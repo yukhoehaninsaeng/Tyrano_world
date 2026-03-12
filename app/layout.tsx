@@ -1,5 +1,17 @@
 import type { Metadata } from "next";
+import { Manrope, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
+
+const sans = Manrope({
+  subsets: ["latin"],
+  variable: "--font-sans"
+});
+
+const serif = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-serif"
+});
 
 export const metadata: Metadata = {
   title: "Tyrano World",
@@ -13,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body className={`${sans.variable} ${serif.variable}`}>{children}</body>
     </html>
   );
 }

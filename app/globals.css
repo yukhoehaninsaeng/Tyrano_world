@@ -3,25 +3,25 @@
 @tailwind utilities;
 
 :root {
-  --background: #f4f7f1;
-  --surface: rgba(255, 255, 255, 0.76);
+  --background: #efede6;
+  --surface: rgba(251, 249, 243, 0.88);
   --card: #ffffff;
-  --border: rgba(15, 23, 42, 0.12);
-  --foreground: #102418;
-  --muted: #5c6b61;
-  --accent: #1f7a45;
-  --success: #12703f;
+  --border: rgba(25, 33, 28, 0.12);
+  --foreground: #141714;
+  --muted: #6d716d;
+  --accent: #1b1f1c;
+  --success: #1b1f1c;
 }
 
 [data-theme="dark"] {
-  --background: #0d1310;
-  --surface: rgba(19, 26, 22, 0.84);
-  --card: #141c18;
-  --border: rgba(186, 230, 200, 0.12);
-  --foreground: #eff7f1;
-  --muted: #97aa9e;
-  --accent: #77d79b;
-  --success: #59c781;
+  --background: #111310;
+  --surface: rgba(24, 27, 24, 0.9);
+  --card: #171a17;
+  --border: rgba(244, 239, 228, 0.12);
+  --foreground: #f2eee5;
+  --muted: #9a978f;
+  --accent: #f2eee5;
+  --success: #f2eee5;
 }
 
 [data-theme="excel"] {
@@ -47,11 +47,11 @@ body {
 
 body {
   background:
-    radial-gradient(circle at top, rgba(102, 187, 106, 0.12), transparent 38%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.48), transparent 35%),
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.8), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55), transparent 32%),
     var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), sans-serif;
 }
 
 body[data-theme="excel"] {
@@ -66,6 +66,13 @@ button,
 input,
 textarea {
   font: inherit;
+}
+
+h1,
+h2,
+h3,
+.font-display {
+  font-family: var(--font-serif), serif;
 }
 
 .safe-screen {
