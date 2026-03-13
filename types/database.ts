@@ -3,6 +3,7 @@ export type ThemeMode = "light" | "dark" | "excel";
 export type Room = {
   id: string;
   title: string;
+  visibility: "open" | "secret";
   created_at: string;
 };
 
@@ -22,11 +23,13 @@ export type Database = {
         Insert: {
           id?: string;
           title: string;
+          visibility?: "open" | "secret";
           created_at?: string;
         };
         Update: Partial<{
           id: string;
           title: string;
+          visibility: "open" | "secret";
           created_at: string;
         }>;
       };

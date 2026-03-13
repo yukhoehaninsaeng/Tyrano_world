@@ -2,7 +2,8 @@ import type { ThemeMode } from "@/types/database";
 
 const KEYS = {
   theme: "tyrano:theme",
-  nickname: "tyrano:nickname"
+  nickname: "tyrano:nickname",
+  joinedRooms: "tyrano:joined-rooms"
 } as const;
 
 export function loadTheme() {
@@ -32,4 +33,26 @@ export function loadNickname() {
 
 export function saveNickname(nickname: string) {
   window.localStorage.setItem(KEYS.nickname, nickname);
+}
+
+export function loadJoinedRooms() {
+  if (typeof window === "undefined") {
+    return [] as string[];
+  }
+
+  try {
+    const raw = window.localStorage.getItem(KEYS.joinedRooms);
+    if (!raw) {
+      return [] as string[];
+    }
+
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter((value): value is string => typeof value === "string") : [];
+  } catch {
+    return [] as string[];
+  }
+}
+
+export function saveJoinedRooms(roomIds: string[]) {
+  window.localStorage.setItem(KEYS.joinedRooms, JSON.stringify(roomIds));
 }
