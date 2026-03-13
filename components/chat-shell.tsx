@@ -53,6 +53,7 @@ export function ChatShell() {
   const [activeTab, setActiveTab] = useState<NavTab>("open");
   const [searchQuery, setSearchQuery] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const activeRoom = rooms.find((room) => room.id === activeRoomId) ?? null;
   const hasSupabase = Boolean(supabase);
@@ -301,10 +302,10 @@ export function ChatShell() {
           <div className="text-sm font-semibold">{activeRoom?.title ?? "Tyrano World"}</div>
           <button
             type="button"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            onClick={() => setSettingsOpen(true)}
             className="ui-transition rounded-xl border border-border bg-card px-4 py-2 text-sm hover:bg-white/5"
           >
-            {THEME_LABELS[theme]}
+            Settings
           </button>
         </div>
 
@@ -336,6 +337,7 @@ export function ChatShell() {
             <div className="flex flex-col items-center gap-3">
               <button
                 type="button"
+                onClick={() => setSettingsOpen(true)}
                 className="ui-transition flex h-12 w-12 items-center justify-center rounded-xl text-xs text-muted hover:bg-white/5"
                 aria-label="Settings"
               >
@@ -453,41 +455,15 @@ export function ChatShell() {
                 </div>
 
                 <div className="flex flex-wrap gap-2">
+                  <span className="rounded-xl border border-border px-3 py-2 text-xs text-white/50">
+                    Theme {THEME_LABELS[theme]}
+                  </span>
                   <button
                     type="button"
-                    onClick={() => setTheme("dark")}
-                    className={clsx(
-                      "ui-transition rounded-xl border px-3 py-2 text-xs",
-                      theme === "dark"
-                        ? "border-transparent bg-[var(--accent)] text-white"
-                        : "border-border hover:bg-white/5"
-                    )}
+                    onClick={() => setSettingsOpen(true)}
+                    className="ui-transition rounded-xl border border-border px-3 py-2 text-xs hover:bg-white/5"
                   >
-                    Dark
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setTheme("light")}
-                    className={clsx(
-                      "ui-transition rounded-xl border px-3 py-2 text-xs",
-                      theme === "light"
-                        ? "border-transparent bg-[var(--accent)] text-white"
-                        : "border-border hover:bg-white/5"
-                    )}
-                  >
-                    Light
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setTheme("excel")}
-                    className={clsx(
-                      "ui-transition rounded-xl border px-3 py-2 text-xs",
-                      theme === "excel"
-                        ? "border-transparent bg-[var(--accent)] text-white"
-                        : "border-border hover:bg-white/5"
-                    )}
-                  >
-                    Excel
+                    Open settings
                   </button>
                 </div>
               </div>
@@ -597,56 +573,79 @@ export function ChatShell() {
                     Send
                   </button>
                 </div>
-
-                <div className="mt-4 grid gap-3 md:grid-cols-[minmax(0,1fr)_220px]">
-                  <div className="rounded-2xl border border-white/5 bg-card p-4">
-                    <label className="text-xs font-bold uppercase tracking-wider text-white/50">
-                      Nickname
-                    </label>
-                    <div className="mt-3 flex gap-2">
-                      <input
-                        value={nicknameInput}
-                        onChange={(event) => setNicknameInput(event.target.value)}
-                        placeholder={effectiveNickname}
-                        className="ui-transition h-12 min-w-0 flex-1 rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-[color:var(--accent)]/50"
-                      />
-                      <button
-                        type="button"
-                        onClick={handleSaveNickname}
-                        className="ui-transition rounded-2xl border border-white/10 px-4 text-sm hover:bg-white/5"
-                      >
-                        Save
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="rounded-2xl border border-white/5 bg-card p-4">
-                    <label className="text-xs font-bold uppercase tracking-wider text-white/50">
-                      Quick room
-                    </label>
-                    <div className="mt-3 flex gap-2">
-                      <input
-                        value={draftRoomTitle}
-                        onChange={(event) => setDraftRoomTitle(event.target.value)}
-                        placeholder="New room"
-                        className="ui-transition h-12 min-w-0 flex-1 rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-[color:var(--accent)]/50"
-                      />
-                      <button
-                        type="button"
-                        onClick={handleCreateRoom}
-                        disabled={!hasSupabase}
-                        className="ui-transition rounded-2xl bg-[var(--accent)] px-4 text-sm font-semibold text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        Add
-                      </button>
-                    </div>
-                  </div>
-                </div>
               </div>
             </footer>
           </section>
         </div>
       </div>
+
+      {settingsOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-end bg-black/60 p-4">
+          <div className="w-full max-w-md rounded-3xl border border-white/10 bg-card p-5 shadow-2xl">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-white/50">
+                  Settings
+                </p>
+                <h3 className="mt-2 text-2xl font-bold">Profile and layout</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSettingsOpen(false)}
+                className="ui-transition rounded-xl border border-border px-3 py-2 text-xs hover:bg-white/5"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="mt-6 space-y-5">
+              <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4">
+                <label className="text-xs font-bold uppercase tracking-wider text-white/50">
+                  Nickname
+                </label>
+                <div className="mt-3 flex gap-2">
+                  <input
+                    value={nicknameInput}
+                    onChange={(event) => setNicknameInput(event.target.value)}
+                    placeholder={effectiveNickname}
+                    className="ui-transition h-12 min-w-0 flex-1 rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-[color:var(--accent)]/50"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSaveNickname}
+                    className="ui-transition rounded-2xl border border-white/10 px-4 text-sm hover:bg-white/5"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4">
+                <label className="text-xs font-bold uppercase tracking-wider text-white/50">
+                  Layout theme
+                </label>
+                <div className="mt-3 grid grid-cols-3 gap-2">
+                  {(Object.keys(THEME_LABELS) as ThemeMode[]).map((mode) => (
+                    <button
+                      key={mode}
+                      type="button"
+                      onClick={() => setTheme(mode)}
+                      className={clsx(
+                        "ui-transition rounded-xl border px-3 py-3 text-sm",
+                        theme === mode
+                          ? "border-transparent bg-[var(--accent)] text-white"
+                          : "border-border hover:bg-white/5"
+                      )}
+                    >
+                      {THEME_LABELS[mode]}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </main>
   );
 }
