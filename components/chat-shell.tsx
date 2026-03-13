@@ -8,10 +8,12 @@ import {
   loadJoinedRooms,
   loadLayout,
   loadNickname,
+  loadRoomPasswords,
   loadTheme,
   saveJoinedRooms,
   saveLayout,
   saveNickname,
+  saveRoomPassword,
   saveTheme
 } from "@/lib/storage";
 import type { LayoutMode, Message, Room, ThemeMode } from "@/types/database";
@@ -82,7 +84,10 @@ export function ChatShell() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [joinDialogOpen, setJoinDialogOpen] = useState(false);
   const [newRoomVisibility, setNewRoomVisibility] = useState<"open" | "secret">("open");
+  const [newRoomPasswordEnabled, setNewRoomPasswordEnabled] = useState(false);
+  const [newRoomPassword, setNewRoomPassword] = useState("");
   const [joinRoomCode, setJoinRoomCode] = useState("");
+  const [joinRoomPassword, setJoinRoomPassword] = useState("");
   const [joinedRoomIds, setJoinedRoomIds] = useState<string[]>([]);
 
   const activeRoom = rooms.find((room) => room.id === activeRoomId) ?? null;
@@ -286,21 +291,33 @@ export function ChatShell() {
     };
 
     setDraftRoomTitle("");
+    setNewRoomPassword("");
+    setNewRoomPasswordEnabled(false);
     setRooms((current) => current.some((room) => room.id === createdRoom.id) ? current : [...current, createdRoom]);
     setActiveRoomId(createdRoom.id);
     setRoomListTab("joined");
     markRoomAsJoined(createdRoom.id);
+    if (newRoomPasswordEnabled && newRoomPassword.trim()) {
+      saveRoomPassword(createdRoom.id, newRoomPassword.trim());
+    }
     setJoinDialogOpen(false);
     setSidebarOpen(false);
     setStatus("Room created.");
   }
 
   function handleJoinRoom(roomId: string) {
+    const roomPasswords = loadRoomPasswords();
+    const expectedPassword = roomPasswords[roomId];
+    if (expectedPassword && joinRoomPassword.trim() !== expectedPassword) {
+      setStatus("This room requires the correct password.");
+      return;
+    }
     setActiveRoomId(roomId);
     markRoomAsJoined(roomId);
     setJoinDialogOpen(false);
     setSidebarOpen(false);
     setRoomListTab("joined");
+    setJoinRoomPassword("");
     setStatus("Joined room.");
   }
 
@@ -341,6 +358,14 @@ export function ChatShell() {
     saveNickname(nextNickname);
   }
 
+  function toggleTheme() {
+    setTheme((current) => current === "dark" ? "light" : "dark");
+  }
+
+  useEffect(() => {
+    setNewRoomVisibility(newRoomPasswordEnabled ? "secret" : "open");
+  }, [newRoomPasswordEnabled]);
+
   return (
     <main className="safe-screen bg-[var(--background)] text-[var(--foreground)]">
       <div className="flex h-screen min-h-screen flex-col md:h-[100dvh]">
@@ -380,25 +405,22 @@ export function ChatShell() {
             <div className="mt-auto flex flex-col items-center gap-2 pb-2">
               <button
                 type="button"
-                onClick={() => setTheme("light")}
+                onClick={toggleTheme}
                 className={clsx(
-                  "flex h-10 w-10 items-center justify-center rounded-xl border text-base transition-all",
-                  theme === "light" ? "border-transparent bg-[#f2c66d] text-[#4e2c12]" : "border-[var(--border)] bg-white/5 text-[var(--muted)]"
+                  "relative flex h-12 w-16 items-center rounded-full border px-1 transition-all",
+                  theme === "light" ? "border-[#efc66e] bg-[#f0cf8a]" : "border-[#33405f] bg-[#1f2940]"
                 )}
-                title="Light mode"
+                title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+                aria-label="Toggle light and dark mode"
               >
-                ☀
-              </button>
-              <button
-                type="button"
-                onClick={() => setTheme("dark")}
-                className={clsx(
-                  "flex h-10 w-10 items-center justify-center rounded-xl border text-base transition-all",
-                  theme === "dark" ? "border-transparent bg-[#20273a] text-[#f0f3ff]" : "border-[var(--border)] bg-white/5 text-[var(--muted)]"
-                )}
-                title="Dark mode"
-              >
-                ☾
+                <span className="absolute left-2 text-sm">☀️</span>
+                <span className="absolute right-2 text-sm">🌙</span>
+                <span
+                  className={clsx(
+                    "relative z-10 h-9 w-9 rounded-full bg-white shadow transition-transform",
+                    theme === "light" ? "translate-x-0" : "translate-x-5"
+                  )}
+                />
               </button>
               <button
                 type="button"
@@ -778,10 +800,10 @@ export function ChatShell() {
 
       {joinDialogOpen ? (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-2xl rounded-3xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-2xl">
+          <div className="w-full max-w-3xl rounded-3xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-[var(--muted)]">Joined rooms</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-[var(--muted)]">Room controls</p>
                 <h3 className="mt-2 text-2xl font-bold">Create / Join room</h3>
               </div>
               <button type="button" onClick={() => setJoinDialogOpen(false)} className="rounded-xl border border-[var(--border)] px-3 py-2 text-xs">
@@ -789,20 +811,67 @@ export function ChatShell() {
               </button>
             </div>
 
-            <div className="mt-6 grid gap-4 lg:grid-cols-2">
-              <div className="rounded-2xl border border-[var(--border)] bg-white/[0.03] p-4">
-                <p className="text-xs font-bold uppercase tracking-wider text-[var(--muted)]">Create room</p>
-                <input value={draftRoomTitle} onChange={(event) => setDraftRoomTitle(event.target.value)} placeholder="Room title" className="mt-4 h-12 w-full rounded-2xl border border-[var(--border)] bg-white/5 px-4 text-sm outline-none" />
-                <div className="mt-3 grid grid-cols-2 gap-2">
-                  <button type="button" onClick={() => setNewRoomVisibility("open")} className={clsx("rounded-xl border px-3 py-3 text-sm", newRoomVisibility === "open" ? "border-transparent bg-[var(--accent)] text-white" : "border-[var(--border)] hover:bg-white/5")}>
-                    Open room
-                  </button>
-                  <button type="button" onClick={() => setNewRoomVisibility("secret")} className={clsx("rounded-xl border px-3 py-3 text-sm", newRoomVisibility === "secret" ? "border-transparent bg-[var(--accent)] text-white" : "border-[var(--border)] hover:bg-white/5")}>
-                    Secret room
-                  </button>
+            <div className="mt-6 grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
+              <div className="rounded-[28px] border border-[var(--border)] bg-[#171717] p-6 shadow-[0_24px_64px_rgba(0,0,0,0.28)]">
+                <h4 className="text-[19px] font-bold text-white">오픈굴 만들기</h4>
+                <input
+                  value={draftRoomTitle}
+                  onChange={(event) => setDraftRoomTitle(event.target.value)}
+                  placeholder="채팅방 이름을 입력하세요"
+                  className="mt-8 h-16 w-full rounded-2xl border border-[#34373d] bg-[#1d1f23] px-5 text-xl text-[#f1e4d0] outline-none placeholder:text-[#ad9a82]"
+                />
+
+                <div className="mt-8 rounded-3xl border border-[#34373d] bg-[#202224] p-5">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-xl">🔒</span>
+                      <div>
+                        <div className="text-[15px] font-bold text-[#f1e4d0]">입장 비밀번호 잠금</div>
+                        <div className="mt-1 text-xs text-[#8e7c67]">
+                          켜면 비밀방으로 생성됩니다.
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setNewRoomPasswordEnabled((current) => !current)}
+                      className={clsx(
+                        "relative h-10 w-20 rounded-full transition-all",
+                        newRoomPasswordEnabled ? "bg-[#08c952]" : "bg-[#3a3d42]"
+                      )}
+                      aria-label="Toggle room password"
+                    >
+                      <span
+                        className={clsx(
+                          "absolute top-1 h-8 w-8 rounded-full bg-white transition-all",
+                          newRoomPasswordEnabled ? "left-[44px]" : "left-1"
+                        )}
+                      />
+                    </button>
+                  </div>
+
+                  {newRoomPasswordEnabled ? (
+                    <input
+                      value={newRoomPassword}
+                      onChange={(event) => setNewRoomPassword(event.target.value.slice(0, 20))}
+                      placeholder="비밀번호 입력 (최대 20자)"
+                      className="mt-5 h-14 w-full rounded-2xl border border-[#34373d] bg-[#17191d] px-5 text-lg text-[#f1e4d0] outline-none placeholder:text-[#ad9a82]"
+                    />
+                  ) : null}
                 </div>
-                <button type="button" onClick={() => void handleCreateRoom()} disabled={!hasSupabase} className="mt-3 w-full rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-white disabled:opacity-40">
-                  Create now
+
+                <div className="mt-4 flex items-center justify-between text-xs text-[#8e7c67]">
+                  <span>{newRoomVisibility === "secret" ? "비밀방" : "오픈방"}으로 생성됩니다.</span>
+                  <span>{hasSupabase ? "실시간 생성 가능" : "Supabase 필요"}</span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => void handleCreateRoom()}
+                  disabled={!hasSupabase || !draftRoomTitle.trim() || (newRoomPasswordEnabled && !newRoomPassword.trim())}
+                  className="mt-5 w-full rounded-2xl bg-[var(--accent)] px-4 py-4 text-sm font-semibold text-white disabled:opacity-40"
+                >
+                  방 만들기
                 </button>
               </div>
 
@@ -814,6 +883,12 @@ export function ChatShell() {
                     Join
                   </button>
                 </div>
+                <input
+                  value={joinRoomPassword}
+                  onChange={(event) => setJoinRoomPassword(event.target.value)}
+                  placeholder="Password if needed"
+                  className="mt-3 h-12 w-full rounded-2xl border border-[var(--border)] bg-white/5 px-4 text-sm outline-none"
+                />
                 <div className="scrollbar-subtle mt-4 max-h-56 overflow-y-auto pr-1">
                   <div className="flex flex-col gap-2">
                     {joinableRooms.length === 0 ? (

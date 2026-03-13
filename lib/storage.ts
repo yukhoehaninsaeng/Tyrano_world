@@ -4,7 +4,8 @@ const KEYS = {
   theme: "tyrano:theme",
   layout: "tyrano:layout",
   nickname: "tyrano:nickname",
-  joinedRooms: "tyrano:joined-rooms"
+  joinedRooms: "tyrano:joined-rooms",
+  roomPasswords: "tyrano:room-passwords"
 } as const;
 
 export function loadTheme() {
@@ -73,4 +74,33 @@ export function loadJoinedRooms() {
 
 export function saveJoinedRooms(roomIds: string[]) {
   window.localStorage.setItem(KEYS.joinedRooms, JSON.stringify(roomIds));
+}
+
+export function loadRoomPasswords() {
+  if (typeof window === "undefined") {
+    return {} as Record<string, string>;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(KEYS.roomPasswords);
+    if (!raw) {
+      return {} as Record<string, string>;
+    }
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object"
+      ? Object.fromEntries(
+          Object.entries(parsed).filter(
+            (entry): entry is [string, string] => typeof entry[0] === "string" && typeof entry[1] === "string"
+          )
+        )
+      : {};
+  } catch {
+    return {} as Record<string, string>;
+  }
+}
+
+export function saveRoomPassword(roomId: string, password: string) {
+  const current = loadRoomPasswords();
+  current[roomId] = password;
+  window.localStorage.setItem(KEYS.roomPasswords, JSON.stringify(current));
 }
