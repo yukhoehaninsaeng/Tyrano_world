@@ -7,7 +7,7 @@ const KEYS = {
 
 export function loadTheme() {
   if (typeof window === "undefined") {
-    return "light" as ThemeMode;
+    return "dark" as ThemeMode;
   }
 
   const value = window.localStorage.getItem(KEYS.theme);
@@ -15,7 +15,7 @@ export function loadTheme() {
     return value;
   }
 
-  return "light" as ThemeMode;
+  return "dark" as ThemeMode;
 }
 
 export function saveTheme(theme: ThemeMode) {
