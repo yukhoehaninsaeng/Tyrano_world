@@ -1,4 +1,5 @@
-export type ThemeMode = "light" | "dark" | "excel";
+export type ThemeMode = "light" | "dark";
+export type LayoutMode = "default" | "excel" | "notepad";
 
 export type Room = {
   id: string;

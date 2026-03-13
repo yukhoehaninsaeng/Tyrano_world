@@ -1,7 +1,8 @@
-import type { ThemeMode } from "@/types/database";
+import type { LayoutMode, ThemeMode } from "@/types/database";
 
 const KEYS = {
   theme: "tyrano:theme",
+  layout: "tyrano:layout",
   nickname: "tyrano:nickname",
   joinedRooms: "tyrano:joined-rooms"
 } as const;
@@ -12,7 +13,7 @@ export function loadTheme() {
   }
 
   const value = window.localStorage.getItem(KEYS.theme);
-  if (value === "light" || value === "dark" || value === "excel") {
+  if (value === "light" || value === "dark") {
     return value;
   }
 
@@ -21,6 +22,23 @@ export function loadTheme() {
 
 export function saveTheme(theme: ThemeMode) {
   window.localStorage.setItem(KEYS.theme, theme);
+}
+
+export function loadLayout() {
+  if (typeof window === "undefined") {
+    return "default" as LayoutMode;
+  }
+
+  const value = window.localStorage.getItem(KEYS.layout);
+  if (value === "default" || value === "excel" || value === "notepad") {
+    return value;
+  }
+
+  return "default" as LayoutMode;
+}
+
+export function saveLayout(layout: LayoutMode) {
+  window.localStorage.setItem(KEYS.layout, layout);
 }
 
 export function loadNickname() {

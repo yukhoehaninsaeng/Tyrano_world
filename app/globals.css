@@ -15,27 +15,15 @@
 }
 
 [data-theme="light"] {
-  --background: #f7f7f7;
-  --surface: #f7f7f7;
-  --card: #ffffff;
-  --sidebar: #ececec;
-  --foreground: #111111;
-  --muted: #666666;
-  --border: rgba(17, 17, 17, 0.1);
-  --accent: oklch(0.6 0.25 15);
-  --success: oklch(0.6 0.25 15);
-}
-
-[data-theme="excel"] {
-  --background: #edf4ec;
-  --surface: rgba(250, 253, 250, 0.78);
-  --card: #ffffff;
-  --sidebar: #e8f0e7;
-  --border: rgba(57, 94, 65, 0.18);
-  --foreground: #17311d;
-  --muted: #55705d;
-  --accent: #217346;
-  --success: #217346;
+  --background: #f3efe7;
+  --surface: #f7f3ec;
+  --card: #fffdf9;
+  --sidebar: #ebe4d9;
+  --foreground: #2a241d;
+  --muted: #73685d;
+  --border: rgba(67, 54, 38, 0.12);
+  --accent: #bc5a2c;
+  --success: #2f7a58;
 }
 
 * {
@@ -52,14 +40,6 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: "Malgun Gothic", "맑은 고딕", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-
-body[data-theme="excel"] {
-  background-color: var(--background);
-  background-image:
-    linear-gradient(to right, rgba(33, 115, 70, 0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(33, 115, 70, 0.08) 1px, transparent 1px);
-  background-size: 28px 28px;
 }
 
 button,
