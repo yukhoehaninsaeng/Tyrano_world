@@ -14,19 +14,11 @@ import type { Message, Room, ThemeMode } from "@/types/database";
 type PresenceState = Record<string, { nickname: string; number: number | null }[]>;
 type NavTab = "open" | "private" | "feedback";
 
-const THEME_LABELS: Record<ThemeMode, string> = {
-  dark: "Dark",
-  light: "Light",
-  excel: "Excel"
-};
-
 const NAV_ITEMS: { id: NavTab; icon: string; label: string }[] = [
-  { id: "open", icon: "O", label: "Open Rooms" },
-  { id: "private", icon: "P", label: "Private Rooms" },
-  { id: "feedback", icon: "F", label: "Feedback" }
+  { id: "open", icon: "🌐", label: "오픈굴" },
+  { id: "private", icon: "🔒", label: "토끼굴" },
+  { id: "feedback", icon: "💌", label: "건의함" }
 ];
-
-const EXCEL_COLUMNS = ["A", "B", "C", "D"];
 
 function formatTime(value: string) {
   return new Intl.DateTimeFormat("ko-KR", {
@@ -56,7 +48,6 @@ export function ChatShell() {
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const activeRoom = rooms.find((room) => room.id === activeRoomId) ?? null;
-  const hasSupabase = Boolean(supabase);
   const effectiveNickname = savedNickname.trim() || sessionNickname || "Generating...";
   const filteredRooms = rooms.filter((room) =>
     room.title.toLowerCase().includes(searchQuery.trim().toLowerCase())
@@ -81,44 +72,27 @@ export function ChatShell() {
   }, [messages]);
 
   useEffect(() => {
-    if (!supabase) {
-      return;
-    }
-
+    if (!supabase) return;
     const client = supabase as any;
     let isMounted = true;
     const roomsChannel = client.channel("public:rooms");
 
     async function loadRooms() {
-      setStatus("Loading rooms...");
-
-      const { data, error } = await client
-        .from("rooms")
-        .select("*")
-        .order("created_at", { ascending: true });
-
-      if (!isMounted) {
-        return;
-      }
-
+      const { data, error } = await client.from("rooms").select("*").order("created_at", { ascending: true });
+      if (!isMounted) return;
       if (error) {
         setStatus(`Failed to load rooms: ${error.message}`);
         return;
       }
-
       const nextRooms = (data ?? []) as Room[];
       setRooms(nextRooms);
       setActiveRoomId((current) => current || nextRooms[0]?.id || "");
-      setStatus("Realtime connected.");
     }
 
     void loadRooms();
-
-    roomsChannel
-      .on("postgres_changes", { event: "*", schema: "public", table: "rooms" }, () => {
-        void loadRooms();
-      })
-      .subscribe();
+    roomsChannel.on("postgres_changes", { event: "*", schema: "public", table: "rooms" }, () => {
+      void loadRooms();
+    }).subscribe();
 
     return () => {
       isMounted = false;
@@ -127,103 +101,42 @@ export function ChatShell() {
   }, [supabase]);
 
   useEffect(() => {
-    if (!supabase || !activeRoomId) {
-      return;
-    }
-
+    if (!supabase || !activeRoomId) return;
     const client = supabase as any;
     let isActive = true;
     const presenceKey = `${Math.random().toString(36).slice(2, 9)}-${Date.now()}`;
-    const roomChannel = client.channel(`room:${activeRoomId}`, {
-      config: {
-        presence: {
-          key: presenceKey
-        }
-      }
-    });
+    const roomChannel = client.channel(`room:${activeRoomId}`, { config: { presence: { key: presenceKey } } });
 
     function buildNickname(state: PresenceState) {
-      if (savedNickname.trim()) {
-        return savedNickname.trim();
-      }
-
-      const occupiedNumbers = Object.values(state)
-        .flat()
-        .map((entry) => entry.number)
-        .filter((value): value is number => value !== null);
-
+      if (savedNickname.trim()) return savedNickname.trim();
+      const occupiedNumbers = Object.values(state).flat().map((entry) => entry.number).filter((value): value is number => value !== null);
       const availableNumber = getAvailableTyranoNumber(occupiedNumbers);
       return formatTyranoName(availableNumber);
     }
 
     async function loadMessages() {
-      const { data, error } = await client
-        .from("messages")
-        .select("*")
-        .eq("room_id", activeRoomId)
-        .order("created_at", { ascending: true });
-
-      if (!isActive) {
-        return;
-      }
-
-      if (error) {
-        setStatus(`Failed to load messages: ${error.message}`);
-        return;
-      }
-
+      const { data, error } = await client.from("messages").select("*").eq("room_id", activeRoomId).order("created_at", { ascending: true });
+      if (!isActive) return;
+      if (error) return;
       setMessages((data ?? []) as Message[]);
     }
 
     void loadMessages();
-
-    roomChannel
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "messages",
-          filter: `room_id=eq.${activeRoomId}`
-        },
-        (payload: { new: Message }) => {
-          const incoming = payload.new as Message;
-          setMessages((current) => {
-            if (current.some((message) => message.id === incoming.id)) {
-              return current;
-            }
-
-            return [...current, incoming];
-          });
-        }
-      )
-      .on("presence", { event: "sync" }, () => {
-        const state = roomChannel.presenceState() as PresenceState;
-        const members = Object.values(state).flat();
-
-        setPresenceCount(Math.max(members.length, 1));
-
-        if (!savedNickname.trim()) {
-          setSessionNickname(buildNickname(state));
-        }
-      })
-      .subscribe(async (subscriptionStatus: string) => {
-        if (subscriptionStatus !== "SUBSCRIBED") {
-          return;
-        }
-
-        const state = roomChannel.presenceState() as PresenceState;
-        const candidate = buildNickname(state);
-
-        if (!savedNickname.trim()) {
-          setSessionNickname(candidate);
-        }
-
-        await roomChannel.track({
-          nickname: candidate,
-          number: extractTyranoNumber(candidate)
-        });
-      });
+    roomChannel.on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `room_id=eq.${activeRoomId}` }, (payload: { new: Message }) => {
+      const incoming = payload.new as Message;
+      setMessages((current) => current.some((m) => m.id === incoming.id) ? current : [...current, incoming]);
+    }).on("presence", { event: "sync" }, () => {
+      const state = roomChannel.presenceState() as PresenceState;
+      const members = Object.values(state).flat();
+      setPresenceCount(Math.max(members.length, 1));
+      if (!savedNickname.trim()) setSessionNickname(buildNickname(state));
+    }).subscribe(async (status: string) => {
+      if (status !== "SUBSCRIBED") return;
+      const state = roomChannel.presenceState() as PresenceState;
+      const candidate = buildNickname(state);
+      if (!savedNickname.trim()) setSessionNickname(candidate);
+      await roomChannel.track({ nickname: candidate, number: extractTyranoNumber(candidate) });
+    });
 
     return () => {
       isActive = false;
@@ -234,418 +147,345 @@ export function ChatShell() {
   }, [supabase, activeRoomId, savedNickname]);
 
   async function handleCreateRoom() {
-    if (!supabase || !draftRoomTitle.trim()) {
-      return;
-    }
-
+    if (!supabase || !draftRoomTitle.trim()) return;
     const client = supabase as any;
-    const { data, error } = await client
-      .from("rooms")
-      .insert({ title: draftRoomTitle.trim() })
-      .select()
-      .single();
-
-    if (error) {
-      setStatus(`Failed to create room: ${error.message}`);
-      return;
-    }
-
+    const { data, error } = await client.from("rooms").insert({ title: draftRoomTitle.trim() }).select().single();
+    if (error) return;
     setDraftRoomTitle("");
-    setRooms((current) => {
-      if (current.some((room) => room.id === data.id)) {
-        return current;
-      }
-
-      return [...current, data];
-    });
+    setRooms((current) => current.some((r) => r.id === data.id) ? current : [...current, data]);
     setActiveRoomId(data.id);
-    setSidebarOpen(false);
   }
 
   async function handleSendMessage() {
-    if (!supabase || !activeRoomId || !draftMessage.trim()) {
-      return;
-    }
-
+    if (!supabase || !activeRoomId || !draftMessage.trim()) return;
     const client = supabase as any;
     const { error } = await client.from("messages").insert({
       room_id: activeRoomId,
       sender_name: savedNickname.trim() || sessionNickname || formatTyranoName(1),
       content: draftMessage.trim()
     });
-
-    if (error) {
-      setStatus(`Failed to send message: ${error.message}`);
-      return;
-    }
-
+    if (error) return;
     setDraftMessage("");
   }
 
-  function handleSaveNickname() {
-    const nextNickname = nicknameInput.trim();
-    setSavedNickname(nextNickname);
-    saveNickname(nextNickname);
-  }
-
   return (
-    <main className="safe-screen bg-[var(--background)] text-foreground">
+    <main className="safe-screen bg-[#121212] text-white">
       <div className="flex h-screen min-h-screen flex-col md:h-[100dvh]">
-        <div className="flex items-center justify-between border-b border-border px-4 py-3 lg:hidden">
+        {/* Mobile Header */}
+        <div className="flex items-center justify-between border-b border-white/5 px-4 py-3 lg:hidden bg-[#0f0f0f]">
           <button
             type="button"
             onClick={() => setSidebarOpen((current) => !current)}
-            className="ui-transition rounded-xl border border-border bg-card px-4 py-2 text-sm hover:bg-white/5"
+            className="rounded-xl bg-white/5 px-4 py-2 text-sm"
           >
             Menu
           </button>
-          <div className="text-sm font-semibold">{activeRoom?.title ?? "Tyrano World"}</div>
+          <div className="text-sm font-bold">{activeRoom?.title ?? "티라노 월드"}</div>
           <button
             type="button"
             onClick={() => setSettingsOpen(true)}
-            className="ui-transition rounded-xl border border-border bg-card px-4 py-2 text-sm hover:bg-white/5"
+            className="rounded-xl bg-white/5 px-4 py-2 text-sm"
           >
             Settings
           </button>
         </div>
 
         <div className="grid min-h-0 flex-1 lg:grid-cols-[68px_288px_minmax(0,1fr)]">
-          <nav className="hidden border-r border-border bg-[var(--sidebar)] lg:flex lg:flex-col lg:items-center lg:justify-between lg:py-4">
-            <div className="flex flex-col items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-card text-sm font-bold">
-                TY
-              </div>
-              {NAV_ITEMS.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setActiveTab(item.id)}
-                  className={clsx(
-                    "ui-transition flex h-12 w-12 items-center justify-center rounded-xl text-xs",
-                    activeTab === item.id
-                      ? "bg-white/10 text-[var(--accent)]"
-                      : "text-muted hover:bg-white/5"
-                  )}
-                  aria-label={item.label}
-                  title={item.label}
-                >
-                  {item.icon}
-                </button>
-              ))}
+          {/* Left NavBar - RabbitHole Style */}
+          <nav className="hidden border-r border-white/5 bg-[#0f0f0f] lg:flex lg:flex-col lg:items-center lg:py-4 lg:gap-4 lg:flex-shrink-0">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--accent)]/20 mb-2">
+              <span className="text-sm font-black text-[var(--accent)]">TY</span>
             </div>
+            
+            {NAV_ITEMS.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setActiveTab(item.id)}
+                className={clsx(
+                  "ui-transition flex h-12 w-12 items-center justify-center rounded-xl text-xl",
+                  activeTab === item.id
+                    ? "bg-white/10 text-[var(--accent)]"
+                    : "text-white/40 hover:bg-white/5"
+                )}
+                title={item.label}
+              >
+                {item.icon}
+              </button>
+            ))}
 
-            <div className="flex flex-col items-center gap-3">
+            <div className="mt-auto flex flex-col items-center gap-4 pb-2">
               <button
                 type="button"
                 onClick={() => setSettingsOpen(true)}
-                className="ui-transition flex h-12 w-12 items-center justify-center rounded-xl text-xs text-muted hover:bg-white/5"
-                aria-label="Settings"
+                className="ui-transition flex h-10 w-10 items-center justify-center rounded-xl text-white/40 hover:bg-white/5"
+                title="설정"
               >
-                ST
+                ⚙️
               </button>
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--accent)] text-xs font-bold text-white">
-                {effectiveNickname.slice(-2)}
+              <div 
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-tr from-[var(--accent)] to-orange-400 text-xs font-bold text-white cursor-pointer shadow-lg shadow-[var(--accent)]/20"
+                title={effectiveNickname}
+              >
+                {effectiveNickname[0]}
               </div>
             </div>
           </nav>
 
-          <aside
-            className={clsx(
-              "min-h-0 border-r border-border bg-surface",
-              sidebarOpen ? "block" : "hidden",
-              "lg:block"
-            )}
-          >
-            <div className="flex h-full min-h-0 flex-col">
-              <div className="border-b border-border px-5 py-5">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-white/50">
-                      {activeTab === "open"
-                        ? "Open Rooms"
-                        : activeTab === "private"
-                          ? "Private Rooms"
-                          : "Feedback"}
-                    </p>
-                    <h1 className="mt-2 text-lg font-bold">
-                      {activeTab === "open"
-                        ? "Public Threads"
-                        : activeTab === "private"
-                          ? "Private Lounge"
-                          : "Feedback Box"}
-                    </h1>
-                  </div>
-                  <span className="text-[10px] text-white/30">{filteredRooms.length} rooms</span>
-                </div>
-
+          {/* Middle Sidebar - Room List */}
+          <aside className={clsx(
+            "border-r border-white/5 bg-[#121212] lg:flex lg:flex-col",
+            sidebarOpen ? "flex flex-col fixed inset-0 z-50 lg:relative lg:z-0" : "hidden"
+          )}>
+            <div className="flex flex-col gap-4 p-5 flex-shrink-0">
+              <div className="flex items-center justify-between">
+                <h1 className="text-lg font-bold tracking-tight text-white">
+                  {NAV_ITEMS.find((item) => item.id === activeTab)?.label ?? "Rooms"}
+                </h1>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const title = prompt("새로운 굴의 이름을 입력하세요:");
+                    if (title) {
+                      setDraftRoomTitle(title);
+                      setTimeout(() => handleCreateRoom(), 0);
+                    }
+                  }}
+                  className="ui-transition flex h-8 w-8 items-center justify-center rounded-lg hover:bg-white/5 text-white/50 hover:text-white"
+                >
+                  +
+                </button>
+              </div>
+              <div className="relative">
                 <input
+                  type="text"
+                  placeholder="검색어를 입력하세요"
                   value={searchQuery}
-                  onChange={(event) => setSearchQuery(event.target.value)}
-                  placeholder="Search rooms"
-                  className="ui-transition mt-4 h-10 w-full rounded-xl border border-transparent bg-white/5 px-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-[color:var(--accent)]/50"
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full rounded-xl border-none bg-white/5 py-2.5 pl-9 pr-4 text-sm text-white placeholder:text-white/20 focus:ring-1 focus:ring-[var(--accent)]/50"
                 />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20">🔍</span>
               </div>
+            </div>
 
-              <div className="scrollbar-subtle min-h-0 flex-1 overflow-y-auto px-3 py-3">
-                <div className="flex flex-col gap-2">
-                  {filteredRooms.length === 0 ? (
-                    <div className="rounded-2xl border border-white/5 bg-white/[0.03] px-4 py-5 text-sm text-white/40">
-                      No rooms found.
-                    </div>
-                  ) : (
-                    filteredRooms.map((room) => (
-                      <button
-                        key={room.id}
-                        type="button"
-                        onClick={() => {
-                          setActiveRoomId(room.id);
-                          setSidebarOpen(false);
-                        }}
-                        className={clsx(
-                          "ui-transition rounded-2xl px-4 py-4 text-left",
-                          room.id === activeRoomId
-                            ? "bg-white/10 ring-1 ring-white/10"
-                            : "hover:bg-white/5"
-                        )}
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <p className="text-[14px] font-semibold">{room.title}</p>
-                          <span className="text-[10px] text-white/30">
-                            {new Date(room.created_at).toLocaleDateString("ko-KR")}
-                          </span>
-                        </div>
-                        <p className="mt-2 text-[12px] text-white/50">
-                          Permanent room history and live updates.
-                        </p>
-                      </button>
-                    ))
-                  )}
-                </div>
-              </div>
-
-              <div className="border-t border-border px-4 py-4">
-                <div className="rounded-2xl border border-white/5 bg-card p-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-semibold">{effectiveNickname}</p>
-                      <p className="mt-1 text-xs text-white/40">Online now {presenceCount}</p>
-                    </div>
-                    <button
-                      type="button"
-                      className="ui-transition rounded-xl border border-border px-3 py-2 text-xs hover:bg-white/5"
-                    >
-                      Logout
-                    </button>
+            <div className="scrollbar-subtle flex-1 overflow-y-auto px-2 pb-4">
+              <div className="space-y-1">
+                {filteredRooms.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center p-8 text-center opacity-30">
+                    <p className="text-sm text-white">방이 없습니다</p>
                   </div>
-                </div>
+                ) : (
+                  filteredRooms.map((room) => (
+                    <button
+                      key={room.id}
+                      type="button"
+                      onClick={() => {
+                        setActiveRoomId(room.id);
+                        setSidebarOpen(false);
+                      }}
+                      className={clsx(
+                        "ui-transition flex w-full flex-col rounded-xl p-3 text-left",
+                        activeRoomId === room.id ? "bg-white/10 ring-1 ring-white/10" : "hover:bg-white/5"
+                      )}
+                    >
+                      <div className="mb-1 flex items-center justify-between">
+                        <span
+                          className={clsx(
+                            "truncate text-[14px] font-semibold",
+                            activeRoomId === room.id ? "text-[var(--accent)]" : "text-white/90"
+                          )}
+                        >
+                          {room.title}
+                        </span>
+                        <span className="text-[10px] text-white/30">
+                          {formatTime(room.created_at)}
+                        </span>
+                      </div>
+                      <div className="truncate text-[12px] text-white/50">
+                        {activeRoomId === room.id ? "채팅 중..." : "최근 메시지가 없습니다"}
+                      </div>
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
+
+            <div className="border-t border-white/5 bg-[#0f0f0f]/50 p-4">
+              <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-transparent px-3 py-2 text-xs font-medium">
+                <div className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
+                <span className="truncate text-white/70">{effectiveNickname}</span>
+                <span className="ml-auto text-[10px] text-white/20">{presenceCount} online</span>
               </div>
             </div>
           </aside>
 
-          <section className="flex min-h-0 flex-col bg-[var(--background)]">
-            <header className="border-b border-border px-4 py-4 md:px-6">
-              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-white/50">
-                    {activeRoom ? "Current Room" : "No Room Selected"}
-                  </p>
-                  <h2 className="mt-2 text-2xl font-bold tracking-tight">
-                    {activeRoom?.title ?? "Choose a room to start"}
-                  </h2>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  <span className="rounded-xl border border-border px-3 py-2 text-xs text-white/50">
-                    Theme {THEME_LABELS[theme]}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setSettingsOpen(true)}
-                    className="ui-transition rounded-xl border border-border px-3 py-2 text-xs hover:bg-white/5"
-                  >
-                    Open settings
-                  </button>
-                </div>
-              </div>
-            </header>
-
-            <div
-              className={clsx(
-                "scrollbar-subtle flex-1 overflow-y-auto px-4 py-5 md:px-6",
-                theme === "excel" && "bg-grid bg-[size:56px_56px]"
-              )}
-            >
-              <div className="mx-auto flex w-full max-w-5xl flex-col gap-4">
-                {messages.length === 0 ? (
-                  <div className="rounded-2xl border border-white/5 bg-card px-6 py-10 text-center text-sm text-white/40">
-                    No messages yet. Leave the first message in this room.
+          {/* Main Chat Area */}
+          <section className="flex min-h-0 flex-col bg-[#121212]">
+            {activeRoom ? (
+              <>
+                <header className="border-b border-white/5 px-6 py-4 flex items-center justify-between bg-[#121212]">
+                  <div>
+                    <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                      <span className="text-[var(--accent)]">🎯</span> {activeRoom.title}
+                    </h2>
+                    <p className="text-xs text-white/30 mt-0.5">{presenceCount}명의 티라노가 대화 중</p>
                   </div>
-                ) : (
-                  messages.map((message, index) => {
-                    const isOwnMessage = message.sender_name === effectiveNickname;
+                  <div className="flex gap-2">
+                    <button className="h-9 px-4 rounded-xl bg-white/5 text-xs font-bold hover:bg-white/10 transition-all">공유</button>
+                    <button className="h-9 w-9 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 transition-all">⋮</button>
+                  </div>
+                </header>
 
-                    if (theme === "excel") {
-                      return (
-                        <article key={message.id} className="bg-white shadow-sm">
-                          <div className="grid grid-cols-[72px_1.2fr_2fr_96px] border border-[#c9d7c8] text-sm">
-                            {EXCEL_COLUMNS.map((column, cellIndex) => (
-                              <div
-                                key={`${message.id}-${column}`}
-                                className={clsx(
-                                  "border-b border-r border-[#c9d7c8] bg-[#f3f8f1] px-3 py-2 font-medium text-[#3e5f45]",
-                                  cellIndex === EXCEL_COLUMNS.length - 1 && "border-r-0"
-                                )}
-                              >
-                                {column}
-                              </div>
-                            ))}
-                            <div className="border-r border-[#c9d7c8] px-3 py-3 text-[#55705d]">
-                              {index + 1}
-                            </div>
-                            <div className="border-r border-[#c9d7c8] px-3 py-3 font-medium text-[#17311d]">
-                              {message.sender_name}
-                            </div>
-                            <div className="border-r border-[#c9d7c8] px-3 py-3 text-[#17311d]">
-                              {message.content}
-                            </div>
-                            <div className="px-3 py-3 text-right text-[#55705d]">
-                              {formatTime(message.created_at)}
-                            </div>
-                          </div>
-                        </article>
-                      );
-                    }
-
+                <div className="scrollbar-subtle flex-1 overflow-y-auto p-6 space-y-6">
+                  {messages.map((message) => {
+                    const isMe = message.sender_name === effectiveNickname;
                     return (
-                      <article
-                        key={message.id}
-                        className={clsx("flex", isOwnMessage ? "justify-end" : "justify-start")}
-                      >
-                        <div className="max-w-[85%]">
-                          <div className="mb-1 px-1 text-[10px] text-white/30">
-                            {message.sender_name} · {formatTime(message.created_at)}
-                          </div>
+                      <div key={message.id} className={clsx("flex flex-col", isMe ? "items-end" : "items-start")}>
+                        {!isMe && (
+                          <span className="text-[11px] text-white/40 mb-1 ml-1 font-medium">{message.sender_name}</span>
+                        )}
+                        <div className="flex items-end gap-2">
+                          {isMe && (
+                            <span className="text-[10px] text-white/20 mb-1">
+                              {formatTime(message.created_at)}
+                            </span>
+                          )}
                           <div
                             className={clsx(
-                              "shadow-sm rounded-2xl px-4 py-2.5 text-[14px]",
-                              isOwnMessage
-                                ? "rounded-tr-none bg-white text-black"
-                                : "rounded-tl-none border border-white/5 bg-[#2c2c2c] text-white"
+                              "max-w-[85%] rounded-2xl px-4 py-2.5 text-[14px] shadow-sm leading-relaxed",
+                              isMe
+                                ? "bg-white text-black rounded-tr-none"
+                                : "bg-[#2c2c2c] text-white rounded-tl-none border border-white/5"
                             )}
                           >
-                            {message.content}
+                            <div className="whitespace-pre-wrap break-words">
+                              {message.content}
+                            </div>
                           </div>
+                          {!isMe && (
+                            <span className="text-[10px] text-white/20 mb-1">
+                              {formatTime(message.created_at)}
+                            </span>
+                          )}
                         </div>
-                      </article>
+                      </div>
                     );
-                  })
-                )}
-                <div ref={messageEndRef} />
-              </div>
-            </div>
+                  })}
+                  <div ref={messageEndRef} />
+                </div>
 
-            <footer className="border-t border-border px-4 py-4 md:px-6">
-              <div className="mx-auto max-w-5xl">
-                <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-                  <div className="text-sm text-white/30">
-                    {hasSupabase ? "Permanent storage enabled." : "Waiting for Supabase config."}
+                <div className="p-4 bg-[#121212]">
+                  <div className="mx-auto max-w-4xl relative group">
+                    <textarea
+                      placeholder="메시지를 입력하세요..."
+                      value={draftMessage}
+                      onChange={(e) => setDraftMessage(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                          e.preventDefault();
+                          void handleSendMessage();
+                        }
+                      }}
+                      rows={1}
+                      className="w-full bg-[#1e1e1e] border border-white/10 rounded-2xl py-3.5 pl-4 pr-16 text-[14px] text-white placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-[var(--accent)]/50 transition-all resize-none min-h-[52px] max-h-32"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleSendMessage}
+                      disabled={!draftMessage.trim()}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-14 rounded-xl bg-[var(--accent)] hover:opacity-90 text-white font-bold text-xs transition-all disabled:opacity-30"
+                    >
+                      전송
+                    </button>
                   </div>
-                  <div className="text-xs text-white/30">{status}</div>
+                  <p className="text-center text-[10px] text-white/20 mt-2">
+                    티라노 월드에서는 모든 대화가 익명으로 보호됩니다. 건전한 대화 문화를 지향합니다. 🦖
+                  </p>
                 </div>
-
-                <div className="relative group">
-                  <textarea
-                    value={draftMessage}
-                    onChange={(event) => setDraftMessage(event.target.value)}
-                    placeholder={
-                      activeRoom ? "Type your message..." : "Select or create a room first"
+              </>
+            ) : (
+              <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
+                <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6">
+                  <span className="text-4xl">🦖</span>
+                </div>
+                <h2 className="text-2xl font-black text-white">티라노 월드에 오신 걸 환영해요</h2>
+                <p className="mt-2 text-white/40">왼쪽 목록에서 대화할 굴을 선택하거나 새로운 굴을 파보세요.</p>
+                <button 
+                  onClick={() => {
+                    const title = prompt("새로운 굴의 이름을 입력하세요:");
+                    if (title) {
+                      setDraftRoomTitle(title);
+                      setTimeout(() => handleCreateRoom(), 0);
                     }
-                    rows={3}
-                    disabled={!activeRoom}
-                    className="ui-transition min-h-[52px] max-h-32 w-full resize-none rounded-2xl border border-white/10 bg-card py-3.5 pl-4 pr-20 text-[14px] text-white placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-[color:var(--accent)]/50 disabled:cursor-not-allowed disabled:opacity-60"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleSendMessage}
-                    disabled={!activeRoom || !hasSupabase}
-                    className="ui-transition absolute right-2 top-1/2 h-9 w-14 -translate-y-1/2 rounded-xl bg-[var(--accent)] text-xs font-bold text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    Send
-                  </button>
-                </div>
+                  }}
+                  className="mt-8 h-12 px-8 rounded-2xl bg-[var(--accent)] text-white font-bold hover:opacity-90 transition-all"
+                >
+                  새로운 굴 만들기
+                </button>
               </div>
-            </footer>
+            )}
           </section>
         </div>
       </div>
 
-      {settingsOpen ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-end bg-black/60 p-4">
-          <div className="w-full max-w-md rounded-3xl border border-white/10 bg-card p-5 shadow-2xl">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-white/50">
-                  Settings
-                </p>
-                <h3 className="mt-2 text-2xl font-bold">Profile and layout</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setSettingsOpen(false)}
-                className="ui-transition rounded-xl border border-border px-3 py-2 text-xs hover:bg-white/5"
-              >
-                Close
-              </button>
-            </div>
-
-            <div className="mt-6 space-y-5">
-              <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4">
-                <label className="text-xs font-bold uppercase tracking-wider text-white/50">
-                  Nickname
-                </label>
-                <div className="mt-3 flex gap-2">
-                  <input
-                    value={nicknameInput}
-                    onChange={(event) => setNicknameInput(event.target.value)}
-                    placeholder={effectiveNickname}
-                    className="ui-transition h-12 min-w-0 flex-1 rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-[color:var(--accent)]/50"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleSaveNickname}
-                    className="ui-transition rounded-2xl border border-white/10 px-4 text-sm hover:bg-white/5"
-                  >
-                    Save
-                  </button>
-                </div>
+      {/* Settings Modal */}
+      {settingsOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md bg-[#1e1e1e] border border-white/5 rounded-3xl shadow-2xl overflow-hidden">
+            <div className="p-8">
+              <div className="flex items-center justify-between mb-8">
+                <h3 className="text-xl font-black text-white">설정</h3>
+                <button onClick={() => setSettingsOpen(false)} className="text-white/40 hover:text-white">✕</button>
               </div>
 
-              <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-4">
-                <label className="text-xs font-bold uppercase tracking-wider text-white/50">
-                  Layout theme
-                </label>
-                <div className="mt-3 grid grid-cols-3 gap-2">
-                  {(Object.keys(THEME_LABELS) as ThemeMode[]).map((mode) => (
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-white/50 uppercase tracking-wider ml-1">닉네임 설정</label>
+                  <div className="flex gap-2">
+                    <input
+                      value={nicknameInput}
+                      onChange={(e) => setNicknameInput(e.target.value)}
+                      placeholder="닉네임을 입력하세요"
+                      className="flex-1 bg-white/5 border-none h-12 rounded-2xl px-4 text-white focus:ring-1 focus:ring-[var(--accent)]/50"
+                    />
                     <button
-                      key={mode}
-                      type="button"
-                      onClick={() => setTheme(mode)}
-                      className={clsx(
-                        "ui-transition rounded-xl border px-3 py-3 text-sm",
-                        theme === mode
-                          ? "border-transparent bg-[var(--accent)] text-white"
-                          : "border-border hover:bg-white/5"
-                      )}
+                      onClick={() => {
+                        handleSaveNickname();
+                        setSettingsOpen(false);
+                      }}
+                      className="px-6 rounded-2xl bg-[var(--accent)] text-white font-bold"
                     >
-                      {THEME_LABELS[mode]}
+                      저장
                     </button>
-                  ))}
+                  </div>
                 </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-white/50 uppercase tracking-wider ml-1">테마 모드</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {(["dark", "light", "excel"] as ThemeMode[]).map((m) => (
+                      <button
+                        key={m}
+                        onClick={() => setTheme(m)}
+                        className={clsx(
+                          "h-12 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all",
+                          theme === m ? "bg-white text-black" : "bg-white/5 text-white/40 hover:bg-white/10"
+                        )}
+                      >
+                        {m}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-10 pt-6 border-t border-white/5 text-center">
+                <p className="text-[10px] font-bold text-white/10 tracking-[0.2em] uppercase">Tyrano World v1.0</p>
               </div>
             </div>
           </div>
         </div>
-      ) : null}
+      )}
     </main>
   );
 }
