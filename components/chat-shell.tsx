@@ -168,6 +168,12 @@ export function ChatShell() {
     setDraftMessage("");
   }
 
+  function handleSaveNickname() {
+    const nextNickname = nicknameInput.trim();
+    setSavedNickname(nextNickname);
+    saveNickname(nextNickname);
+  }
+
   return (
     <main className="safe-screen bg-[#121212] text-white">
       <div className="flex h-screen min-h-screen flex-col md:h-[100dvh]">
