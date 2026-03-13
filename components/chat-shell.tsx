@@ -36,7 +36,7 @@ const ROOM_FILTERS: { id: RoomListTab; label: string }[] = [
 
 const CATEGORY_ITEMS: { id: NavTab; icon: string; label: string }[] = [
   { id: "open", icon: "🌐", label: "오픈굴" },
-  { id: "private", icon: "🔒", label: "토끼굴" },
+  { id: "private", icon: "🔒", label: "비밀굴" },
   { id: "feedback", icon: "💌", label: "건의함" }
 ];
 
@@ -64,6 +64,33 @@ function formatDate(value: string) {
 
 function getInitials(name: string) {
   return name.trim().slice(0, 1).toUpperCase() || "T";
+}
+
+function DinoMark() {
+  return (
+    <svg viewBox="0 0 120 120" aria-hidden="true" className="h-12 w-12">
+      <path d="M37 26c8-9 16-13 24-13 10 0 19 5 27 16 13 3 21 14 21 28 0 22-18 39-41 39H50C26 96 11 79 11 57c0-15 9-27 26-31Z" fill="#8CCF43" stroke="#18341C" strokeWidth="4" strokeLinejoin="round" />
+      <path d="M54 16c4 3 8 7 10 12H43c3-5 7-9 11-12Z" fill="#57A536" />
+      <ellipse cx="37" cy="50" rx="10" ry="13" fill="#1C1C1C" />
+      <ellipse cx="81" cy="50" rx="10" ry="13" fill="#1C1C1C" />
+      <circle cx="34" cy="46" r="4" fill="#fff" />
+      <circle cx="78" cy="46" r="4" fill="#fff" />
+      <circle cx="49" cy="58" r="2.7" fill="#18341C" />
+      <circle cx="69" cy="58" r="2.7" fill="#18341C" />
+      <circle cx="59" cy="62" r="2.5" fill="#18341C" />
+      <path d="M42 69c5 10 12 15 19 15 8 0 15-5 20-15-6-3-13-5-20-5-6 0-13 2-19 5Z" fill="#FE8B73" />
+      <path d="M45 70c5 5 10 8 16 8 7 0 12-3 17-8" fill="none" stroke="#18341C" strokeWidth="4" strokeLinecap="round" />
+      <path d="M47 69l7 8" fill="none" stroke="#18341C" strokeWidth="3" strokeLinecap="round" />
+      <path d="M73 69l-7 8" fill="none" stroke="#18341C" strokeWidth="3" strokeLinecap="round" />
+      <path d="M43 74l8 7" fill="#fff7d9" />
+      <path d="M69 81l8-7" fill="#fff7d9" />
+      <path d="M39 84c0 13 8 23 21 23 12 0 20-10 20-23H39Z" fill="#F8F0CD" />
+      <circle cx="24" cy="67" r="8" fill="#FFB096" />
+      <circle cx="94" cy="67" r="8" fill="#FFB096" />
+      <path d="M40 90c-4 4-9 6-15 6-6 0-10-1-14-4 4 10 12 16 21 16h11c-3-4-4-11-3-18Z" fill="#8CCF43" stroke="#18341C" strokeWidth="4" strokeLinejoin="round" />
+      <path d="M80 90c4 4 9 6 15 6 6 0 10-1 14-4-4 10-12 16-21 16H77c3-4 4-11 3-18Z" fill="#8CCF43" stroke="#18341C" strokeWidth="4" strokeLinejoin="round" />
+    </svg>
+  );
 }
 
 export function ChatShell() {
@@ -400,63 +427,7 @@ export function ChatShell() {
           </button>
         </div>
 
-        <div className="grid min-h-0 flex-1 lg:grid-cols-[76px_320px_minmax(0,1fr)]">
-          <nav className="hidden border-r border-[var(--border)] bg-[var(--sidebar)] lg:flex lg:flex-col lg:items-center lg:py-4">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--border)] bg-white/5 text-sm font-black">
-              TY
-            </div>
-
-            <div className="mt-4 flex flex-col gap-3">
-              {NAV_ITEMS.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setActiveTab(item.id)}
-                  className={clsx(
-                    "flex h-11 w-11 items-center justify-center rounded-xl text-xs font-bold transition-all",
-                    activeTab === item.id ? "bg-[var(--accent)] text-white" : "bg-white/5 text-[var(--muted)] hover:bg-white/10"
-                  )}
-                  title={item.label}
-                >
-                  {item.icon}
-                </button>
-              ))}
-            </div>
-
-            <div className="mt-auto flex flex-col items-center gap-2 pb-2">
-              <button
-                type="button"
-                onClick={toggleTheme}
-                className={clsx(
-                  "relative flex h-12 w-16 items-center rounded-full border px-1 transition-all",
-                  theme === "light" ? "border-[#efc66e] bg-[#f0cf8a]" : "border-[#33405f] bg-[#1f2940]"
-                )}
-                title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-                aria-label="Toggle light and dark mode"
-              >
-                <span className="absolute left-2 text-sm">☀️</span>
-                <span className="absolute right-2 text-sm">🌙</span>
-                <span
-                  className={clsx(
-                    "relative z-10 h-9 w-9 rounded-full bg-white shadow transition-transform",
-                    theme === "light" ? "translate-x-0" : "translate-x-5"
-                  )}
-                />
-              </button>
-              <button
-                type="button"
-                onClick={() => setSettingsOpen(true)}
-                className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-white/5 text-[var(--muted)] transition-all hover:bg-white/10"
-                title="Settings"
-              >
-                ⚙
-              </button>
-              <div className="mt-1 flex h-10 w-10 items-center justify-center rounded-full bg-[var(--accent)] text-xs font-black text-white">
-                {getInitials(effectiveNickname)}
-              </div>
-            </div>
-          </nav>
-
+        <div className="grid min-h-0 flex-1 lg:grid-cols-[340px_minmax(0,1fr)]">
           <aside
             className={clsx(
               "border-r border-[var(--border)] bg-[var(--background)] lg:flex lg:flex-col",
@@ -466,8 +437,8 @@ export function ChatShell() {
             <div className="border-b border-[var(--border)] px-5 py-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl">🐰</span>
-                  <div className="text-[26px] font-black tracking-tight text-white">토끼굴</div>
+                  <DinoMark />
+                  <div className="text-[26px] font-black tracking-tight text-white">티라노 놀이터</div>
                 </div>
                 <div className="flex items-center gap-4 text-xl">
                   <span title="Notifications">🔔</span>
@@ -570,11 +541,48 @@ export function ChatShell() {
               </div>
             </div>
 
-            <div className="border-t border-[var(--border)] bg-[var(--sidebar)]/80 p-4">
-              <div className="flex items-center gap-2 rounded-xl border border-[var(--border)] px-3 py-2 text-xs">
-                <div className="h-2 w-2 rounded-full bg-green-500" />
-                <span className="truncate">{effectiveNickname}</span>
-                <span className="ml-auto text-[10px] text-[var(--muted)]">{presenceCount} online</span>
+            <div className="mt-auto border-t border-[var(--border)] px-4 py-5">
+              <div className="flex flex-col items-start gap-4">
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  className={clsx(
+                    "relative flex h-14 w-28 items-center rounded-full border px-1.5 transition-all",
+                    theme === "light" ? "border-[#efc66e] bg-[#f0cf8a]" : "border-[#33405f] bg-[#1f2940]"
+                  )}
+                  title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+                  aria-label="Toggle light and dark mode"
+                >
+                  <span className="absolute left-3 text-lg">☀️</span>
+                  <span className="absolute right-3 text-lg">🌙</span>
+                  <span
+                    className={clsx(
+                      "relative z-10 h-11 w-11 rounded-full bg-white shadow transition-transform",
+                      theme === "light" ? "translate-x-0" : "translate-x-[52px]"
+                    )}
+                  />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSettingsOpen(true)}
+                  className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[var(--border)] bg-white/5 text-2xl text-[var(--muted)] transition-all hover:bg-white/10"
+                  title="Settings"
+                >
+                  ⚙️
+                </button>
+              </div>
+
+              <div className="mt-5 flex items-center gap-3 rounded-2xl border border-[var(--border)] px-4 py-4 text-sm">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--accent)] text-2xl font-black text-white">
+                  {getInitials(effectiveNickname)}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <div className="h-4 w-4 rounded-full bg-[#1dd75f]" />
+                    <span className="truncate text-xl font-semibold">{effectiveNickname}</span>
+                  </div>
+                  <div className="mt-2 text-right text-[12px] text-[var(--muted)]">{presenceCount} online</div>
+                </div>
               </div>
             </div>
           </aside>
