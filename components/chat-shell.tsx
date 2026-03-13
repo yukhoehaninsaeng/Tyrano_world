@@ -274,109 +274,99 @@ export function ChatShell() {
   }
 
   return (
-    <main className="safe-screen px-4 py-4 text-foreground md:px-6 md:py-6">
-      <div className="mx-auto flex h-[calc(100vh-2rem)] max-w-[1440px] flex-col gap-4 lg:h-[calc(100dvh-3rem)]">
-        <section className="grid gap-4 rounded-[36px] border border-border bg-surface px-5 py-5 shadow-soft backdrop-blur md:px-8 md:py-8 lg:grid-cols-[1.3fr_0.7fr]">
-          <div className="flex flex-col justify-between gap-8">
-            <div className="flex items-center justify-between gap-4">
-              <p className="text-[11px] uppercase tracking-[0.42em] text-muted">Tyrano World</p>
-              <div className="flex items-center gap-2 text-xs text-muted">
-                <span className="rounded-full border border-border px-3 py-1.5">
-                  {THEME_LABELS[theme]}
-                </span>
-                <span className="rounded-full border border-border px-3 py-1.5">
-                  Live {presenceCount}
-                </span>
-              </div>
-            </div>
-
-            <div className="max-w-3xl">
-              <p className="text-sm uppercase tracking-[0.3em] text-muted">Open anonymous chat</p>
-              <h1 className="font-display mt-4 text-5xl leading-[0.94] md:text-7xl lg:text-[92px]">
-                Quiet layout,
-                <br />
-                fast rooms,
-                <br />
-                realtime talk.
-              </h1>
-              <p className="mt-6 max-w-xl text-sm leading-7 text-muted md:text-base">
-                A cleaner, editorial front for open chat. Create a room, enter under an
-                anonymous Tyrano nickname, and switch between white, dark, or spreadsheet mode.
-              </p>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-3">
-              <div className="rounded-[28px] border border-border bg-card/80 p-5">
-                <p className="text-[11px] uppercase tracking-[0.28em] text-muted">Nickname</p>
-                <p className="mt-3 text-lg">{effectiveNickname}</p>
-              </div>
-              <div className="rounded-[28px] border border-border bg-card/80 p-5">
-                <p className="text-[11px] uppercase tracking-[0.28em] text-muted">Messages</p>
-                <p className="mt-3 text-lg">{messages.length}</p>
-              </div>
-              <div className="rounded-[28px] border border-border bg-card/80 p-5">
-                <p className="text-[11px] uppercase tracking-[0.28em] text-muted">Status</p>
-                <p className="mt-3 text-sm leading-6 text-muted">{status}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid gap-3">
-            <div className="rounded-[30px] border border-border bg-card p-5">
-              <div className="flex items-center justify-between">
-                <p className="text-[11px] uppercase tracking-[0.28em] text-muted">
-                  Start a room
+    <main className="safe-screen px-4 py-4 text-foreground md:px-7 md:py-7">
+      <div className="mx-auto flex h-[calc(100vh-2rem)] max-w-[1440px] flex-col gap-4 lg:h-[calc(100dvh-3.5rem)]">
+        <section className="border border-border bg-surface px-5 py-5 backdrop-blur md:px-8 md:py-8">
+          <div className="grid gap-8 lg:grid-cols-[1.4fr_0.6fr]">
+            <div className="flex flex-col justify-between gap-10">
+              <div className="flex items-center justify-between gap-4">
+                <p className="text-[11px] uppercase tracking-[0.46em] text-muted">Tyrano World</p>
+                <p className="text-xs uppercase tracking-[0.26em] text-muted">
+                  Anonymous realtime open chat
                 </p>
-                <span className="text-xs text-muted">Persistent chat log</span>
               </div>
-              <div className="mt-4 flex flex-col gap-2">
+
+              <div className="max-w-4xl">
+                <p className="text-xs uppercase tracking-[0.32em] text-muted">
+                  For the conversations you cannot post anywhere else
+                </p>
+                <h1 className="font-display mt-5 text-[56px] leading-[0.88] md:text-[92px] lg:text-[124px]">
+                  talk
+                  <br />
+                  under
+                  <br />
+                  the table
+                </h1>
+                <p className="mt-6 max-w-xl text-sm leading-7 text-muted md:text-[15px]">
+                  Make a room in seconds. Join with a generated Tyrano nickname. Keep the
+                  interface white, dark, or spreadsheet-flat when you need to disappear in
+                  plain sight.
+                </p>
+              </div>
+
+              <div className="grid gap-6 border-t border-border pt-5 md:grid-cols-3">
+                <div>
+                  <p className="text-[11px] uppercase tracking-[0.26em] text-muted">Now</p>
+                  <p className="mt-2 text-lg">{presenceCount} online</p>
+                </div>
+                <div>
+                  <p className="text-[11px] uppercase tracking-[0.26em] text-muted">Identity</p>
+                  <p className="mt-2 text-lg">{effectiveNickname}</p>
+                </div>
+                <div>
+                  <p className="text-[11px] uppercase tracking-[0.26em] text-muted">Status</p>
+                  <p className="mt-2 text-sm leading-6 text-muted">{status}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid content-start gap-0 border border-border bg-card">
+              <div className="border-b border-border p-5">
+                <p className="text-[11px] uppercase tracking-[0.28em] text-muted">Create room</p>
                 <input
                   value={draftRoomTitle}
                   onChange={(event) => setDraftRoomTitle(event.target.value)}
                   placeholder="Tyrano lounge"
-                  className="rounded-[22px] border border-border bg-transparent px-4 py-3 outline-none"
+                  className="mt-4 w-full border border-border bg-transparent px-4 py-3 outline-none"
                 />
                 <button
                   type="button"
                   onClick={handleCreateRoom}
                   disabled={!hasSupabase}
-                  className="rounded-[22px] bg-accent px-4 py-3 text-sm font-medium text-[var(--background)] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="mt-3 w-full bg-accent px-4 py-3 text-sm font-medium text-[var(--background)] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Create room
                 </button>
               </div>
-            </div>
 
-            <div className="rounded-[30px] border border-border bg-card p-5">
-              <p className="text-[11px] uppercase tracking-[0.28em] text-muted">Preferences</p>
-              <div className="mt-4">
-                <label className="text-xs uppercase tracking-[0.2em] text-muted">Nickname</label>
+              <div className="border-b border-border p-5">
+                <p className="text-[11px] uppercase tracking-[0.28em] text-muted">Nickname</p>
                 <input
                   value={nicknameInput}
                   onChange={(event) => setNicknameInput(event.target.value)}
                   placeholder={effectiveNickname}
-                  className="mt-2 w-full rounded-[22px] border border-border bg-transparent px-4 py-3 outline-none"
+                  className="mt-4 w-full border border-border bg-transparent px-4 py-3 outline-none"
                 />
                 <button
                   type="button"
                   onClick={handleSaveNickname}
-                  className="mt-2 w-full rounded-[22px] border border-border px-4 py-3 text-sm font-medium"
+                  className="mt-3 w-full border border-border px-4 py-3 text-sm"
                 >
                   Save nickname
                 </button>
               </div>
 
-              <div className="mt-4">
-                <label className="text-xs uppercase tracking-[0.2em] text-muted">Theme</label>
-                <div className="mt-2 grid grid-cols-3 gap-2">
+              <div className="p-5">
+                <p className="text-[11px] uppercase tracking-[0.28em] text-muted">Theme</p>
+                <div className="mt-4 grid grid-cols-3 gap-px bg-border">
                   {(Object.keys(THEME_LABELS) as ThemeMode[]).map((mode) => (
                     <button
                       key={mode}
                       type="button"
                       onClick={() => setTheme(mode)}
                       className={clsx(
-                        "rounded-[20px] border px-3 py-3 text-sm transition",
-                        theme === mode ? "border-accent bg-accent text-[var(--background)]" : "border-border"
+                        "bg-card px-3 py-3 text-sm transition",
+                        theme === mode && "bg-accent text-[var(--background)]"
                       )}
                     >
                       {THEME_LABELS[mode]}
@@ -389,91 +379,83 @@ export function ChatShell() {
         </section>
 
         <section className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[320px_minmax(0,1fr)]">
-          <aside className="flex min-h-0 flex-col rounded-[34px] border border-border bg-surface p-4 shadow-soft backdrop-blur">
-            <div className="flex items-center justify-between px-2 pb-3">
-              <div>
-                <p className="text-[11px] uppercase tracking-[0.28em] text-muted">Rooms</p>
-                <h2 className="font-display mt-2 text-3xl leading-none">Browse</h2>
-              </div>
-              <span className="text-xs text-muted">{rooms.length} total</span>
+          <aside className="flex min-h-0 flex-col border border-border bg-surface">
+            <div className="border-b border-border px-5 py-4">
+              <p className="text-[11px] uppercase tracking-[0.28em] text-muted">Room archive</p>
+              <h2 className="font-display mt-3 text-4xl leading-none">rooms</h2>
             </div>
-            <div className="scrollbar-subtle min-h-0 flex-1 overflow-y-auto pr-1">
-              <div className="flex flex-col gap-2">
-                {rooms.length === 0 ? (
-                  <div className="rounded-[24px] border border-dashed border-border p-5 text-sm leading-6 text-muted">
-                    No room yet. Create the first conversation.
-                  </div>
-                ) : (
-                  rooms.map((room) => (
-                    <button
-                      key={room.id}
-                      type="button"
-                      onClick={() => setActiveRoomId(room.id)}
-                      className={clsx(
-                        "rounded-[24px] border px-4 py-4 text-left transition",
-                        room.id === activeRoomId
-                          ? "border-accent bg-card"
-                          : "border-transparent bg-card/60 hover:border-border"
-                      )}
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="text-base">{room.title}</p>
-                          <p className="mt-2 text-xs uppercase tracking-[0.24em] text-muted">
-                            Active room
-                          </p>
-                        </div>
-                        <span className="text-xs text-muted">
-                          {new Date(room.created_at).toLocaleDateString("ko-KR")}
-                        </span>
+
+            <div className="scrollbar-subtle min-h-0 flex-1 overflow-y-auto">
+              {rooms.length === 0 ? (
+                <div className="px-5 py-6 text-sm leading-7 text-muted">
+                  No rooms yet. Start the first one.
+                </div>
+              ) : (
+                rooms.map((room) => (
+                  <button
+                    key={room.id}
+                    type="button"
+                    onClick={() => setActiveRoomId(room.id)}
+                    className={clsx(
+                      "w-full border-b border-border px-5 py-5 text-left transition",
+                      room.id === activeRoomId ? "bg-card" : "hover:bg-card/70"
+                    )}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-base">{room.title}</p>
+                        <p className="mt-2 text-[11px] uppercase tracking-[0.24em] text-muted">
+                          Open thread
+                        </p>
                       </div>
-                    </button>
-                  ))
-                )}
-              </div>
+                      <span className="text-xs text-muted">
+                        {new Date(room.created_at).toLocaleDateString("ko-KR")}
+                      </span>
+                    </div>
+                  </button>
+                ))
+              )}
             </div>
           </aside>
 
-          <section className="flex min-h-0 flex-col rounded-[34px] border border-border bg-surface shadow-soft backdrop-blur">
-            <header className="flex flex-col gap-4 border-b border-border px-5 py-5 md:flex-row md:items-end md:justify-between md:px-7">
-              <div>
-                <p className="text-[11px] uppercase tracking-[0.3em] text-muted">Current room</p>
-                <h2 className="font-display mt-3 text-4xl leading-none md:text-5xl">
-                  {activeRoom?.title ?? "Select a room"}
-                </h2>
-              </div>
-              <div className="flex flex-wrap gap-2 text-xs text-muted">
-                <span className="rounded-full border border-border px-3 py-2">
-                  Nickname {effectiveNickname}
-                </span>
-                <span className="rounded-full border border-border px-3 py-2">
-                  Theme {THEME_LABELS[theme]}
-                </span>
+          <section className="flex min-h-0 flex-col border border-border bg-surface">
+            <header className="border-b border-border px-5 py-4 md:px-7 md:py-5">
+              <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                <div>
+                  <p className="text-[11px] uppercase tracking-[0.3em] text-muted">Current room</p>
+                  <h2 className="font-display mt-3 text-4xl leading-none md:text-6xl">
+                    {activeRoom?.title ?? "Select a room"}
+                  </h2>
+                </div>
+                <div className="flex flex-wrap gap-2 text-xs text-muted">
+                  <span className="border border-border px-3 py-2">Nickname {effectiveNickname}</span>
+                  <span className="border border-border px-3 py-2">Theme {THEME_LABELS[theme]}</span>
+                </div>
               </div>
             </header>
 
             <div
               className={clsx(
-                "scrollbar-subtle flex-1 overflow-y-auto px-4 py-4 md:px-7 md:py-6",
+                "scrollbar-subtle flex-1 overflow-y-auto",
                 theme === "excel" && "bg-grid bg-[size:56px_56px]"
               )}
             >
-              <div className="mx-auto flex w-full max-w-4xl flex-col gap-3">
+              <div className="mx-auto flex w-full max-w-5xl flex-col px-5 py-4 md:px-7 md:py-6">
                 {messages.length === 0 ? (
-                  <div className="rounded-[28px] border border-dashed border-border bg-card/70 p-10 text-center text-sm leading-7 text-muted">
-                    No messages yet. Start the room with one line.
+                  <div className="border border-dashed border-border px-6 py-12 text-center text-sm leading-7 text-muted">
+                    No messages yet. Start with one line.
                   </div>
                 ) : (
                   messages.map((message, index) => (
                     <article
                       key={message.id}
                       className={clsx(
-                        "rounded-[28px] border border-border bg-card/92 p-5",
-                        theme === "excel" && "rounded-none bg-white p-0"
+                        "border-b border-border py-5",
+                        theme === "excel" && "border-0 py-0"
                       )}
                     >
                       {theme === "excel" ? (
-                        <div className="grid grid-cols-[72px_1.2fr_2fr_96px] border border-[#c9d7c8] text-sm">
+                        <div className="grid grid-cols-[72px_1.2fr_2fr_96px] border border-[#c9d7c8] bg-white text-sm">
                           {EXCEL_COLUMNS.map((column, cellIndex) => (
                             <div
                               key={`${message.id}-${column}`}
@@ -499,16 +481,14 @@ export function ChatShell() {
                           </div>
                         </div>
                       ) : (
-                        <div className="flex items-start justify-between gap-4">
-                          <div>
-                            <p className="text-sm uppercase tracking-[0.18em] text-muted">
-                              {message.sender_name}
-                            </p>
-                            <p className="mt-3 whitespace-pre-wrap text-[15px] leading-7 text-foreground">
-                              {message.content}
-                            </p>
-                          </div>
-                          <time className="shrink-0 text-xs text-muted">
+                        <div className="grid gap-3 md:grid-cols-[170px_minmax(0,1fr)_72px] md:items-start">
+                          <p className="text-[11px] uppercase tracking-[0.28em] text-muted">
+                            {message.sender_name}
+                          </p>
+                          <p className="whitespace-pre-wrap text-[15px] leading-7 text-foreground">
+                            {message.content}
+                          </p>
+                          <time className="text-right text-xs text-muted">
                             {formatTime(message.created_at)}
                           </time>
                         </div>
@@ -520,23 +500,23 @@ export function ChatShell() {
               </div>
             </div>
 
-            <footer className="border-t border-border px-4 py-4 md:px-7 md:py-5">
-              <div className="mx-auto flex max-w-4xl flex-col gap-3 md:flex-row">
+            <footer className="border-t border-border px-5 py-4 md:px-7 md:py-5">
+              <div className="mx-auto flex max-w-5xl flex-col gap-3 md:flex-row">
                 <textarea
                   value={draftMessage}
                   onChange={(event) => setDraftMessage(event.target.value)}
                   placeholder={activeRoom ? "Type a message" : "Select or create a room first"}
                   rows={3}
                   disabled={!activeRoom}
-                  className="min-h-[84px] flex-1 resize-none rounded-[26px] border border-border bg-card px-5 py-4 outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                  className="min-h-[88px] flex-1 resize-none border border-border bg-card px-5 py-4 outline-none disabled:cursor-not-allowed disabled:opacity-60"
                 />
                 <button
                   type="button"
                   onClick={handleSendMessage}
                   disabled={!activeRoom || !hasSupabase}
-                  className="rounded-[26px] bg-accent px-6 py-4 text-sm font-medium text-[var(--background)] disabled:cursor-not-allowed disabled:opacity-50 md:w-40"
+                  className="bg-accent px-6 py-4 text-sm font-medium text-[var(--background)] disabled:cursor-not-allowed disabled:opacity-50 md:w-44"
                 >
-                  Send now
+                  Send
                 </button>
               </div>
             </footer>

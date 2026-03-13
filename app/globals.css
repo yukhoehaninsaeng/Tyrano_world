@@ -3,25 +3,25 @@
 @tailwind utilities;
 
 :root {
-  --background: #efede6;
-  --surface: rgba(251, 249, 243, 0.88);
-  --card: #ffffff;
-  --border: rgba(25, 33, 28, 0.12);
-  --foreground: #141714;
-  --muted: #6d716d;
-  --accent: #1b1f1c;
-  --success: #1b1f1c;
+  --background: #f5f1e8;
+  --surface: rgba(251, 248, 241, 0.82);
+  --card: rgba(255, 255, 255, 0.72);
+  --border: rgba(20, 23, 20, 0.12);
+  --foreground: #121212;
+  --muted: #6f6a63;
+  --accent: #151515;
+  --success: #151515;
 }
 
 [data-theme="dark"] {
-  --background: #111310;
-  --surface: rgba(24, 27, 24, 0.9);
-  --card: #171a17;
+  --background: #111111;
+  --surface: rgba(20, 20, 20, 0.88);
+  --card: rgba(27, 27, 27, 0.9);
   --border: rgba(244, 239, 228, 0.12);
-  --foreground: #f2eee5;
-  --muted: #9a978f;
-  --accent: #f2eee5;
-  --success: #f2eee5;
+  --foreground: #f6f0e5;
+  --muted: #9f978d;
+  --accent: #f6f0e5;
+  --success: #f6f0e5;
 }
 
 [data-theme="excel"] {
@@ -47,11 +47,12 @@ body {
 
 body {
   background:
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.8), transparent 30%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.55), transparent 32%),
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.86), transparent 24%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.42), transparent 26%),
     var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), sans-serif;
+  letter-spacing: -0.01em;
 }
 
 body[data-theme="excel"] {
@@ -87,4 +88,16 @@ h3,
 .scrollbar-subtle::-webkit-scrollbar-thumb {
   background: rgba(92, 107, 97, 0.28);
   border-radius: 999px;
+}
+
+.hairline {
+  position: relative;
+}
+
+.hairline::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--border);
+  pointer-events: none;
 }
