@@ -34,6 +34,12 @@ const ROOM_FILTERS: { id: RoomListTab; label: string }[] = [
   { id: "joined", label: "Joined" }
 ];
 
+const CATEGORY_ITEMS: { id: NavTab; icon: string; label: string }[] = [
+  { id: "open", icon: "🌐", label: "오픈굴" },
+  { id: "private", icon: "🔒", label: "토끼굴" },
+  { id: "feedback", icon: "💌", label: "건의함" }
+];
+
 const LAYOUT_ITEMS: { id: LayoutMode; label: string; description: string }[] = [
   { id: "default", label: "General", description: "Bubble chat layout" },
   { id: "excel", label: "Excel", description: "Spreadsheet style" },
@@ -106,6 +112,21 @@ export function ChatShell() {
     return joinedRoomIds.includes(room.id);
   });
   const joinableRooms = rooms.filter((room) => !joinedRoomIds.includes(room.id));
+  const myRooms = rooms.filter((room) => {
+    if (!joinedRoomIds.includes(room.id)) {
+      return false;
+    }
+    if (searchKeyword && !room.title.toLowerCase().includes(searchKeyword)) {
+      return false;
+    }
+    if (activeTab === "open") {
+      return room.visibility === "open";
+    }
+    if (activeTab === "private") {
+      return room.visibility === "secret";
+    }
+    return true;
+  });
   const currentSectionLabel =
     activeTab === "open" ? "Open" : activeTab === "private" ? "Private" : "Feedback";
 
@@ -442,58 +463,75 @@ export function ChatShell() {
               sidebarOpen ? "fixed inset-0 z-50 flex flex-col lg:relative lg:z-0" : "hidden"
             )}
           >
-            <div className="border-b border-[var(--border)] p-5">
+            <div className="border-b border-[var(--border)] px-5 py-6">
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">{currentSectionLabel}</p>
-                  <h1 className="mt-1 text-lg font-bold">{currentSectionLabel} rooms</h1>
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">🐰</span>
+                  <div className="text-[26px] font-black tracking-tight text-white">토끼굴</div>
                 </div>
-                <div className="flex gap-2">
-                  <button type="button" onClick={() => setJoinDialogOpen(true)} className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-lg">
-                    +
-                  </button>
-                  <button type="button" onClick={() => setSidebarOpen(false)} className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 lg:hidden">
-                    x
+                <div className="flex items-center gap-4 text-xl">
+                  <span title="Notifications">🔔</span>
+                  <span className="h-3 w-3 rounded-full bg-[#1dd75f]" />
+                  <button
+                    type="button"
+                    onClick={() => setSettingsOpen(true)}
+                    className="text-[var(--muted)] transition-all hover:text-[var(--foreground)]"
+                    title="Settings"
+                  >
+                    ⚙️
                   </button>
                 </div>
               </div>
+            </div>
 
+            <div className="border-b border-[var(--border)] px-5 py-6">
+              <div className="text-[15px] font-medium text-[var(--muted)]">카테고리</div>
+            </div>
+
+            <div className="border-b border-[var(--border)] py-3">
+              {CATEGORY_ITEMS.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setActiveTab(item.id)}
+                  className={clsx(
+                    "flex w-full items-center gap-4 px-5 py-5 text-left transition-all",
+                    activeTab === item.id ? "bg-white/10 text-white" : "text-[var(--muted)] hover:bg-white/5"
+                  )}
+                >
+                  <span className="text-[28px] leading-none">{item.icon}</span>
+                  <span className="text-[20px] font-medium">{item.label}</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="border-b border-[var(--border)] px-5 py-6">
+              <div className="flex items-center justify-between">
+                <div className="text-[15px] font-medium text-[var(--muted)]">내 굴 목록</div>
+                <button type="button" onClick={() => setJoinDialogOpen(true)} className="text-3xl leading-none text-[var(--muted)] transition-all hover:text-white">
+                  +
+                </button>
+              </div>
               <div className="relative mt-4">
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(event) => setSearchQuery(event.target.value)}
-                  placeholder="Search rooms"
+                  placeholder="내 굴 검색"
                   className="w-full rounded-xl border border-transparent bg-white/5 py-2.5 pl-9 pr-4 text-sm placeholder:text-[var(--muted)] focus:border-[var(--border)] focus:outline-none"
                 />
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted)]">⌕</span>
               </div>
-
-              <div className="mt-4 flex flex-wrap gap-2">
-                {ROOM_FILTERS.map((filter) => (
-                  <button
-                    key={filter.id}
-                    type="button"
-                    onClick={() => setRoomListTab(filter.id)}
-                    className={clsx(
-                      "rounded-xl px-3 py-2 text-xs font-medium transition-all",
-                      roomListTab === filter.id ? "bg-[var(--foreground)] text-[var(--background)]" : "bg-white/5 text-[var(--muted)] hover:bg-white/10"
-                    )}
-                  >
-                    {filter.label}
-                  </button>
-                ))}
-              </div>
             </div>
 
-            <div className="scrollbar-subtle flex-1 overflow-y-auto px-2 py-4">
-              <div className="space-y-1">
-                {filteredRooms.length === 0 ? (
+            <div className="scrollbar-subtle flex-1 overflow-y-auto px-5 py-5">
+              <div className="space-y-4">
+                {myRooms.length === 0 ? (
                   <div className="rounded-2xl border border-[var(--border)] bg-white/[0.03] px-4 py-8 text-center text-sm text-[var(--muted)]">
-                    No rooms in this view.
+                    참여한 방이 없습니다.
                   </div>
                 ) : (
-                  filteredRooms.map((room) => (
+                  myRooms.map((room) => (
                     <button
                       key={room.id}
                       type="button"
@@ -503,19 +541,28 @@ export function ChatShell() {
                         setSidebarOpen(false);
                       }}
                       className={clsx(
-                        "flex w-full flex-col rounded-xl p-3 text-left transition-all",
-                        activeRoomId === room.id ? "bg-white/10 ring-1 ring-white/10" : "hover:bg-white/5"
+                        "block w-full rounded-2xl px-1 py-1 text-left transition-all",
+                        activeRoomId === room.id ? "bg-white/[0.04]" : "hover:bg-white/[0.03]"
                       )}
                     >
-                      <div className="flex items-center justify-between gap-2">
-                        <span className={clsx("truncate text-sm font-semibold", activeRoomId === room.id && "text-[var(--accent)]")}>
-                          {room.title}
-                        </span>
-                        <span className="text-[10px] text-[var(--muted)]">{formatDate(room.created_at)}</span>
-                      </div>
-                      <div className="mt-2 flex items-center justify-between text-[11px] text-[var(--muted)]">
-                        <span>{room.visibility === "secret" ? "Secret room" : "Open room"}</span>
-                        <span>{activeRoomId === room.id ? "Live" : room.id.slice(0, 8)}</span>
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <div className="flex items-baseline gap-2">
+                            <span className={clsx("truncate text-[18px] font-black", activeRoomId === room.id ? "text-white" : "text-[#efe7dc]")}>
+                              {room.title}
+                            </span>
+                            <span className="text-sm font-semibold text-[var(--muted)]">
+                              {room.visibility === "secret" ? "비밀" : "공개"}
+                            </span>
+                          </div>
+                          <div className="mt-2 inline-flex max-w-full items-center rounded-xl bg-white/5 px-3 py-2 text-sm font-semibold text-[#b8a48c]">
+                            ✨ 참여 중인 굴
+                          </div>
+                          <div className="mt-3 truncate text-[15px] text-[#6f685d]">
+                            {activeRoomId === room.id ? "현재 대화 중입니다." : `생성일 ${formatDate(room.created_at)}`}
+                          </div>
+                        </div>
+                        <span className="pt-1 text-2xl">{activeRoomId === room.id ? "🔔" : "⋯"}</span>
                       </div>
                     </button>
                   ))
