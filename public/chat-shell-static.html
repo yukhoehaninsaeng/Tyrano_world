@@ -1,101 +1,1142 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>티라노 놀이터</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;height:100vh;overflow:hidden}
-.app{--bg:#111113;--bg2:#1a1a1c;--bg3:#222224;--bg4:#2a2a2c;--border:#2e2e30;--border2:#3a3a3c;--text:#f0ece6;--text2:#9a9590;--text3:#55525a;--green:#1dd75f;--accent:#e8174a;--bubble-o:#2a2a2c;--bubble-me:#9f3060;--inp-bg:#222224;--inp-border:#3a3a3c;--inp-text:#f0ece6;--inp-ph:#55525a;display:flex;height:100vh;background:var(--bg);color:var(--text)}
-.app.light{--bg:#f5f4f0;--bg2:#fff;--bg3:#f0eee9;--bg4:#e8e5df;--border:#e0ddd6;--border2:#ccc9c2;--text:#1a1816;--text2:#6b6760;--text3:#a09c95;--bubble-o:#fff;--inp-bg:#ebe8e2;--inp-border:#d4d0c9;--inp-text:#1a1816;--inp-ph:#a09c95}
-.invite{position:fixed;inset:0;z-index:200;background:#0d0d0f;display:flex;align-items:center;justify-content:center}
-.invite.hide{display:none}
-.inv-card{width:360px;max-width:90vw;background:#1a1a1c;border:.5px solid #3a3a3c;border-radius:24px;padding:40px 36px 36px;text-align:center}
-.inv-stamp{width:72px;height:72px;border-radius:20px;background:#8CCF43;display:flex;align-items:center;justify-content:center;font-size:38px;margin:0 auto 20px}
-.inv-title{font-size:26px;font-weight:900;color:#f0ece6}.inv-title span{color:#8CCF43}
-.inv-sub{font-size:13px;color:#7a7570;line-height:1.6;margin:10px 0 20px}
-.inv-enter-btn{width:100%;padding:14px;background:#e8174a;border:none;border-radius:12px;font-size:15px;font-weight:800;color:#fff;cursor:pointer}
-.inv-nick-step{display:none}.inv-nick-step.show{display:block}.inv-main-step.hide{display:none}
-.nick-input{width:100%;background:#222224;border:.5px solid #3a3a3c;border-radius:10px;padding:12px 14px;font-size:15px;color:#f0ece6;outline:none;text-align:center;margin:12px 0}
-.sb{width:220px;min-width:220px;background:var(--bg2);border-right:.5px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
-.sb-head{padding:16px 14px 12px;display:flex;align-items:center;gap:10px;border-bottom:.5px solid var(--border)}
-.sb-dino{width:32px;height:32px;border-radius:9px;background:#8CCF43;display:flex;align-items:center;justify-content:center}
-.sb-title{font-size:14px;font-weight:800;line-height:1.2}.sb-head-right{margin-left:auto;display:flex;align-items:center;gap:8px}
-.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
-.sb-label{padding:14px 14px 5px;font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.8px;text-transform:uppercase}
-.cat-list{padding:0 8px 8px}.cat-item{display:flex;align-items:center;gap:9px;padding:8px 8px;border-radius:8px;cursor:pointer;color:var(--text2)}.cat-item.active{background:rgba(128,128,128,.1);color:var(--text)}
-.sb-rooms-head{padding:12px 14px 6px;display:flex;align-items:center;justify-content:space-between}.add-btn{width:20px;height:20px;border-radius:5px;background:transparent;border:.5px solid var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer}
-.sb-search{padding:0 8px 8px}.sb-si input{width:100%;background:var(--inp-bg);border:.5px solid var(--inp-border);border-radius:7px;padding:7px 10px 7px 28px;font-size:12px;color:var(--inp-text);outline:none}
-.room-list{flex:1;overflow-y:auto;padding:0 8px}.room-item{padding:9px;border-radius:9px;cursor:pointer}.room-item.active{background:rgba(128,128,128,.1)}
-.ri-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}.ri-name{font-size:13px;font-weight:700}
-.sb-foot{padding:10px 12px;border-top:.5px solid var(--border);display:flex;align-items:center;gap:9px}
-.my-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff}
-.my-info{flex:1;min-width:0}.my-name{font-size:12px;font-weight:700;display:flex;align-items:center;gap:5px}.my-sub{font-size:10px;color:var(--text3)}
-.theme-sw{position:relative;width:44px;height:24px;border-radius:12px;cursor:pointer;border:.5px solid var(--border2);background:var(--bg4);display:flex;align-items:center;padding:0 3px}
-.app.light .theme-sw{background:#f0cf8a;border-color:#ddb84a}
+
+/* ── 초대장 ── */
+#inviteScreen{position:fixed;inset:0;z-index:200;background:#0d0d0f;display:flex;align-items:center;justify-content:center;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif}
+.inv-card{width:360px;max-width:90vw;background:#1a1a1c;border:0.5px solid #3a3a3c;border-radius:24px;padding:40px 36px 36px;display:flex;flex-direction:column;align-items:center;text-align:center;animation:cardIn .5s cubic-bezier(.34,1.2,.64,1) both}
+@keyframes cardIn{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:none}}
+.inv-stamp{width:72px;height:72px;border-radius:20px;background:#8CCF43;display:flex;align-items:center;justify-content:center;font-size:38px;margin-bottom:20px;box-shadow:0 0 0 8px rgba(140,207,67,.12),0 0 0 16px rgba(140,207,67,.06)}
+.inv-from{font-size:11px;font-weight:700;color:#55525a;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.inv-title{font-size:26px;font-weight:900;color:#f0ece6;letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}
+.inv-title span{color:#8CCF43}
+.inv-sub{font-size:13px;color:#7a7570;line-height:1.6;margin-bottom:28px}
+.inv-divider{width:100%;height:0.5px;background:#2e2e30;margin-bottom:24px}
+.inv-info{display:flex;justify-content:center;gap:28px;margin-bottom:28px}
+.inv-info-item{display:flex;flex-direction:column;align-items:center;gap:4px}
+.inv-info-num{font-size:20px;font-weight:800;color:#f0ece6}
+.inv-info-lbl{font-size:11px;color:#55525a}
+.inv-enter-btn{width:100%;padding:14px;background:#e8174a;border:none;border-radius:12px;font-size:15px;font-weight:800;color:#fff;cursor:pointer;font-family:inherit;transition:background .15s,transform .1s}
+.inv-enter-btn:hover{background:#c8103e}
+.inv-enter-btn:active{transform:scale(.98)}
+.inv-note{font-size:11px;color:#3a3a3c;margin-top:14px}
+.inv-nick-step{display:none;flex-direction:column;align-items:center;width:100%;text-align:center}
+.inv-nick-step.show{display:flex}
+.inv-main-step.hide{display:none}
+.nick-label{font-size:13px;color:#7a7570;margin-bottom:14px;line-height:1.6}
+.nick-input{width:100%;background:#222224;border:0.5px solid #3a3a3c;border-radius:10px;padding:12px 14px;font-size:15px;color:#f0ece6;outline:none;font-family:inherit;text-align:center;margin-bottom:12px;transition:border-color .15s}
+.nick-input:focus{border-color:#e8174a}
+.nick-input::placeholder{color:#55525a}
+.nick-skip{font-size:12px;color:#55525a;cursor:pointer;margin-top:4px;transition:color .15s}
+.nick-skip:hover{color:#9a9590}
+@keyframes fadeOut{to{opacity:0;pointer-events:none}}
+.fading{animation:fadeOut .4s ease forwards}
+
+/* ════════════════════════════════════════
+   말풍선 앱 (기본 다크/라이트)
+════════════════════════════════════════ */
+#appBubble{
+  --bg:#111113;--bg2:#1a1a1c;--bg3:#222224;--bg4:#2a2a2c;
+  --border:#2e2e30;--border2:#3a3a3c;
+  --text:#f0ece6;--text2:#9a9590;--text3:#55525a;
+  --green:#1dd75f;--accent:#e8174a;
+  --bubble-o:#2a2a2c;--bubble-me:#9f3060;
+  --inp-bg:#222224;--inp-border:#3a3a3c;--inp-text:#f0ece6;--inp-ph:#55525a;
+  display:flex;height:100vh;background:var(--bg);color:var(--text);transition:background .25s,color .25s;font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;
+}
+#appBubble.light{
+  --bg:#f5f4f0;--bg2:#ffffff;--bg3:#f0eee9;--bg4:#e8e5df;
+  --border:#e0ddd6;--border2:#ccc9c2;
+  --text:#1a1816;--text2:#6b6760;--text3:#a09c95;
+  --bubble-o:#ffffff;--bubble-me:#9f3060;
+  --inp-bg:#ebe8e2;--inp-border:#d4d0c9;--inp-text:#1a1816;--inp-ph:#a09c95;
+}
+body{height:100vh;overflow:hidden}
+
+/* 사이드바 (버블용) */
+.sb{width:220px;min-width:220px;background:var(--bg2);border-right:0.5px solid var(--border);display:flex;flex-direction:column;overflow:hidden;transition:background .25s,border-color .25s}
+.sb-head{padding:16px 14px 12px;display:flex;align-items:center;gap:10px;border-bottom:0.5px solid var(--border);flex-shrink:0}
+.sb-dino{width:32px;height:32px;border-radius:9px;background:#8CCF43;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px}
+.sb-title{font-size:14px;font-weight:800;color:var(--text);letter-spacing:-0.3px;line-height:1.2}
+.sb-head-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.hicon{font-size:13px;cursor:pointer;color:var(--text3);transition:color .15s}
+.hicon:hover{color:var(--text)}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0}
+.sb-label{padding:14px 14px 5px;font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.8px;text-transform:uppercase;flex-shrink:0}
+.cat-list{padding:0 8px 8px;flex-shrink:0}
+.cat-item{display:flex;align-items:center;gap:9px;padding:8px 8px;border-radius:8px;cursor:pointer;transition:background .12s;color:var(--text2);position:relative}
+.cat-item:hover{background:rgba(128,128,128,.08);color:var(--text)}
+.cat-item.active{background:rgba(128,128,128,.1);color:var(--text)}
+.cat-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:16px;background:var(--accent);border-radius:0 2px 2px 0}
+.cat-icon{font-size:14px;width:18px;text-align:center}
+.cat-lbl{font-weight:600;font-size:13px}
+.sb-rooms-head{padding:12px 14px 6px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.sb-rooms-title{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.8px;text-transform:uppercase}
+.add-btn{width:20px;height:20px;border-radius:5px;background:transparent;border:0.5px solid var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--text3);transition:all .15s;line-height:1}
+.add-btn:hover{background:var(--bg4);color:var(--text)}
+.sb-search{padding:0 8px 8px;flex-shrink:0}
+.sb-si{position:relative}
+.sb-si input{width:100%;background:var(--inp-bg);border:0.5px solid var(--inp-border);border-radius:7px;padding:7px 10px 7px 28px;font-size:12px;color:var(--inp-text);outline:none;font-family:inherit;transition:background .25s,border-color .2s,color .25s}
+.sb-si input::placeholder{color:var(--inp-ph)}
+.sb-si input:focus{border-color:var(--accent)}
+.search-ic{position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--inp-ph);pointer-events:none}
+.room-list{flex:1;overflow-y:auto;padding:0 8px}
+.room-list::-webkit-scrollbar{width:2px}
+.room-list::-webkit-scrollbar-thumb{background:var(--border2)}
+.empty-state{margin:6px 0;background:var(--bg3);border:0.5px solid var(--border);border-radius:10px;padding:24px 12px;text-align:center;font-size:12px;color:var(--text3);line-height:1.6}
+.room-item{padding:9px;border-radius:9px;cursor:pointer;transition:background .12s;margin-bottom:2px}
+.room-item:hover{background:rgba(128,128,128,.06)}
+.room-item.active{background:rgba(128,128,128,.1)}
+.ri-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
+.ri-name{font-size:13px;font-weight:700;color:var(--text)}
+.ri-cnt{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:3px}
+.ri-dot{width:5px;height:5px;border-radius:50%;background:var(--green)}
+.ri-preview{font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-foot{padding:10px 12px;border-top:0.5px solid var(--border);display:flex;align-items:center;gap:9px;flex-shrink:0}
+.my-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.my-info{flex:1;min-width:0}
+.my-name{font-size:12px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:5px}
+.my-sub{font-size:10px;color:var(--text3)}
+.foot-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.theme-sw{position:relative;width:44px;height:24px;border-radius:12px;cursor:pointer;flex-shrink:0;border:0.5px solid var(--border2);background:var(--bg4);transition:background .25s,border-color .25s;display:flex;align-items:center;padding:0 3px}
+#appBubble.light .theme-sw{background:#f0cf8a;border-color:#ddb84a}
 .sw-track-icons{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 5px;font-size:10px;pointer-events:none}
-.sw-knob{width:18px;height:18px;border-radius:50%;background:#888;position:relative;z-index:1;transition:.22s}
-.app.light .sw-knob{transform:translateX(20px);background:#fff}
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
-.ch{padding:0 18px;height:52px;border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.layout-badge{font-size:11px;color:var(--text3);border:.5px solid var(--border);padding:3px 9px;border-radius:20px}
-.ch-btn{padding:5px 12px;border-radius:7px;border:.5px solid var(--border2);background:transparent;font-size:12px;color:var(--text2);cursor:pointer}
+.sw-knob{width:18px;height:18px;border-radius:50%;background:#888;position:relative;z-index:1;transition:transform .22s cubic-bezier(.34,1.3,.64,1),background .22s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+#appBubble.light .sw-knob{transform:translateX(20px);background:#fff}
+#appBubble:not(.light) .sw-knob{transform:translateX(0);background:#ccc}
+.foot-ic{font-size:13px;cursor:pointer;color:var(--text3);width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.foot-ic:hover{background:var(--bg4);color:var(--text)}
+
+/* 메인 영역 (버블) */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);transition:background .25s;min-width:0}
+.ch{padding:0 18px;height:52px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ch-room{font-size:15px;font-weight:800;color:var(--text)}
+.ch-sub{font-size:12px;color:var(--text3);background:var(--bg3);padding:2px 8px;border-radius:20px}
+.ch-r{display:flex;align-items:center;gap:6px}
+.ch-btn{padding:5px 12px;border-radius:7px;border:0.5px solid var(--border2);background:transparent;font-size:12px;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .15s}
+.ch-btn:hover{background:var(--bg3);color:var(--text)}
+.layout-badge{font-size:11px;color:var(--text3);border:0.5px solid var(--border);padding:3px 9px;border-radius:20px}
 .welcome{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px}
-.w-ring{width:64px;height:64px;border-radius:50%;border:.5px solid var(--border2);background:var(--bg3);display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:30px}
-.w-title{font-size:20px;font-weight:800;margin-bottom:8px}.w-sub{font-size:13px;color:var(--text3);margin-bottom:28px;text-align:center;line-height:1.6}
-.w-acts{display:flex;gap:10px}.w-btn{padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:.5px solid transparent}.w-btn.p{background:var(--accent);color:#fff}.w-btn.g{background:transparent;color:var(--text2);border:.5px solid var(--border2)}
-.chatScreen{display:none;flex:1;flex-direction:column;overflow:hidden}
+.w-ring{width:64px;height:64px;border-radius:50%;border:0.5px solid var(--border2);background:var(--bg3);display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:30px}
+.w-title{font-size:20px;font-weight:800;color:var(--text);margin-bottom:8px}
+.w-sub{font-size:13px;color:var(--text3);margin-bottom:28px;text-align:center;line-height:1.6}
+.w-acts{display:flex;gap:10px}
+.w-btn{padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;border:0.5px solid transparent}
+.w-btn.p{background:var(--accent);color:#fff}
+.w-btn.p:hover{background:#c8103e}
+.w-btn.g{background:transparent;color:var(--text2);border:0.5px solid var(--border2)}
+.w-btn.g:hover{background:var(--bg3);color:var(--text)}
 .msgs{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
-.day-sep{text-align:center;font-size:11px;color:var(--text3);margin:10px 0}
-.sys-notice{margin:8px 0;background:rgba(200,170,60,.07);border:.5px solid rgba(200,170,60,.2);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--text2);text-align:center}
-.msg-row{display:flex;align-items:flex-end;gap:8px}.msg-row.me{flex-direction:row-reverse}
-.av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
-.bwrap{display:flex;flex-direction:column;max-width:62%}.me .bwrap{align-items:flex-end}
-.bubble{padding:8px 13px;font-size:13px;line-height:1.55;border-radius:16px}.bubble.o{background:var(--bubble-o);border:.5px solid var(--border)}.bubble.m{background:var(--bubble-me);color:#fff}
-.inp-area{padding:10px 14px;border-top:.5px solid var(--border);display:flex;align-items:center;gap:10px}
-.inp-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
-.inp-box{flex:1;background:var(--inp-bg);border:.5px solid var(--inp-border);border-radius:22px;display:flex;align-items:center;padding:0 14px}
-.inp-box input{flex:1;background:transparent;border:none;outline:none;font-size:13px;color:var(--inp-text);padding:9px 0}
-.send-btn{background:var(--accent);border:none;border-radius:18px;color:#fff;font-size:12px;font-weight:700;padding:8px 16px;cursor:pointer}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:50}
-.dialog{background:var(--bg2);border:.5px solid var(--border2);border-radius:16px;padding:24px;width:300px}
-.dialog input{width:100%;background:var(--inp-bg);border:.5px solid var(--inp-border);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--inp-text);outline:none;margin-bottom:10px}
-.settings-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:none;align-items:center;justify-content:center}
-.settings-modal{background:var(--bg2);border:.5px solid var(--border2);border-radius:16px;width:560px;max-width:95vw;max-height:80vh;display:flex;flex-direction:column;overflow:hidden}
-.settings-header{padding:18px 20px;border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.settings-body{display:flex;flex:1;overflow:hidden}.settings-nav{width:160px;border-right:.5px solid var(--border);padding:12px 8px}
-.settings-nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer}.settings-nav-item.active{background:rgba(128,128,128,.12)}
-.settings-content{flex:1;padding:20px;overflow-y:auto}.layout-card{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:12px;border:.5px solid var(--border2);cursor:pointer;margin-bottom:10px}.layout-card.active{border-color:var(--accent);background:rgba(232,23,74,.06)}
+.msgs::-webkit-scrollbar{width:3px}
+.msgs::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.sys-notice{margin:8px 0;background:rgba(200,170,60,.07);border:0.5px solid rgba(200,170,60,.2);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--text2);text-align:center;line-height:1.5}
+.day-sep{text-align:center;font-size:11px;color:var(--text3);margin:10px 0;display:flex;align-items:center;gap:8px}
+.day-sep::before,.day-sep::after{content:'';flex:1;height:.5px;background:var(--border)}
+.msg-row{display:flex;align-items:flex-end;gap:8px}
+.msg-row.first{margin-top:10px}
+.msg-row.me{flex-direction:row-reverse}
+.av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.av.h{visibility:hidden}
+.bwrap{display:flex;flex-direction:column;max-width:62%}
+.me .bwrap{align-items:flex-end}
+.sname{font-size:10px;font-weight:700;margin-bottom:3px;margin-left:2px}
+.bmeta{display:flex;align-items:flex-end;gap:5px}
+.me .bmeta{flex-direction:row-reverse}
+.bubble{padding:8px 13px;font-size:13px;line-height:1.55;word-break:break-word;border-radius:16px}
+.bubble.o{background:var(--bubble-o);color:var(--text);border-radius:16px 16px 16px 4px;border:0.5px solid var(--border)}
+.bubble.m{background:var(--bubble-me);color:#fff;border-radius:16px 16px 4px 16px}
+.bubble.o.mid{border-radius:4px 16px 16px 4px}
+.bubble.o.bot{border-radius:4px 16px 16px 16px}
+.bubble.m.mid{border-radius:16px 4px 4px 16px}
+.bubble.m.bot{border-radius:16px 4px 16px 16px}
+.mc{display:flex;flex-direction:column;align-items:flex-end;padding-bottom:2px;gap:1px}
+.unread{font-size:11px;font-weight:700;color:#e8b84b;line-height:1}
+.ts{font-size:10px;color:var(--text3)}
+.inp-area{padding:10px 14px;border-top:0.5px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.inp-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.inp-box{flex:1;background:var(--inp-bg);border:0.5px solid var(--inp-border);border-radius:22px;display:flex;align-items:center;padding:0 14px;gap:6px;transition:border .15s}
+.inp-box:focus-within{border-color:var(--accent)}
+.inp-box input{flex:1;background:transparent;border:none;outline:none;font-size:13px;color:var(--inp-text);font-family:inherit;padding:9px 0}
+.inp-box input::placeholder{color:var(--inp-ph)}
+.inp-ic{font-size:14px;cursor:pointer;color:var(--text3)}
+.send-btn{background:var(--accent);border:none;border-radius:18px;color:#fff;font-size:12px;font-weight:700;padding:8px 16px;cursor:pointer;font-family:inherit;transition:background .15s;flex-shrink:0}
+.send-btn:hover{background:#c8103e}
+
+/* ════════════════════════════════════════
+   엑셀 전체화면 — Windows 스타일
+════════════════════════════════════════ */
+#appExcel{
+  display:none;flex-direction:column;height:100vh;
+  font-family:'Malgun Gothic','굴림',sans-serif;
+  background:#fff;overflow:hidden;
+}
+/* 타이틀바 */
+.xl-titlebar{background:#217346;display:flex;align-items:center;height:22px;padding:0 8px;flex-shrink:0;user-select:none}
+.xl-titlebar-ico{font-size:12px;margin-right:6px}
+.xl-titlebar-title{flex:1;font-size:11px;color:#fff;font-family:'Malgun Gothic',sans-serif}
+.xl-titlebar-btns{display:flex;gap:0}
+.xl-tb-btn{width:44px;height:22px;display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(255,255,255,.9);cursor:pointer;transition:background .1s}
+.xl-tb-btn:hover{background:rgba(255,255,255,.2)}
+.xl-tb-btn.close:hover{background:#c42b1c}
+/* 리본 탭 바 */
+.xl-ribbon-tabs{background:#217346;display:flex;padding:0 4px;flex-shrink:0}
+.xl-rtab{padding:4px 12px 3px;font-size:11px;font-family:'Malgun Gothic',sans-serif;color:rgba(255,255,255,.8);cursor:pointer;border-radius:2px 2px 0 0;border:1px solid transparent;border-bottom:none;position:relative;bottom:-1px}
+.xl-rtab:hover{color:#fff;background:rgba(255,255,255,.1)}
+.xl-rtab.active{background:#f0f0f0;color:#217346;font-weight:700;border-color:#c0c0c0}
+/* 리본 패널 */
+.xl-ribbon{background:#f0f0f0;border-bottom:2px solid #217346;display:flex;align-items:stretch;padding:2px 4px;gap:1px;flex-shrink:0;min-height:58px}
+.xl-rgroup{display:flex;flex-direction:column;align-items:stretch;border-right:1px solid #d4d4d4;padding:0 6px 0 4px;gap:1px;min-width:60px}
+.xl-rgroup:last-child{border-right:none;margin-left:auto}
+.xl-rgroup-label{font-size:9px;color:#666;text-align:center;padding:2px 0 1px;font-family:'Malgun Gothic',sans-serif;margin-top:auto}
+.xl-rgroup-btns{display:flex;gap:1px;justify-content:center;flex:1;align-items:center}
+.xl-rb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:3px 6px;font-size:10px;font-family:'Malgun Gothic',sans-serif;color:#333;cursor:pointer;border:1px solid transparent;border-radius:2px;min-width:36px;min-height:36px;background:transparent}
+.xl-rb:hover{background:#e0e8e0;border-color:#b8d0b8}
+.xl-rb .rb-ico{font-size:16px;line-height:1}
+.xl-rb .rb-lbl{font-size:9px;color:#444;white-space:nowrap}
+.xl-rb-small{display:flex;align-items:center;gap:3px;padding:2px 6px;font-size:10px;font-family:'Malgun Gothic',sans-serif;color:#333;cursor:pointer;border:1px solid transparent;border-radius:2px;background:transparent;white-space:nowrap}
+.xl-rb-small:hover{background:#e0e8e0;border-color:#b8d0b8}
+/* 이름 상자 + 수식 입력줄 */
+.xl-formula{display:flex;align-items:center;background:#fff;border-bottom:1px solid #d0d0d0;height:24px;flex-shrink:0}
+.xl-cellref{width:64px;border-right:2px solid #d0d0d0;padding:0 6px;font-size:11px;font-weight:700;color:#000;text-align:center;line-height:24px;font-family:'Malgun Gothic',sans-serif;background:#fff}
+.xl-formula-btn{width:22px;height:24px;display:flex;align-items:center;justify-content:center;border-right:1px solid #d0d0d0;font-size:11px;color:#217346;cursor:pointer;font-family:'Symbol',serif;background:#f8f8f8}
+.xl-formula-btn:hover{background:#e8f0e8}
+.xl-fx{padding:0 6px;color:#217346;font-size:11px;font-style:italic;font-weight:700;border-right:1px solid #d0d0d0;line-height:24px;font-family:'Malgun Gothic',sans-serif;background:#f8f8f8;cursor:default}
+.xl-fval{flex:1;padding:0 8px;font-size:11px;color:#000;line-height:24px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Malgun Gothic',sans-serif}
+/* 바디 */
+.xl-body{display:flex;flex:1;overflow:hidden}
+/* 왼쪽 탐색 패널 */
+.xl-side{width:155px;min-width:155px;background:#f5f5f5;border-right:1px solid #c0c0c0;display:flex;flex-direction:column;overflow:hidden}
+.xl-side-head{background:#e8e8e8;border-bottom:1px solid #c0c0c0;padding:4px 8px;font-size:11px;font-weight:700;color:#333;font-family:'Malgun Gothic',sans-serif;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;user-select:none}
+.xl-side-add{cursor:pointer;font-size:15px;color:#217346;line-height:1;font-weight:700}
+.xl-side-add:hover{color:#107c41}
+.xl-sheets{flex:1;overflow-y:auto;padding:2px 0}
+.xl-sheets::-webkit-scrollbar{width:12px}
+.xl-sheets::-webkit-scrollbar-track{background:#f0f0f0}
+.xl-sheets::-webkit-scrollbar-thumb{background:#c0c0c0;border:2px solid #f0f0f0}
+.xl-sheet-item{padding:5px 10px;cursor:pointer;font-size:11px;color:#333;display:flex;align-items:center;gap:6px;font-family:'Malgun Gothic',sans-serif}
+.xl-sheet-item:hover{background:#d8ecff}
+.xl-sheet-item.active{background:#cce8ff;color:#003d73;font-weight:700;border-left:2px solid #217346}
+.xl-sheet-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.xl-side-foot{border-top:1px solid #c0c0c0;padding:6px 8px;background:#f0f0f0;flex-shrink:0}
+.xl-side-user{font-size:11px;color:#333;display:flex;align-items:center;gap:6px;font-family:'Malgun Gothic',sans-serif}
+.xl-side-uav{width:20px;height:20px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+/* 시트 본체 */
+.xl-sheet{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.xl-colheads{display:flex;background:#f2f2f2;border-bottom:1px solid #d0d0d0;height:20px;flex-shrink:0}
+.xl-ch{border-right:1px solid #d0d0d0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#444;font-weight:700;font-family:'Malgun Gothic',sans-serif;background:#f2f2f2}
+.xl-ch.a{width:32px}.xl-ch.b{width:100px}.xl-ch.c{width:70px}.xl-ch.d{flex:1;min-width:0}.xl-ch.e{width:80px}.xl-ch.f{width:50px}
+.xl-rowwrap{flex:1;display:flex;overflow:hidden}
+.xl-rownums{width:32px;min-width:32px;background:#f2f2f2;border-right:1px solid #d0d0d0;overflow-y:hidden;flex-shrink:0}
+.xl-rn{height:20px;display:flex;align-items:center;justify-content:flex-end;padding-right:4px;font-size:10px;color:#444;border-bottom:1px solid #e8e8e8;font-family:'Malgun Gothic',sans-serif}
+.xl-rows{flex:1;overflow-y:auto}
+.xl-rows::-webkit-scrollbar{width:17px}
+.xl-rows::-webkit-scrollbar-track{background:#f0f0f0;border-left:1px solid #d0d0d0}
+.xl-rows::-webkit-scrollbar-thumb{background:#a8a8a8;border:3px solid #f0f0f0;border-radius:0}
+.xl-rows::-webkit-scrollbar-button{background:#e0e0e0;height:17px;border:1px solid #c0c0c0}
+.xl-row{display:flex;height:20px;border-bottom:1px solid #e8e8e8;align-items:center;cursor:default}
+.xl-row:nth-child(odd){background:#fff}
+.xl-row:nth-child(even){background:#fafafa}
+.xl-row:hover{background:#e3efff}
+.xl-row.selected{background:#b8d4f8;outline:2px solid #217346;outline-offset:-1px}
+.xl-cell{border-right:1px solid #e0e0e0;padding:0 4px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;height:100%;display:flex;align-items:center;font-size:11px;font-family:'Malgun Gothic',sans-serif}
+.xl-cell.a{width:32px;justify-content:center;font-size:12px}
+.xl-cell.b{width:100px;font-weight:700}
+.xl-cell.c{width:70px;color:#555;font-size:10px;justify-content:center}
+.xl-cell.d{flex:1;min-width:0}
+.xl-cell.e{width:80px;font-size:10px;color:#555;justify-content:center}
+.xl-cell.f{width:50px;color:#999;font-size:10px;justify-content:center;font-family:'Malgun Gothic',sans-serif}
+/* 입력줄 */
+.xl-inp-wrap{background:#f0f0f0;border-top:2px solid #217346;display:flex;align-items:center;gap:6px;padding:4px 8px;flex-shrink:0}
+.xl-inp-name{background:#fff;border:1px inset #aaa;color:#217346;padding:3px 8px;font-size:11px;font-weight:700;white-space:nowrap;flex-shrink:0;font-family:'Malgun Gothic',sans-serif}
+.xl-inp-field{flex:1;border:1px solid #7a7a7a;border-radius:0;padding:3px 6px;font-size:11px;color:#000;outline:none;font-family:'Malgun Gothic',sans-serif;background:#fff}
+.xl-inp-field:focus{border-color:#217346;box-shadow:0 0 0 1px #217346}
+.xl-inp-btn{background:#e1e1e1;color:#000;border:1px outset #aaa;border-radius:0;padding:3px 12px;font-size:11px;cursor:pointer;font-family:'Malgun Gothic',sans-serif}
+.xl-inp-btn:hover{background:#c8d8ff}
+.xl-inp-btn:active{border-style:inset}
+/* 상태 표시줄 */
+.xl-statusbar{display:flex;background:#f0f0f0;border-top:1px solid #c0c0c0;height:22px;align-items:center;font-size:11px;color:#444;flex-shrink:0;font-family:'Malgun Gothic',sans-serif}
+.xl-stat{padding:0 10px;border-right:1px solid #d0d0d0;height:100%;display:flex;align-items:center;white-space:nowrap}
+/* 하단 시트탭 */
+.xl-sheettabs{display:flex;background:#f0f0f0;border-top:1px solid #c0c0c0;height:20px;align-items:flex-end;flex-shrink:0;padding-left:4px;gap:2px}
+.xl-stab{padding:2px 10px;font-size:10px;border:1px solid #b0b0b0;border-bottom:none;background:#d4d4d4;color:#333;cursor:pointer;border-radius:3px 3px 0 0;font-family:'Malgun Gothic',sans-serif}
+.xl-stab:hover{background:#e4e4e4}
+.xl-stab.active{background:#fff;color:#217346;font-weight:700}
+
+/* ════════════════════════════════════════
+   메모장 전체화면 — Notepad++ Windows 스타일
+════════════════════════════════════════ */
+#appNotepad{
+  display:none;flex-direction:column;height:100vh;
+  font-family:'Malgun Gothic','굴림',sans-serif;
+  background:#f0f0f0;overflow:hidden;
+}
+/* 타이틀바 */
+.np-titlebar{background:#1c1c1c;color:#ffffff;display:flex;align-items:center;height:22px;padding:0 0 0 8px;flex-shrink:0;user-select:none}
+.np-title-ico{font-size:13px;margin-right:6px}
+.np-title-text{flex:1;font-size:11px;font-family:'Malgun Gothic',sans-serif}
+.np-title-btns{display:flex;gap:0;margin-left:auto;height:22px}
+.np-title-btn{width:44px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;cursor:pointer;transition:background .1s;font-family:'Malgun Gothic',sans-serif}
+.np-title-btn:hover{background:rgba(255,255,255,.2)}
+.np-title-btn.close:hover{background:#c42b1c}
+/* 메뉴바 */
+.np-menubar{background:#f0f0f0;border-bottom:1px solid #c0c0c0;display:flex;padding:1px 2px;height:22px;align-items:center;flex-shrink:0}
+.np-menu{padding:1px 8px;font-size:11px;font-family:'Malgun Gothic',sans-serif;color:#000;cursor:pointer;height:18px;display:flex;align-items:center;border:1px solid transparent}
+.np-menu:hover{background:#d4e4f7;border-color:#7eb4ea}
+.np-menu:active{background:#c0d8f0;border-style:inset}
+/* 툴바 */
+.np-toolbar{background:#f0f0f0;border-bottom:1px solid #d0d0d0;display:flex;padding:2px 4px;gap:1px;align-items:center;flex-shrink:0;height:28px}
+.np-tool{width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;border:1px solid transparent;border-radius:2px}
+.np-tool:hover{background:#c8dcf0;border-color:#7eb4ea}
+.np-tool-sep{width:1px;height:18px;background:#c0c0c0;margin:0 3px}
+/* 탭바 */
+.np-tabs{display:flex;background:#d4d0c8;padding:3px 3px 0;flex-shrink:0;border-bottom:1px solid #808080;gap:2px}
+.np-tab{padding:3px 14px 2px;font-size:11px;font-family:'Malgun Gothic',sans-serif;background:#d4d0c8;border:1px solid #808080;border-bottom:none;cursor:pointer;border-radius:3px 3px 0 0;color:#333;display:flex;align-items:center;gap:5px}
+.np-tab:hover:not(.active){background:#e4e0d8}
+.np-tab.active{background:#fff;color:#000;border-color:#808080;font-weight:600;position:relative;bottom:-1px;border-bottom:1px solid #fff}
+.np-tab-dot{width:7px;height:7px;border-radius:1px;flex-shrink:0}
+/* 바디 */
+.np-body{display:flex;flex:1;overflow:hidden;background:#fff}
+/* 왼쪽 파일 패널 */
+.np-sidebar{width:180px;min-width:180px;background:#f5f5f5;border-right:2px solid #808080;display:flex;flex-direction:column;overflow:hidden}
+.np-sb-head{background:#d4d0c8;border-bottom:1px solid #808080;padding:3px 8px;font-size:11px;font-weight:700;color:#000;font-family:'Malgun Gothic',sans-serif;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;user-select:none}
+.np-sb-items{flex:1;overflow-y:auto;padding:2px 0;background:#fff}
+.np-sb-items::-webkit-scrollbar{width:17px}
+.np-sb-items::-webkit-scrollbar-track{background:#f0f0f0}
+.np-sb-items::-webkit-scrollbar-thumb{background:#a8a8a8;border:3px solid #f0f0f0}
+.np-sb-items::-webkit-scrollbar-button{background:#e0e0e0;height:17px;border:1px solid #c0c0c0}
+.np-sb-item{padding:3px 8px;cursor:pointer;font-size:11px;color:#000;font-family:'Malgun Gothic',sans-serif;display:flex;align-items:center;gap:6px}
+.np-sb-item:hover{background:#cce8ff}
+.np-sb-item.active{background:#0078d7;color:#fff;font-weight:700}
+.np-sb-item.active .np-sb-item-dot{border-color:#fff}
+.np-sb-item-dot{width:8px;height:8px;border-radius:1px;flex-shrink:0;border:1px solid #808080}
+.np-sb-foot{border-top:1px solid #c0c0c0;padding:5px 8px;background:#f0f0f0;flex-shrink:0}
+.np-sb-user{font-size:11px;color:#000;display:flex;align-items:center;gap:6px;font-family:'Malgun Gothic',sans-serif}
+.np-sb-uav{width:18px;height:18px;border-radius:1px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+/* 에디터 */
+.np-editor-wrap{flex:1;display:flex;overflow:hidden;background:#fff}
+.np-lnum{width:44px;min-width:44px;background:#f0f0f0;border-right:1px solid #c0c0c0;overflow:hidden;flex-shrink:0}
+.np-ln{height:18px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:11px;color:#808080;border-bottom:1px solid #f0f0f0;font-family:'Courier New',monospace}
+.np-ln.hl{color:#0000ff;background:#e8f0ff}
+.np-editor{flex:1;overflow-y:auto;background:#fff}
+.np-editor::-webkit-scrollbar{width:17px}
+.np-editor::-webkit-scrollbar-track{background:#f0f0f0;border-left:1px solid #c0c0c0}
+.np-editor::-webkit-scrollbar-thumb{background:#a8a8a8;border:3px solid #f0f0f0;border-radius:0}
+.np-editor::-webkit-scrollbar-button{background:#e0e0e0;height:17px;border:1px solid #c0c0c0}
+.np-line{height:18px;padding:0 6px;display:flex;align-items:center;font-size:12px;border-bottom:1px solid transparent;white-space:nowrap;overflow:hidden;cursor:default;font-family:'Courier New',Consolas,monospace}
+.np-line:hover{background:#e8f4ff}
+.np-line.hl{background:#d0e8ff}
+/* Notepad++ 신택스 컬러 (라이트 테마) */
+.c-bracket{color:#808000}.c-time{color:#808080}.c-arrow{color:#808080}.c-msg{color:#000000}.c-me-msg{color:#008000}
+.c-me{color:#008000;font-weight:700}.c-u1{color:#0000ff;font-weight:700}.c-u2{color:#ff6600;font-weight:700}.c-u3{color:#800080;font-weight:700}.c-u4{color:#800000;font-weight:700}
+.c-react{color:#a0522d}.c-comment{color:#008080;font-style:italic}.c-sys{color:#808000;font-style:italic}
+/* 입력창 */
+.np-inp{background:#f0f0f0;border-top:2px solid #808080;flex-shrink:0}
+.np-inp-lbl{padding:2px 8px;font-size:10px;color:#555;font-family:'Malgun Gothic',sans-serif;background:#e8e8e8;border-bottom:1px solid #c0c0c0}
+.np-inp-row{display:flex;align-items:center;background:#fff;border-top:1px solid #d0d0d0}
+.np-inp-ln{width:44px;min-width:44px;background:#f0f0f0;border-right:1px solid #c0c0c0;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:11px;color:#0000ff;font-weight:700;height:26px;font-family:'Courier New',monospace}
+.np-inp-prefix{padding:0 4px 0 6px;font-size:12px;color:#008000;font-weight:700;white-space:nowrap;font-family:'Courier New',monospace}
+.np-inp-field{flex:1;border:none;outline:none;background:transparent;font-family:'Courier New',monospace;font-size:12px;color:#008000;padding:4px 2px}
+.np-inp-btn{margin:2px 6px;padding:2px 10px;background:#e1e1e1;color:#000;border:1px outset #aaa;border-radius:0;font-size:11px;font-family:'Malgun Gothic',sans-serif;cursor:pointer}
+.np-inp-btn:hover{background:#d4e4f7;border-color:#7eb4ea}
+.np-inp-btn:active{border-style:inset}
+/* 상태 표시줄 */
+.np-statusbar{display:flex;background:#f0f0f0;border-top:1px solid #c0c0c0;height:20px;align-items:center;font-size:10px;font-family:'Malgun Gothic',sans-serif;color:#333;flex-shrink:0}
+.np-stat{padding:0 10px;border-right:1px solid #c0c0c0;height:100%;display:flex;align-items:center;white-space:nowrap}
+.np-stat.accent{color:#0000aa;font-weight:700}
+
+/* ════════════════════════════════════════
+   설정 모달 (버블 전용)
+════════════════════════════════════════ */
+.settings-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:flex;align-items:center;justify-content:center}
+.settings-modal{background:var(--bg2);border:0.5px solid var(--border2);border-radius:16px;width:520px;max-width:95vw;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;animation:popIn .2s cubic-bezier(.34,1.2,.64,1) both}
+@keyframes popIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+.settings-header{padding:18px 20px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.settings-header h2{font-size:16px;font-weight:800;color:var(--text)}
+.settings-close{width:28px;height:28px;border-radius:7px;background:transparent;border:none;cursor:pointer;font-size:16px;color:var(--text2);display:flex;align-items:center;justify-content:center;transition:background .15s}
+.settings-close:hover{background:var(--bg3);color:var(--text)}
+.settings-body{display:flex;flex:1;overflow:hidden}
+.settings-nav{width:150px;min-width:150px;border-right:0.5px solid var(--border);padding:12px 8px;display:flex;flex-direction:column;gap:2px}
+.settings-nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--text2);transition:background .12s;font-weight:500;position:relative}
+.settings-nav-item:hover{background:rgba(128,128,128,.08);color:var(--text)}
+.settings-nav-item.active{background:rgba(128,128,128,.12);color:var(--text)}
+.settings-nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:16px;background:var(--accent);border-radius:0 2px 2px 0}
+.nav-icon{font-size:16px;width:22px;text-align:center}
+.settings-content{flex:1;padding:20px;overflow-y:auto}
+.settings-section-title{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:14px}
+.layout-cards{display:flex;flex-direction:column;gap:10px}
+.layout-card{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:12px;border:0.5px solid var(--border2);cursor:pointer;transition:all .15s}
+.layout-card:hover{background:rgba(128,128,128,.06)}
+.layout-card.active{border-color:var(--accent);background:rgba(232,23,74,.06)}
+.layout-card-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.lc-bubble{background:rgba(79,172,254,.15)}
+.lc-notepad{background:rgba(100,60,220,.15)}
+.lc-excel{background:rgba(33,115,70,.15)}
+.layout-card-info{flex:1}
+.layout-card-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px}
+.layout-card-desc{font-size:12px;color:var(--text3)}
+.layout-card-badge{font-size:11px;font-weight:700;color:var(--accent);background:rgba(232,23,74,.12);padding:2px 8px;border-radius:20px;flex-shrink:0}
+
+/* 방 만들기 */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;z-index:50}
+.dialog{background:var(--bg2);border:0.5px solid var(--border2);border-radius:16px;padding:24px;width:300px}
+.dialog h3{font-size:16px;font-weight:800;color:var(--text);margin-bottom:4px}
+.dialog p{font-size:12px;color:var(--text3);margin-bottom:18px}
+.dialog input{width:100%;background:var(--inp-bg);border:0.5px solid var(--inp-border);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--inp-text);outline:none;font-family:inherit;margin-bottom:10px}
+.dialog input:focus{border-color:var(--accent)}
+.dialog input::placeholder{color:var(--inp-ph)}
+.vis-row{display:flex;gap:8px;margin-bottom:16px}
+.vis-btn{flex:1;padding:8px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;border:0.5px solid var(--border2);background:transparent;color:var(--text2)}
+.vis-btn.sel{background:rgba(232,23,74,.12);color:#f06;border-color:rgba(232,23,74,.35)}
+.d-btns{display:flex;gap:8px}
+.d-btn{flex:1;padding:9px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;border:0.5px solid var(--border2)}
+.d-btn.cancel{background:transparent;color:var(--text2)}
+.d-btn.cancel:hover{background:var(--bg3)}
+.d-btn.ok{background:var(--accent);color:#fff;border-color:var(--accent)}
+.d-btn.ok:hover{background:#c8103e}
+@keyframes pop{from{opacity:0;transform:scale(.9) translateY(4px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.pop{animation:pop .16s cubic-bezier(.34,1.3,.64,1) both}
 </style>
 </head>
 <body>
-<div class="invite" id="inviteScreen"><div class="inv-card"><div class="inv-main-step" id="invMain"><div class="inv-stamp">🦕</div><div class="inv-from">You're invited to</div><div class="inv-title">티라노<span> 놀이터</span></div><div class="inv-sub">공룡들이 모이는 익명 채팅 공간.<br>굴을 만들고, 대화하고, 즐기세요.</div><button class="inv-enter-btn" id="invNextBtn">닉네임 설정하기 →</button></div><div class="inv-nick-step" id="invNick"><div class="inv-stamp" style="width:56px;height:56px;font-size:28px;margin-bottom:16px">🦕</div><div class="inv-title" style="font-size:20px;margin-bottom:6px">닉네임을 정해요</div><div class="nick-label">티라노 놀이터에서 불릴 이름이에요.<br>나중에 설정에서 바꿀 수 있어요.</div><input class="nick-input" id="nickInput" placeholder="예: 월화수목티라노" maxlength="16"><button class="inv-enter-btn" id="invEnterBtn">입장하기 🎉</button><div class="nick-skip" id="nickSkip">닉네임 없이 입장 (랜덤 부여)</div></div></div></div>
-<div class="app" id="app">
-<div class="sb"><div class="sb-head"><div class="sb-dino">🦕</div><div class="sb-title">티라노<br>놀이터</div><div class="sb-head-right"><span class="hicon">🔔</span><div class="live-dot"></div><span class="hicon" id="settingsBtn" title="설정">⚙️</span></div></div><div class="sb-label">카테고리</div><div class="cat-list"><div class="cat-item active"><span class="cat-icon">🌐</span><span class="cat-lbl">오픈굴</span></div><div class="cat-item"><span class="cat-icon">🔒</span><span class="cat-lbl">비밀굴</span></div><div class="cat-item"><span class="cat-icon">💌</span><span class="cat-lbl">건의함</span></div></div><div class="sb-rooms-head"><span class="sb-rooms-title">내 굴 목록</span><div class="add-btn" id="addBtn">+</div></div><div class="sb-search"><div class="sb-si"><span class="search-ic">⌕</span><input type="text" placeholder="내 굴 검색" id="searchInp"></div></div><div class="room-list" id="roomList"></div><div class="sb-foot"><div class="my-av" id="myAv" style="background:#c64ab8">티</div><div class="my-info"><div class="my-name"><div class="live-dot"></div><span id="myName">티라노대장</span></div><div class="my-sub">1 online</div></div><div class="foot-right"><div class="theme-sw" id="themeSw" title="라이트/다크 모드"><div class="sw-track-icons"><span>☀️</span><span>🌙</span></div><div class="sw-knob"></div></div><div class="foot-ic" id="settingsBtn2" title="설정">⚙️</div></div></div></div>
-<div class="main"><div class="ch"><div style="display:flex;align-items:center;gap:8px"><span class="ch-room" id="roomTitle">방을 선택하세요</span><span class="ch-sub" id="roomSub" style="display:none"></span></div><div class="ch-r"><span class="layout-badge" id="layoutBadge">말풍선</span><button class="ch-btn" id="layoutSettingsBtn">⚙️ 레이아웃</button></div></div><div class="welcome" id="welcomeScreen"><div class="w-ring">🦕</div><div class="w-title">티라노 놀이터에 오신 걸 환영해요</div><div class="w-sub">왼쪽에서 굴을 선택하거나<br>새 굴을 만들어 대화를 시작해보세요.</div><div class="w-acts"><button class="w-btn p" id="wCreate">+ 굴 만들기</button><button class="w-btn g" id="wBrowse">굴 둘러보기 →</button></div></div><div class="chatScreen" id="chatScreen"><div id="layoutBubble" style="display:flex;flex:1;flex-direction:column;overflow:hidden"><div class="msgs" id="msgs"></div><div class="inp-area"><div class="inp-av" id="inpAv" style="background:#c64ab8">티</div><div class="inp-box"><input type="text" placeholder="메시지를 입력하세요..." id="msgInp"><span class="inp-ic">😊</span></div><button class="send-btn" id="sendBtn">전송</button></div></div></div></div>
+
+<!-- ── 초대장 ── -->
+<div id="inviteScreen">
+  <div class="inv-card">
+    <div class="inv-main-step" id="invMain">
+      <div class="inv-stamp">🦕</div>
+      <div class="inv-from">You're invited to</div>
+      <div class="inv-title">티라노<span> 놀이터</span></div>
+      <div class="inv-sub">공룡들이 모이는 익명 채팅 공간.<br>굴을 만들고, 대화하고, 즐기세요.</div>
+      <div class="inv-divider"></div>
+      <div class="inv-info">
+        <div class="inv-info-item"><span class="inv-info-num">47</span><span class="inv-info-lbl">현재 접속</span></div>
+        <div class="inv-info-item"><span class="inv-info-num">12</span><span class="inv-info-lbl">활성 굴</span></div>
+        <div class="inv-info-item"><span class="inv-info-num">24h</span><span class="inv-info-lbl">익명 채팅</span></div>
+      </div>
+      <button class="inv-enter-btn" id="invNextBtn">닉네임 설정하기 →</button>
+      <div class="inv-note">* 모든 채팅은 매일 자정에 초기화됩니다</div>
+    </div>
+    <div class="inv-nick-step" id="invNick">
+      <div class="inv-stamp" style="width:56px;height:56px;font-size:28px;margin-bottom:16px">🦕</div>
+      <div class="inv-title" style="font-size:20px;margin-bottom:6px">닉네임을 정해요</div>
+      <div class="nick-label">티라노 놀이터에서 불릴 이름이에요.<br>나중에 설정에서 바꿀 수 있어요.</div>
+      <input class="nick-input" id="nickInput" placeholder="예: 월화수목티라노" maxlength="16"/>
+      <button class="inv-enter-btn" id="invEnterBtn">입장하기 🎉</button>
+      <div class="nick-skip" id="nickSkip">닉네임 없이 입장 (랜덤 부여)</div>
+    </div>
+  </div>
 </div>
-<div class="settings-overlay" id="settingsModal"><div class="settings-modal"><div class="settings-header"><h2>설정</h2><button class="settings-close" id="settingsClose">✕</button></div><div class="settings-body"><div class="settings-nav"><div class="settings-nav-item active" data-tab="layout">레이아웃</div></div><div class="settings-content"><div class="layout-card active" id="cardBubble">말풍선</div><div class="layout-card" id="cardNotepad">메모장</div><div class="layout-card" id="cardExcel">엑셀</div></div></div></div></div>
-<div class="overlay" id="dialog"><div class="dialog"><h3>새 굴 만들기</h3><p>굴 이름을 입력하고 공개 여부를 설정하세요.</p><input type="text" placeholder="굴 이름 (예: 직장 탈출굴)" id="roomNameInp" maxlength="30"><div class="d-btns"><button class="d-btn cancel" id="dCancel">취소</button><button class="d-btn ok" id="dCreate">만들기</button></div></div></div>
+
+<!-- ══════════════════════════════════════
+     말풍선 전체 화면
+══════════════════════════════════════ -->
+<div id="appBubble">
+  <div class="sb">
+    <div class="sb-head">
+      <div class="sb-dino">🦕</div>
+      <div class="sb-title">티라노<br>놀이터</div>
+      <div class="sb-head-right">
+        <span class="hicon">🔔</span>
+        <div class="live-dot"></div>
+        <span class="hicon" id="settingsBtn">⚙️</span>
+      </div>
+    </div>
+    <div class="sb-label">카테고리</div>
+    <div class="cat-list">
+      <div class="cat-item active"><span class="cat-icon">🌐</span><span class="cat-lbl">오픈굴</span></div>
+      <div class="cat-item"><span class="cat-icon">🔒</span><span class="cat-lbl">비밀굴</span></div>
+      <div class="cat-item"><span class="cat-icon">💌</span><span class="cat-lbl">건의함</span></div>
+    </div>
+    <div class="sb-rooms-head">
+      <span class="sb-rooms-title">내 굴 목록</span>
+      <div class="add-btn" id="addBtn">+</div>
+    </div>
+    <div class="sb-search"><div class="sb-si"><span class="search-ic">⌕</span><input type="text" placeholder="내 굴 검색" id="searchInp"/></div></div>
+    <div class="room-list" id="roomList"></div>
+    <div class="sb-foot">
+      <div class="my-av" id="myAv" style="background:#c64ab8">티</div>
+      <div class="my-info">
+        <div class="my-name"><div class="live-dot"></div><span id="myName">티라노대장</span></div>
+        <div class="my-sub">1 online</div>
+      </div>
+      <div class="foot-right">
+        <div class="theme-sw" id="themeSw">
+          <div class="sw-track-icons"><span>☀️</span><span>🌙</span></div>
+          <div class="sw-knob"></div>
+        </div>
+        <div class="foot-ic" id="settingsBtn2">⚙️</div>
+      </div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="ch">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="ch-room" id="roomTitle">방을 선택하세요</span>
+        <span class="ch-sub" id="roomSub" style="display:none"></span>
+      </div>
+      <div class="ch-r">
+        <span class="layout-badge">말풍선</span>
+        <button class="ch-btn" id="layoutSettingsBtn">⚙️ 레이아웃</button>
+      </div>
+    </div>
+    <div class="welcome" id="welcomeScreen">
+      <div class="w-ring">🦕</div>
+      <div class="w-title">티라노 놀이터에 오신 걸 환영해요</div>
+      <div class="w-sub">왼쪽에서 굴을 선택하거나<br>새 굴을 만들어 대화를 시작해보세요.</div>
+      <div class="w-acts">
+        <button class="w-btn p" id="wCreate">+ 굴 만들기</button>
+        <button class="w-btn g" id="wBrowse">굴 둘러보기 →</button>
+      </div>
+    </div>
+    <div style="display:none;flex:1;flex-direction:column;overflow:hidden" id="chatScreen">
+      <div class="msgs" id="msgs"></div>
+      <div class="inp-area">
+        <div class="inp-av" id="inpAv" style="background:#c64ab8">티</div>
+        <div class="inp-box">
+          <input type="text" placeholder="메시지를 입력하세요..." id="msgInp"/>
+          <span class="inp-ic">😊</span>
+        </div>
+        <button class="send-btn" id="sendBtn">전송</button>
+      </div>
+    </div>
+  </div>
+  <!-- 설정 모달 -->
+  <div class="settings-overlay" id="settingsModal" style="display:none">
+    <div class="settings-modal">
+      <div class="settings-header">
+        <h2>설정</h2>
+        <button class="settings-close" id="settingsClose">✕</button>
+      </div>
+      <div class="settings-body">
+        <div class="settings-nav">
+          <div class="settings-nav-item active" onclick="switchSettingsTab('layout',this)">
+            <span class="nav-icon">🧩</span>레이아웃
+          </div>
+          <div class="settings-nav-item" onclick="switchSettingsTab('color',this)">
+            <span class="nav-icon">🎨</span>채팅 색상
+          </div>
+        </div>
+        <div class="settings-content">
+          <div id="tabLayout">
+            <div class="settings-section-title">메시지 표시 방식을 변경합니다</div>
+            <div class="layout-cards">
+              <div class="layout-card active" id="cardBubble" onclick="selectLayout('bubble')">
+                <div class="layout-card-icon lc-bubble">💬</div>
+                <div class="layout-card-info"><div class="layout-card-name">말풍선</div><div class="layout-card-desc">기본 채팅 스타일</div></div>
+                <span class="layout-card-badge" id="badgeBubble">사용 중</span>
+              </div>
+              <div class="layout-card" id="cardNotepad" onclick="selectLayout('notepad')">
+                <div class="layout-card-icon lc-notepad">📝</div>
+                <div class="layout-card-info"><div class="layout-card-name">메모장</div><div class="layout-card-desc">코드 에디터처럼 보이는 레이아웃</div></div>
+                <span class="layout-card-badge" id="badgeNotepad" style="display:none">사용 중</span>
+              </div>
+              <div class="layout-card" id="cardExcel" onclick="selectLayout('excel')">
+                <div class="layout-card-icon lc-excel">📊</div>
+                <div class="layout-card-info"><div class="layout-card-name">엑셀</div><div class="layout-card-desc">스프레드시트 표 형태</div></div>
+                <span class="layout-card-badge" id="badgeExcel" style="display:none">사용 중</span>
+              </div>
+            </div>
+          </div>
+          <div id="tabColor" style="display:none">
+            <div class="settings-section-title">내 말풍선 색상</div>
+            <div id="bubbleSwatches" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 방 만들기 -->
+  <div class="overlay" id="dialog" style="display:none">
+    <div class="dialog pop">
+      <h3>새 굴 만들기</h3>
+      <p>굴 이름을 입력하고 공개 여부를 설정하세요.</p>
+      <input type="text" placeholder="굴 이름 (예: 직장 탈출굴)" id="roomNameInp" maxlength="30"/>
+      <div class="vis-row">
+        <button class="vis-btn sel" id="visOpen">🌐 오픈</button>
+        <button class="vis-btn" id="visSecret">🔒 비밀</button>
+      </div>
+      <div class="d-btns">
+        <button class="d-btn cancel" id="dCancel">취소</button>
+        <button class="d-btn ok" id="dCreate">만들기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     엑셀 전체 화면 — Windows 스타일
+══════════════════════════════════════ -->
+<div id="appExcel">
+  <!-- 윈도우 타이틀바 -->
+  <div class="xl-titlebar">
+    <span class="xl-titlebar-ico">📊</span>
+    <span class="xl-titlebar-title" id="xlTitle">월루방.xlsx - SpreadChat</span>
+    <div class="xl-titlebar-btns">
+      <div class="xl-tb-btn" onclick="selectLayout('notepad')" title="메모장으로">📝</div>
+      <div class="xl-tb-btn" onclick="selectLayout('bubble')" title="채팅뷰로">💬</div>
+      <div class="xl-tb-btn" title="최소화">─</div>
+      <div class="xl-tb-btn" title="최대화">□</div>
+      <div class="xl-tb-btn close" onclick="selectLayout('bubble')" title="닫기">✕</div>
+    </div>
+  </div>
+  <!-- 리본 탭 -->
+  <div class="xl-ribbon-tabs">
+    <div class="xl-rtab active">홈</div>
+    <div class="xl-rtab">삽입(N)</div>
+    <div class="xl-rtab">페이지 레이아웃(P)</div>
+    <div class="xl-rtab">수식(M)</div>
+    <div class="xl-rtab">데이터(A)</div>
+    <div class="xl-rtab">검토(R)</div>
+    <div class="xl-rtab">보기(W)</div>
+    <div class="xl-rtab" onclick="openXlSettings()" style="margin-left:auto;opacity:.8">레이아웃 변경</div>
+  </div>
+  <!-- 리본 패널 -->
+  <div class="xl-ribbon">
+    <div class="xl-rgroup">
+      <div class="xl-rgroup-btns">
+        <div class="xl-rb"><span class="rb-ico">📋</span><span class="rb-lbl">붙여넣기</span></div>
+        <div style="display:flex;flex-direction:column;gap:1px">
+          <div class="xl-rb-small">✂ 잘라내기</div>
+          <div class="xl-rb-small">📄 복사</div>
+          <div class="xl-rb-small">🖌 서식 복사</div>
+        </div>
+      </div>
+      <div class="xl-rgroup-label">클립보드</div>
+    </div>
+    <div class="xl-rgroup">
+      <div class="xl-rgroup-btns">
+        <div class="xl-rb-small" style="font-weight:700">B 굵게</div>
+        <div class="xl-rb-small" style="font-style:italic">I 기울임</div>
+        <div class="xl-rb-small" style="text-decoration:underline">U 밑줄</div>
+      </div>
+      <div class="xl-rgroup-label">글꼴</div>
+    </div>
+    <div class="xl-rgroup">
+      <div class="xl-rgroup-btns">
+        <div class="xl-rb-small">≡ 자동 합계</div>
+        <div class="xl-rb-small">▼ 필터</div>
+        <div class="xl-rb-small">↑↓ 정렬</div>
+      </div>
+      <div class="xl-rgroup-label">편집</div>
+    </div>
+    <div class="xl-rgroup" style="margin-left:auto;border-right:none">
+      <div class="xl-rgroup-btns">
+        <div class="xl-rb-small" id="xlOnline">🟢 <span id="xlOnlineCnt">47명 접속중</span></div>
+        <div class="xl-rb-small" onclick="showDialog()" style="color:#217346;font-weight:700">+ 새 굴</div>
+      </div>
+      <div class="xl-rgroup-label">채팅방</div>
+    </div>
+  </div>
+  <!-- 이름상자 + 수식입력줄 -->
+  <div class="xl-formula">
+    <div class="xl-cellref" id="xlCellRef">D1</div>
+    <div class="xl-formula-btn">✕</div>
+    <div class="xl-formula-btn">✓</div>
+    <div class="xl-fx">fx</div>
+    <div class="xl-fval" id="xlFval">메시지를 입력하세요</div>
+  </div>
+  <div class="xl-body">
+    <!-- 왼쪽: 채팅방 목록 -->
+    <div class="xl-side">
+      <div class="xl-side-head">
+        <span>채팅방</span>
+        <span class="xl-side-add" id="xlAddRoom" title="새 굴">＋</span>
+      </div>
+      <div class="xl-sheets" id="xlSheets"></div>
+      <div class="xl-side-foot">
+        <div class="xl-side-user">
+          <div class="xl-side-uav" id="xlMyAv" style="background:#c64ab8">티</div>
+          <span id="xlMyName">나</span>
+        </div>
+      </div>
+    </div>
+    <!-- 오른쪽: 시트 -->
+    <div class="xl-sheet">
+      <div class="xl-colheads">
+        <div class="xl-ch a">A</div>
+        <div class="xl-ch b">B</div>
+        <div class="xl-ch c">C</div>
+        <div class="xl-ch d">D</div>
+        <div class="xl-ch e">E</div>
+        <div class="xl-ch f">F</div>
+      </div>
+      <div class="xl-rowwrap">
+        <div class="xl-rownums" id="xlRowNums"></div>
+        <div class="xl-rows" id="xlRows"></div>
+      </div>
+    </div>
+  </div>
+  <!-- 입력 -->
+  <div class="xl-inp-wrap">
+    <div class="xl-inp-name" id="xlInpName">나</div>
+    <input class="xl-inp-field" id="xlInp" placeholder="메시지를 입력하세요... (Enter 전송)"/>
+    <button class="xl-inp-btn" id="xlSendBtn">전송 ↵</button>
+  </div>
+  <!-- 하단 시트탭 + 상태바 -->
+  <div class="xl-sheettabs" id="xlSheetTabs">
+    <div class="xl-stab active" id="xlActiveTab">Sheet1</div>
+    <div class="xl-stab">Sheet2</div>
+    <div class="xl-stab">Sheet3</div>
+  </div>
+  <div class="xl-statusbar">
+    <div class="xl-stat">준비</div>
+    <div class="xl-stat" id="xlStatRoom">시트: —</div>
+    <div class="xl-stat" id="xlStatCount">행: 0</div>
+    <div class="xl-stat" style="margin-left:auto">평균: —  개수: 0  합계: 0</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     메모장 전체 화면 — Notepad++ Windows 스타일
+══════════════════════════════════════ -->
+<div id="appNotepad">
+  <!-- 윈도우 타이틀바 -->
+  <div class="np-titlebar">
+    <span class="np-title-ico">📝</span>
+    <span class="np-title-text" id="npTitleText">*채팅방 - TyranoPad</span>
+    <div class="np-title-btns">
+      <div class="np-title-btn" onclick="selectLayout('excel')" title="엑셀로">─</div>
+      <div class="np-title-btn" title="최대화">□</div>
+      <div class="np-title-btn close" onclick="selectLayout('bubble')" title="닫기">✕</div>
+    </div>
+  </div>
+  <!-- 윈도우 메뉴바 -->
+  <div class="np-menubar">
+    <span class="np-menu">파일(F)</span>
+    <span class="np-menu">편집(E)</span>
+    <span class="np-menu">검색(S)</span>
+    <span class="np-menu">보기(V)</span>
+    <span class="np-menu">인코딩(N)</span>
+    <span class="np-menu">언어(L)</span>
+    <span class="np-menu">설정(T)</span>
+    <span class="np-menu">채널(C)</span>
+    <span class="np-menu" onclick="openNpSettings()" style="margin-left:auto">레이아웃(?)</span>
+  </div>
+  <!-- 툴바 -->
+  <div class="np-toolbar">
+    <div class="np-tool" title="새 파일">📄</div>
+    <div class="np-tool" title="열기">📂</div>
+    <div class="np-tool" title="저장">💾</div>
+    <div class="np-tool-sep"></div>
+    <div class="np-tool" title="잘라내기">✂</div>
+    <div class="np-tool" title="복사">📋</div>
+    <div class="np-tool" title="붙여넣기">📌</div>
+    <div class="np-tool-sep"></div>
+    <div class="np-tool" title="실행 취소">↩</div>
+    <div class="np-tool" title="다시 실행">↪</div>
+    <div class="np-tool-sep"></div>
+    <div class="np-tool" title="찾기">🔍</div>
+    <div class="np-tool-sep"></div>
+    <div class="np-tool" onclick="showDialog()" title="새 굴 만들기" style="font-size:11px;width:auto;padding:0 6px;color:#217346;font-weight:700;font-family:'Malgun Gothic',sans-serif">+ 새 굴</div>
+  </div>
+  <!-- 탭바 -->
+  <div class="np-tabs">
+    <div class="np-tab active" id="npTabName">
+      <span class="np-tab-dot" style="background:#008000"></span>
+      <span id="npTabLabel">일반.log</span>
+    </div>
+    <div class="np-tab">
+      <span class="np-tab-dot" style="background:#0000ff"></span>
+      presence.txt
+    </div>
+    <div class="np-tab">
+      <span class="np-tab-dot" style="background:#800000"></span>
+      settings.ini
+    </div>
+  </div>
+  <!-- 바디 -->
+  <div class="np-body">
+    <!-- 왼쪽 파일 트리 패널 -->
+    <div class="np-sidebar">
+      <div class="np-sb-head">
+        <span>채팅방 목록</span>
+      </div>
+      <div class="np-sb-items" id="npSideList"></div>
+      <div class="np-sb-foot">
+        <div class="np-sb-user">
+          <div class="np-sb-uav" id="npMyAv" style="background:#c64ab8">티</div>
+          <span id="npMyName">나</span>
+        </div>
+      </div>
+    </div>
+    <!-- 에디터 -->
+    <div class="np-editor-wrap">
+      <div class="np-lnum" id="npLnum"></div>
+      <div class="np-editor" id="npEditor"></div>
+    </div>
+  </div>
+  <!-- 입력창 -->
+  <div class="np-inp">
+    <div class="np-inp-lbl">새 메시지 입력 (Enter: 전송)</div>
+    <div class="np-inp-row">
+      <div class="np-inp-ln" id="npNextLn">1</div>
+      <div class="np-inp-prefix" id="npPrefix">[나] → </div>
+      <input class="np-inp-field" id="npInp" placeholder="여기에 입력하세요..."/>
+      <button class="np-inp-btn" id="npSendBtn">Write</button>
+    </div>
+  </div>
+  <!-- 상태바 -->
+  <div class="np-statusbar">
+    <div class="np-stat accent" id="npStatLn">Ln : 1    Col : 1    Sel : 0 | 0</div>
+    <div class="np-stat">Windows (CR LF)</div>
+    <div class="np-stat">UTF-8</div>
+    <div class="np-stat" id="npStatCount">0 lines</div>
+    <div class="np-stat" style="margin-left:auto" id="npStatRoom">INS</div>
+  </div>
+</div>
+
+<!-- 레이아웃 전환 모달 — Windows 다이얼로그 스타일 -->
+<div id="layoutModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:150;align-items:center;justify-content:center">
+  <div style="background:#f0f0f0;border:2px outset #fff;width:340px;font-family:'Malgun Gothic',sans-serif;box-shadow:4px 4px 8px rgba(0,0,0,.4)">
+    <!-- 타이틀바 -->
+    <div style="background:#000080;color:#fff;padding:4px 8px;display:flex;align-items:center;justify-content:space-between;user-select:none">
+      <span style="font-size:12px;font-weight:700">레이아웃 변경</span>
+      <div onclick="closeLayoutModal()" style="width:16px;height:14px;background:#c0c0c0;border:1px outset #fff;display:flex;align-items:center;justify-content:center;font-size:10px;color:#000;cursor:pointer;font-weight:700">✕</div>
+    </div>
+    <!-- 본문 -->
+    <div style="padding:16px 14px 10px;display:flex;flex-direction:column;gap:4px">
+      <div style="font-size:11px;color:#333;margin-bottom:8px">메시지 표시 방식을 선택하세요:</div>
+      <div onclick="selectLayout('bubble');closeLayoutModal()" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border:2px inset #808080;background:#fff;cursor:pointer" onmouseover="this.style.background='#d4e4f7'" onmouseout="this.style.background='#fff'">
+        <span style="font-size:18px">💬</span>
+        <div><div style="font-size:12px;font-weight:700;color:#000">말풍선</div><div style="font-size:10px;color:#555">기본 채팅 스타일</div></div>
+        <span id="lmBadgeBubble" style="display:none;margin-left:auto;font-size:10px;background:#000080;color:#fff;padding:1px 6px">사용 중</span>
+      </div>
+      <div onclick="selectLayout('notepad');closeLayoutModal()" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border:2px inset #808080;background:#fff;cursor:pointer" onmouseover="this.style.background='#d4e4f7'" onmouseout="this.style.background='#fff'">
+        <span style="font-size:18px">📝</span>
+        <div><div style="font-size:12px;font-weight:700;color:#000">메모장 (Notepad++)</div><div style="font-size:10px;color:#555">코드 에디터 스타일</div></div>
+        <span id="lmBadgeNotepad" style="display:none;margin-left:auto;font-size:10px;background:#000080;color:#fff;padding:1px 6px">사용 중</span>
+      </div>
+      <div onclick="selectLayout('excel');closeLayoutModal()" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border:2px inset #808080;background:#fff;cursor:pointer" onmouseover="this.style.background='#d4e4f7'" onmouseout="this.style.background='#fff'">
+        <span style="font-size:18px">📊</span>
+        <div><div style="font-size:12px;font-weight:700;color:#000">엑셀 (Microsoft Excel)</div><div style="font-size:10px;color:#555">스프레드시트 표 형태</div></div>
+        <span id="lmBadgeExcel" style="display:none;margin-left:auto;font-size:10px;background:#000080;color:#fff;padding:1px 6px">사용 중</span>
+      </div>
+    </div>
+    <!-- 버튼 영역 -->
+    <div style="padding:6px 14px 12px;display:flex;justify-content:flex-end;gap:6px">
+      <button onclick="closeLayoutModal()" style="padding:4px 16px;background:#e1e1e1;border:2px outset #fff;font-size:11px;font-family:'Malgun Gothic',sans-serif;cursor:pointer">취소</button>
+    </div>
+  </div>
+</div>
+
 <script>
-const STORAGE_KEY='tyrano_visited_v1',NICK_KEY='tyrano_nickname_v1',LAYOUT_KEY='tyrano_layout_v1';
-const COLORS_AV=['#e8734a','#4a9ee8','#4ac674','#c64ab8','#e8c44a','#4ab8c6','#9f3060','#7a4ac6'];
-function ac(n){let h=0;for(let i=0;i<n.length;i++)h=n.charCodeAt(i)+((h<<5)-h);return COLORS_AV[Math.abs(h)%COLORS_AV.length]}
+const STORAGE_KEY='tyrano_visited_v1';
+const NICK_KEY='tyrano_nickname_v1';
+const LAYOUT_KEY='tyrano_layout_v1';
+const BUBBLE_COLOR_KEY='tyrano_bubblecolor_v1';
+
+const AV_COLORS=['#e8734a','#4a9ee8','#4ac674','#c64ab8','#e8c44a','#4ab8c6','#9f3060','#7a4ac6'];
+const BUBBLE_PALETTE=['#9f3060','#217346','#1565c0','#6a1b9a','#e65100','#4a148c','#1b5e20','#37474f'];
+
+function ac(n){let h=0;for(let i=0;i<n.length;i++)h=n.charCodeAt(i)+((h<<5)-h);return AV_COLORS[Math.abs(h)%AV_COLORS.length]}
 function ini(n){return n.trim()[0]?.toUpperCase()||'?'}
 function ts(){return new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}
-function randomNick(){const a=['졸린','배고픈','신나는','수줍은','당당한','귀여운'];const b=['티라노','공룡','스테고','프테라','렉스','사우루스'];return a[Math.floor(Math.random()*a.length)]+b[Math.floor(Math.random()*b.length)]+(Math.floor(Math.random()*900)+100)}
-let myNickname='',activeRoom=null,rooms=[{id:'r1',name:'월루방',sub:'직장 탈출굴 · 47명',cnt:47,preview:'혹시 웹에서 알림 안오시는분 계신가요?'},{id:'r2',name:'디노 개발방',sub:'개발 · 12명',cnt:12,preview:'오늘 배포 언제해요?'},{id:'r3',name:'취준 뚝배기',sub:'취업준비 · 29명',cnt:29,preview:'면접 후기 공유합니다'}],msgsData={};
-const DEMOS=[{u:'아근하는 디잔토끼',t:'오후 01:40',msg:'혹시 딜로이트 SAP 컨 괜찮을까여?',r:42},{u:'강아지927',t:'오후 01:40',msg:'좋죠',r:42},{u:'강태공',t:'오후 03:10',msg:'혹시 웹에서 알림 안오시는분 계신가요?',r:44}];
-function applyNickname(n){myNickname=n||randomNick();localStorage.setItem(NICK_KEY,myNickname);const c=ac(myNickname);myAv.textContent=ini(myNickname);myAv.style.background=c;myName.textContent=myNickname;inpAv.textContent=ini(myNickname);inpAv.style.background=c}
-function renderRooms(){const q=searchInp.value.trim().toLowerCase(),f=rooms.filter(r=>r.name.toLowerCase().includes(q));roomList.innerHTML=f.length?f.map(r=>`<div class="room-item${activeRoom===r.id?' active':''}" onclick="openRoom('${r.id}')"><div class="ri-top"><span class="ri-name">${r.name}</span><span class="ri-cnt">${r.cnt}명</span></div><div class="ri-preview">${r.preview}</div></div>`).join(''):'<div class="empty-state">참여한 굴이 없어요.<br>새 굴을 만들어보세요 🕳️</div>'}
-function openRoom(id){activeRoom=id;const r=rooms.find(x=>x.id===id);if(!r)return;if(!msgsData[id])msgsData[id]=DEMOS.map(m=>({...m}));welcomeScreen.style.display='none';chatScreen.style.display='flex';roomTitle.textContent=r.name;roomSub.textContent=r.sub;roomSub.style.display='';renderRooms();renderBubble(id)}
-function renderBubble(id){const list=msgsData[id]||[];let html='<div class="day-sep">오늘</div><div class="sys-notice">모든 채팅 내용은 밤 12시가 되면 초기화됩니다.</div>';list.forEach(m=>{const me=m.u===myNickname;html+=`<div class="msg-row${me?' me':''}"><div class="av" style="background:${ac(m.u)}">${ini(m.u)}</div><div class="bwrap">${me?'':`<div class="sname" style="color:${ac(m.u)}">${m.u}</div>`}<div class="bubble ${me?'m':'o'}">${m.msg}</div></div></div>`});msgs.innerHTML=html;msgs.scrollTop=msgs.scrollHeight}
-function pushMsg(v){if(!v||!activeRoom)return;msgsData[activeRoom].push({u:myNickname,t:ts(),msg:v,r:0});renderBubble(activeRoom)}
-if(localStorage.getItem(STORAGE_KEY)){inviteScreen.classList.add('hide');applyNickname(localStorage.getItem(NICK_KEY)||'')}else{applyNickname('');invNextBtn.onclick=()=>{invMain.classList.add('hide');invNick.classList.add('show');nickInput.focus()};invEnterBtn.onclick=()=>{applyNickname(nickInput.value.trim());localStorage.setItem(STORAGE_KEY,'1');inviteScreen.classList.add('hide')};nickSkip.onclick=()=>{applyNickname('');localStorage.setItem(STORAGE_KEY,'1');inviteScreen.classList.add('hide')}}
-themeSw.onclick=()=>app.classList.toggle('light');settingsBtn.onclick=()=>settingsModal.style.display='flex';settingsBtn2.onclick=()=>settingsModal.style.display='flex';layoutSettingsBtn.onclick=()=>settingsModal.style.display='flex';settingsClose.onclick=()=>settingsModal.style.display='none';settingsModal.onclick=e=>{if(e.target===settingsModal)settingsModal.style.display='none'}
-addBtn.onclick=()=>dialog.style.display='flex';wCreate.onclick=()=>dialog.style.display='flex';wBrowse.onclick=()=>openRoom(rooms[0].id);dCancel.onclick=()=>dialog.style.display='none';dCreate.onclick=()=>{const n=roomNameInp.value.trim();if(!n)return;const id='r'+Date.now();rooms.unshift({id,name:n,sub:'오픈 · 1명',cnt:1,preview:'새 굴이 열렸어요!'});msgsData[id]=[{u:'SYSTEM',t:ts(),msg:`'${n}' 굴이 생성되었습니다 🎉`,r:0}];dialog.style.display='none';roomNameInp.value='';renderRooms();openRoom(id)}
-searchInp.addEventListener('input',renderRooms);sendBtn.onclick=()=>{pushMsg(msgInp.value.trim());msgInp.value=''};msgInp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();pushMsg(msgInp.value.trim());msgInp.value=''}})
-renderRooms();
+function rnd(n){const a=['졸린','배고픈','신나는','수줍은','당당한'];const b=['티라노','공룡','스테고','프테라'];return a[~~(Math.random()*a.length)]+b[~~(Math.random()*b.length)]+(~~(Math.random()*900)+100)}
+
+let myNick='', myBubbleColor=localStorage.getItem(BUBBLE_COLOR_KEY)||'#9f3060';
+let currentLayout=localStorage.getItem(LAYOUT_KEY)||'bubble';
+let isLight=false, activeRoom=null, visMode='open';
+
+// ── 닉네임 ──────────────────────────────────
+function applyNick(nick){
+  myNick=nick||rnd();
+  localStorage.setItem(NICK_KEY,myNick);
+  const c=ac(myNick), i=ini(myNick);
+  ['myAv','inpAv','xlMyAv','npMyAv'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.textContent=i;el.style.background=c;}
+  });
+  document.getElementById('myName').textContent=myNick;
+  document.getElementById('xlMyName').textContent=myNick;
+  document.getElementById('npMyName').textContent=myNick;
+  document.getElementById('xlInpName').textContent=myNick;
+  document.getElementById('npPrefix').textContent='['+myNick+'] → ';
+}
+
+// ── 초대장 ──────────────────────────────────
+const invScreen=document.getElementById('inviteScreen');
+function enterApp(){invScreen.classList.add('fading');setTimeout(()=>invScreen.style.display='none',400)}
+
+if(localStorage.getItem(STORAGE_KEY)){
+  invScreen.style.display='none';
+  applyNick(localStorage.getItem(NICK_KEY)||'');
+} else {
+  applyNick('');
+  document.getElementById('invNextBtn').onclick=()=>{
+    document.getElementById('invMain').classList.add('hide');
+    document.getElementById('invNick').classList.add('show');
+    setTimeout(()=>document.getElementById('nickInput').focus(),100);
+  };
+  function doEnter(){
+    applyNick(document.getElementById('nickInput').value.trim());
+    localStorage.setItem(STORAGE_KEY,'1');
+    enterApp();
+  }
+  document.getElementById('invEnterBtn').onclick=doEnter;
+  document.getElementById('nickInput').addEventListener('keydown',e=>{if(e.key==='Enter')doEnter()});
+  document.getElementById('nickSkip').onclick=()=>{applyNick('');localStorage.setItem(STORAGE_KEY,'1');enterApp()};
+}
+
+// ── 레이아웃 전환 (전체 화면 교체) ──────────
+function selectLayout(layout){
+  currentLayout=layout;
+  localStorage.setItem(LAYOUT_KEY,layout);
+  document.getElementById('appBubble').style.display=layout==='bubble'?'flex':'none';
+  document.getElementById('appExcel').style.display=layout==='excel'?'flex':'none';
+  document.getElementById('appNotepad').style.display=layout==='notepad'?'flex':'none';
+  // 버블 설정 모달 뱃지
+  ['bubble','notepad','excel'].forEach(l=>{
+    const card=document.getElementById('card'+l[0].toUpperCase()+l.slice(1));
+    const badge=document.getElementById('badge'+l[0].toUpperCase()+l.slice(1));
+    if(card) card.classList.toggle('active',l===layout);
+    if(badge) badge.style.display=l===layout?'':'none';
+  });
+  // 레이아웃 모달 뱃지
+  ['Bubble','Notepad','Excel'].forEach(l=>{
+    const b=document.getElementById('lmBadge'+l);
+    if(b) b.style.display=l.toLowerCase()===layout?'inline':'none';
+  });
+  if(activeRoom) renderCurrentLayout();
+  closeSettings();
+}
+
+// ── 설정 모달 (버블) ─────────────────────────
+function openSettings(tab='layout'){
+  document.getElementById('settingsModal').style.display='flex';
+  switchSettingsTab(tab,document.querySelector(`[onclick*="${tab}"]`));
+}
+function closeSettings(){document.getElementById('settingsModal').style.display='none'}
+function switchSettingsTab(tab,el){
+  document.querySelectorAll('.settings-nav-item').forEach(x=>x.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.getElementById('tabLayout').style.display=tab==='layout'?'block':'none';
+  document.getElementById('tabColor').style.display=tab==='color'?'block':'none';
+}
+document.getElementById('settingsBtn').onclick=()=>openSettings('layout');
+document.getElementById('settingsBtn2').onclick=()=>openSettings('layout');
+document.getElementById('layoutSettingsBtn').onclick=()=>openSettings('layout');
+document.getElementById('settingsClose').onclick=closeSettings;
+document.getElementById('settingsModal').onclick=function(e){if(e.target===this)closeSettings()};
+
+// 엑셀/노트패드에서 레이아웃 모달
+function openXlSettings(){document.getElementById('layoutModal').style.display='flex'}
+function openNpSettings(){document.getElementById('layoutModal').style.display='flex'}
+function closeLayoutModal(){document.getElementById('layoutModal').style.display='none'}
+document.getElementById('layoutModal').onclick=function(e){if(e.target===this)closeLayoutModal()}
+
+// ── 색상 스와치 ──────────────────────────────
+function renderSwatches(){
+  document.getElementById('bubbleSwatches').innerHTML=BUBBLE_PALETTE.map(c=>`
+    <div style="width:26px;height:26px;border-radius:50%;background:${c};cursor:pointer;border:2px solid ${c===myBubbleColor?'#fff':'transparent'};transition:transform .15s" onclick="setBubbleColor('${c}')" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform=''"></div>
+  `).join('');
+}
+function setBubbleColor(c){
+  myBubbleColor=c;localStorage.setItem(BUBBLE_COLOR_KEY,c);
+  document.querySelectorAll('.bubble.m').forEach(el=>el.style.background=c);
+  renderSwatches();
+}
+renderSwatches();
+
+// ── 데이터 ───────────────────────────────────
+let rooms=[
+  {id:'r1',name:'월루방',sub:'직장 탈출굴 · 47명',cnt:47,preview:'혹시 웹에서 알림 안오시는분 계신가요?'},
+  {id:'r2',name:'디노 개발방',sub:'개발 · 12명',cnt:12,preview:'오늘 배포 언제해요?'},
+  {id:'r3',name:'취준 뚝배기',sub:'취업준비 · 29명',cnt:29,preview:'면접 후기 공유합니다'},
+];
+let msgsData={};
+const DEMOS=[
+  {u:'아근하는 디잔토끼',t:'오후 01:40',msg:'혹시 딜로이트 SAP 컨 괜찮을까여?',r:42},
+  {u:'강아지927',t:'오후 01:40',msg:'좋죠',r:42},
+  {u:'강아지927',t:'오후 01:40',msg:'빅4면',r:42},
+  {u:'강아지927',t:'오후 01:41',msg:'근데 pwc말고는 일거리가 많이 없을거에요',r:42},
+  {u:'아근하는 디잔토끼',t:'오후 01:41',msg:'한번 사업 접었었다고 한거 같아서요',r:42},
+  {u:'강아지927',t:'오후 01:41',msg:'맞아요 팩트는몰라요근데',r:42},
+  {u:'강태공',t:'오후 03:10',msg:'혹시 웹에서 알림 안오시는분 계신가요?',r:44},
+  {u:'강태공',t:'오후 03:10',msg:'저는 윈도우에 크롬쓰고 있는데 잘오긴하거든요',r:44},
+];
+
+// ── 사이드바 렌더링 ──────────────────────────
+function renderRooms(){
+  const q=document.getElementById('searchInp').value.trim().toLowerCase();
+  const f=rooms.filter(r=>r.name.toLowerCase().includes(q));
+  document.getElementById('roomList').innerHTML=f.length?f.map(r=>`
+    <div class="room-item${activeRoom===r.id?' active':''}" onclick="openRoom('${r.id}')">
+      <div class="ri-top"><span class="ri-name">${r.name}</span><span class="ri-cnt"><span class="ri-dot"></span>${r.cnt}명</span></div>
+      <div class="ri-preview">${r.preview}</div>
+    </div>`).join(''):'<div class="empty-state">참여한 굴이 없어요.<br>새 굴을 만들어보세요 🕳️</div>';
+}
+function renderXlSheets(){
+  document.getElementById('xlSheets').innerHTML=rooms.map(r=>`
+    <div class="xl-sheet-item${activeRoom===r.id?' active':''}" onclick="openRoom('${r.id}')">
+      <span class="xl-sheet-dot" style="background:${ac(r.name)}"></span>
+      <span>${r.name}</span>
+      <span style="font-size:10px;color:#4a8c64">${r.cnt}</span>
+    </div>`).join('');
+}
+function renderNpSide(){
+  document.getElementById('npSideList').innerHTML=rooms.map(r=>`
+    <div class="np-sb-item${activeRoom===r.id?' active':''}" onclick="openRoom('${r.id}')">
+      <span class="np-sb-item-dot" style="background:${ac(r.name)}"></span>
+      # ${r.name}
+    </div>`).join('');
+}
+
+// ── 방 열기 ──────────────────────────────────
+function openRoom(id){
+  activeRoom=id;const r=rooms.find(x=>x.id===id);if(!r)return;
+  if(!msgsData[id])msgsData[id]=DEMOS.map(m=>({...m}));
+  // 버블
+  document.getElementById('welcomeScreen').style.display='none';
+  document.getElementById('chatScreen').style.display='flex';
+  document.getElementById('roomTitle').textContent=r.name;
+  const sub=document.getElementById('roomSub');sub.textContent=r.sub;sub.style.display='';
+  // 엑셀
+  document.getElementById('xlTitle').textContent='SpreadChat — '+r.name+'.xlsx';
+  document.getElementById('xlStatRoom').textContent='시트: '+r.name;
+  const atab=document.getElementById('xlActiveTab');if(atab)atab.textContent=r.name;
+  // 노트패드
+  document.getElementById('npTitleText').textContent='*'+r.name+' - TyranoPad';
+  document.getElementById('npTabLabel').textContent=r.name.replace(/\s/g,'_')+'.log';
+  document.getElementById('npStatRoom').textContent=r.name;
+  renderRooms();renderXlSheets();renderNpSide();
+  renderCurrentLayout();
+}
+
+function renderCurrentLayout(){
+  if(!activeRoom) return;
+  if(currentLayout==='bubble') renderBubble(activeRoom);
+  else if(currentLayout==='excel') renderExcel(activeRoom);
+  else if(currentLayout==='notepad') renderNotepad(activeRoom);
+}
+
+// ── 말풍선 렌더 ──────────────────────────────
+function renderBubble(id){
+  const list=msgsData[id]||[];
+  const el=document.getElementById('msgs');
+  let h='<div class="day-sep">오늘</div><div class="sys-notice">모든 채팅 내용은 밤 12시가 되면 초기화됩니다.</div>';
+  list.forEach((m,i)=>{
+    const me=m.u===myNick;
+    const prev=list[i-1],next=list[i+1];
+    const first=!prev||prev.u!==m.u,last=!next||next.u!==m.u;
+    let cls=me?'m':'o';
+    if(!first&&!last)cls+=' mid';else if(!first&&last)cls+=' bot';
+    const bStyle=me?`style="background:${myBubbleColor}"`:'';
+    const av=`<div class="av${last?'':' h'}" style="background:${ac(m.u)}">${ini(m.u)}</div>`;
+    const sn=(!me&&first)?`<div class="sname" style="color:${ac(m.u)}">${m.u}</div>`:'';
+    const bm=`<div class="bmeta"><div class="bubble ${cls}" ${bStyle}>${m.msg}</div><div class="mc">${m.r?`<div class="unread">${m.r}</div>`:''} ${last?`<div class="ts">${m.t}</div>`:''}</div></div>`;
+    const bw=`<div class="bwrap">${sn}${bm}</div>`;
+    h+=`<div class="msg-row${first?' first':''}${me?' me':''}">${me?`${bw}${av}`:`${av}${bw}`}</div>`;
+  });
+  el.innerHTML=h;el.scrollTop=el.scrollHeight;
+}
+
+// ── 엑셀 렌더 ────────────────────────────────
+function renderExcel(id){
+  const list=msgsData[id]||[];
+  document.getElementById('xlRowNums').innerHTML=list.map((_,i)=>`<div class="xl-rn">${i+1}</div>`).join('');
+  document.getElementById('xlRows').innerHTML=list.map((m,i)=>`
+    <div class="xl-row${m.u===myNick?' selected':''}" onclick="document.getElementById('xlCellRef').textContent='D${i+1}';document.getElementById('xlFval').textContent='${m.msg.replace(/'/g,"\\'").replace(/</g,'&lt;')}'">
+      <div class="xl-cell a">${m.u===myNick?'●':'○'}</div>
+      <div class="xl-cell b" style="color:${ac(m.u)}">${m.u}</div>
+      <div class="xl-cell c">${m.t}</div>
+      <div class="xl-cell d">${m.msg}</div>
+      <div class="xl-cell e">${m.r?'읽음 '+m.r:''}</div>
+      <div class="xl-cell f">${i+1}</div>
+    </div>`).join('');
+  document.getElementById('xlStatCount').textContent='행: '+list.length;
+  document.getElementById('xlRows').scrollTop=999999;
+}
+
+// ── 메모장 렌더 ──────────────────────────────
+function uCls(u){
+  if(u===myNick)return'c-me';
+  const map={'강아지927':'c-u1','아근하는 디잔토끼':'c-u2','강태공':'c-u3'};
+  return map[u]||'c-u4';
+}
+function renderNotepad(id){
+  const list=msgsData[id]||[];
+  document.getElementById('npLnum').innerHTML=list.map((_,i)=>`<div class="np-ln">${i+1}</div>`).join('');
+  document.getElementById('npEditor').innerHTML=list.length===0
+    ?'<div class="np-line"><span class="c-comment">// 메시지가 없습니다</span></div>'
+    :list.map(m=>`<div class="np-line">
+        <span class="c-bracket">[</span><span class="c-time">${m.t}</span><span class="c-bracket">]</span>&nbsp;
+        <span class="${uCls(m.u)}">${m.u}</span>
+        <span class="c-arrow"> → </span>
+        <span class="${m.u===myNick?'c-me-msg':'c-msg'}">${m.msg}</span>
+        ${m.r?`&nbsp;<span class="c-comment">// 읽음 ${m.r}</span>`:''}
+      </div>`).join('');
+  document.getElementById('npEditor').scrollTop=999999;
+  document.getElementById('npNextLn').textContent=list.length+1;
+  document.getElementById('npStatCount').textContent=list.length+' lines';
+  document.getElementById('npStatLn').textContent='Ln: '+(list.length+1)+'  Col: 1';
+}
+
+// ── 메시지 전송 ──────────────────────────────
+function pushMsg(v){
+  if(!v||!activeRoom)return;
+  msgsData[activeRoom].push({u:myNick,t:ts(),msg:v,r:0});
+  renderCurrentLayout();
+  const replies=['맞아요 ㅎㅎ','오 진짜요?','ㅋㅋㅋ 공감','헐 ㄷㄷ','저도 그렇게 생각해요'];
+  const others=['강아지927','아근하는 디잔토끼','강태공'];
+  if(Math.random()>.35){
+    const who=others[~~(Math.random()*others.length)];
+    setTimeout(()=>{
+      msgsData[activeRoom].push({u:who,t:ts(),msg:replies[~~(Math.random()*replies.length)],r:~~(Math.random()*10)+1});
+      renderCurrentLayout();
+    },700+Math.random()*1200);
+  }
+}
+function mkSend(inputId){
+  const inp=document.getElementById(inputId);
+  return ()=>{const v=inp.value.trim();if(v){pushMsg(v);inp.value=''}};
+}
+document.getElementById('sendBtn').onclick=mkSend('msgInp');
+document.getElementById('xlSendBtn').onclick=mkSend('xlInp');
+document.getElementById('npSendBtn').onclick=mkSend('npInp');
+['msgInp','xlInp','npInp'].forEach(id=>{
+  document.getElementById(id).addEventListener('keydown',e=>{
+    if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();mkSend(id)();}
+  });
+});
+
+// ── 방 만들기 ────────────────────────────────
+function showDialog(){document.getElementById('dialog').style.display='flex'}
+function hideDialog(){document.getElementById('dialog').style.display='none';document.getElementById('roomNameInp').value=''}
+function createRoom(){
+  const n=document.getElementById('roomNameInp').value.trim();if(!n)return;
+  const id='r'+Date.now();
+  rooms.unshift({id,name:n,sub:`${visMode==='open'?'오픈':'비밀'} · 1명`,cnt:1,preview:'새 굴이 열렸어요!'});
+  msgsData[id]=[{u:'SYSTEM',t:ts(),msg:`'${n}' 굴이 생성되었습니다 🎉`,r:0}];
+  hideDialog();openRoom(id);
+}
+document.getElementById('addBtn').onclick=showDialog;
+document.getElementById('xlAddRoom').onclick=showDialog;
+document.getElementById('wCreate').onclick=showDialog;
+document.getElementById('wBrowse').onclick=()=>openRoom(rooms[0].id);
+document.getElementById('dCancel').onclick=hideDialog;
+document.getElementById('dCreate').onclick=createRoom;
+document.getElementById('roomNameInp').addEventListener('keydown',e=>{if(e.key==='Enter')createRoom()});
+document.getElementById('searchInp').addEventListener('input',renderRooms);
+document.querySelectorAll('.cat-item').forEach(el=>{
+  el.onclick=()=>{document.querySelectorAll('.cat-item').forEach(x=>x.classList.remove('active'));el.classList.add('active')};
+});
+document.getElementById('visOpen').onclick=function(){visMode='open';this.classList.add('sel');document.getElementById('visSecret').classList.remove('sel')};
+document.getElementById('visSecret').onclick=function(){visMode='secret';this.classList.add('sel');document.getElementById('visOpen').classList.remove('sel')};
+
+// ── 테마 ─────────────────────────────────────
+document.getElementById('themeSw').onclick=function(){
+  isLight=!isLight;
+  document.getElementById('appBubble').classList.toggle('light',isLight);
+};
+
+// ── 초기화 ───────────────────────────────────
+selectLayout(currentLayout);
+renderRooms();renderXlSheets();renderNpSide();
 </script>
 </body>
 </html>
