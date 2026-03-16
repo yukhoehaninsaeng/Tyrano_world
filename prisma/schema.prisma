@@ -1,0 +1,50 @@
+// Prisma schema for the Tyrano World chat app.
+//
+// Set the DATABASE_URL environment variable in Vercel (and locally) to point
+// to a real database. Example (Postgres):
+// DATABASE_URL="postgresql://user:pass@host:port/dbname?schema=public"
+//
+// For local development you can use SQLite by setting:
+// DATABASE_URL="file:./dev.db"
+// and changing provider to "sqlite" below.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Room {
+  id          String       @id @default(uuid())
+  name        String
+  slug        String       @unique
+  concept     String
+  description String?
+  isPrivate   Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  messages    Message[]
+  participants Participant[]
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  room      Room     @relation(fields: [roomId], references: [id])
+  roomId    String
+  createdAt DateTime @default(now())
+  reads     Read[]
+}
+
+model Participant {
+  id     String @id @default(uuid())
+  room   Room   @relation(fields: [roomId], references: [id])
+  roomId String
+}
+
+model Read {
+  id        String   @id @default(uuid())
+  message   Message  @relation(fields: [messageId], references: [id])
+  messageId String
+}
