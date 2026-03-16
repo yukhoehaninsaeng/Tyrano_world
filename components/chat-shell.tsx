@@ -5,7 +5,7 @@ export function ChatShell() {
     <iframe
       src="/chat-shell-static.html"
       title="Tyrano Playground"
-      className="h-screen w-full border-0"
+      className="h-full w-full border-0"
     />
   );
 }
