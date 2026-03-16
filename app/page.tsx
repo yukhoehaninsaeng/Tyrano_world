@@ -1,5 +1,6 @@
 import { CreateRoomForm } from "@/components/create-room-form";
 import { RoomList } from "@/components/room-list";
+import { ChatShell } from "@/components/chat-shell";
 import { isDatabaseConfigured } from "@/lib/db-errors";
 import { prisma } from "@/lib/prisma";
 
@@ -71,6 +72,10 @@ export default async function HomePage() {
         </p>
         {dbWarning ? <p style={{ margin: 0, color: "#ffb3b3" }}>{dbWarning}</p> : null}
       </header>
+
+      <section className="card" style={{ padding: 0, height: "70vh" }}>
+        <ChatShell />
+      </section>
 
       <section className="card" style={{ padding: 16 }}>
         <h2 style={{ marginTop: 0 }}>채팅방 리스트</h2>
