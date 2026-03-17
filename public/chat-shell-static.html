@@ -1,70 +1,69 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>티라노 놀이터</title>
+<title>?곕씪????댄꽣</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link rel="stylesheet" href="chat-shell.css">
 </head>
 <body>
 
-<!-- 초대장 -->
+<!-- 珥덈???-->
 <div id="inviteScreen">
   <div class="inv-card">
     <div class="inv-main-step" id="invMain">
-      <div class="inv-stamp">🦕</div>
+      <div class="inv-stamp">?쫾</div>
       <div class="inv-from">You're invited to</div>
-      <div class="inv-title">티라노<span> 놀이터</span></div>
-      <div class="inv-sub">공룡들이 모이는 익명 채팅 공간.<br>놀이터를 만들고, 대화하고, 즐기세요.</div>
+      <div class="inv-title">?곕씪??span> ??댄꽣</span></div>
+      <div class="inv-sub">怨듬！?ㅼ씠 紐⑥씠???듬챸 梨꾪똿 怨듦컙.<br>??댄꽣瑜?留뚮뱾怨? ??뷀븯怨? 利먭린?몄슂.</div>
       <div class="inv-divider"></div>
       <div class="inv-info">
-        <div class="inv-info-item"><span class="inv-info-num" id="invRoomCnt">0</span><span class="inv-info-lbl">활성 방</span></div>
-        <div class="inv-info-item"><span class="inv-info-num">24h</span><span class="inv-info-lbl">익명 채팅</span></div>
+        <div class="inv-info-item"><span class="inv-info-num" id="invRoomCnt">0</span><span class="inv-info-lbl">?쒖꽦 諛?/span></div>
+        <div class="inv-info-item"><span class="inv-info-num">24h</span><span class="inv-info-lbl">?듬챸 梨꾪똿</span></div>
       </div>
-      <button class="inv-enter-btn" id="invNextBtn">닉네임 설정하기 →</button>
-      <div class="inv-note">* 모든 채팅은 매일 자정에 초기화됩니다</div>
+      <button class="inv-enter-btn" id="invNextBtn">?됰꽕???ㅼ젙?섍린 ??/button>
+      <div class="inv-note">* 紐⑤뱺 梨꾪똿? 留ㅼ씪 ?먯젙??珥덇린?붾맗?덈떎</div>
     </div>
     <div class="inv-nick-step" id="invNick">
-      <div class="inv-stamp" style="width:56px;height:56px;font-size:28px;margin-bottom:16px">🦕</div>
-      <div class="inv-title" style="font-size:20px;margin-bottom:6px">닉네임을 정해요</div>
-      <div class="nick-label">티라노 놀이터에서 불릴 이름이에요.</div>
-      <input class="nick-input" id="nickInput" placeholder="예: 월화수목티라노" maxlength="16"/>
-      <button class="inv-enter-btn" id="invEnterBtn">입장하기 🎉</button>
-      <div class="nick-skip" id="nickSkip">닉네임 없이 입장 (랜덤 부여)</div>
+      <div class="inv-stamp" style="width:56px;height:56px;font-size:28px;margin-bottom:16px">?쫾</div>
+      <div class="inv-title" style="font-size:20px;margin-bottom:6px">?됰꽕?꾩쓣 ?뺥빐??/div>
+      <div class="nick-label">?곕씪????댄꽣?먯꽌 遺덈┫ ?대쫫?댁뿉??</div>
+      <input class="nick-input" id="nickInput" placeholder="?? ?뷀솕?섎ぉ?곕씪?? maxlength="16"/>
+      <button class="inv-enter-btn" id="invEnterBtn">?낆옣?섍린 ?럦</button>
+      <div class="nick-skip" id="nickSkip">?됰꽕???놁씠 ?낆옣 (?쒕뜡 遺??</div>
     </div>
   </div>
 </div>
 
-<!-- 말풍선 앱 -->
+<!-- 留먰뭾????-->
 <div id="appBubble">
   <div class="sb-dimmer" id="sbDimmer" onclick="closeSidebar()"></div>
   <div class="sb" id="sidebar">
     <div class="sb-head">
-      <div class="sb-dino">🦖</div>
-      <div class="sb-title">티라노<br>놀이터</div>
+      <div class="sb-dino">?쫿</div>
+      <div class="sb-title">?곕씪??br>??댄꽣</div>
       <div class="sb-head-right">
-        <div class="live-dot" id="connDot" style="background:#888" title="연결 중..."></div>
+        <div class="live-dot" id="connDot" style="background:#888" title="?곌껐 以?.."></div>
         
-        <span class="hicon" id="settingsBtn">⚙️</span>
-        <span class="hicon" id="sidebarCloseBtn" style="display:none" onclick="closeSidebar()">✕</span>
+        <span class="hicon" id="settingsBtn">?숋툘</span>
+        <span class="hicon" id="sidebarCloseBtn" style="display:none" onclick="closeSidebar()">??/span>
       </div>
     </div>
     <div class="sb-rooms-head">
-      <span class="sb-rooms-title">채팅방 목록</span>
+      <span class="sb-rooms-title">梨꾪똿諛?紐⑸줉</span>
       <div class="add-btn" id="addBtn">+</div>
     </div>
-    <div class="sb-search"><div class="sb-si"><span class="search-ic">⌕</span><input type="text" placeholder="방 검색" id="searchInp"/></div></div>
+    <div class="sb-search"><div class="sb-si"><span class="search-ic">??/span><input type="text" placeholder="諛?寃?? id="searchInp"/></div></div>
     <div class="room-list" id="roomList"></div>
     <div class="sb-foot">
-      <div class="my-av" id="myAv" style="background:#c64ab8">티</div>
+      <div class="my-av" id="myAv" style="background:#c64ab8">??/div>
       <div class="my-info">
-        <div class="my-name"><div class="live-dot"></div><span id="myName">티라노대장</span></div>
-        <div class="my-sub" id="mySub">접속 중...</div>
+        <div class="my-name"><div class="live-dot"></div><span id="myName">?곕씪?몃???/span></div>
+        <div class="my-sub" id="mySub">?묒냽 以?..</div>
       </div>
       <div class="foot-right">
-        <button id="themeToggleBtn" class="theme-toggle-btn">☀️</button>
-        <span class="hicon" id="notifyToggleBtn" title="알림 켜기">🔕</span>
+        <button id="themeToggleBtn" class="theme-toggle-btn">?截?/button>
       </div>
     </div>
   </div>
@@ -72,69 +71,69 @@
   <div class="main">
     <div class="ch">
       <div class="ch-left">
-        <button class="ch-menu" id="menuBtn" onclick="openSidebar()">☰</button>
-        <span class="ch-room" id="roomTitle">방을 선택하세요</span>
+        <button class="ch-menu" id="menuBtn" onclick="openSidebar()">??/button>
+        <span class="ch-room" id="roomTitle">諛⑹쓣 ?좏깮?섏꽭??/span>
         <span class="ch-sub" id="roomSub" style="display:none"></span>
       </div>
       <div class="ch-r">
-        <span class="layout-badge" id="layoutBadge">말풍선</span>
-        <button class="ch-btn" id="layoutSettingsBtn">⚙️ 레이아웃</button>
+        <span class="layout-badge" id="layoutBadge">留먰뭾??/span>
+        <button class="ch-btn" id="layoutSettingsBtn">?숋툘 ?덉씠?꾩썐</button>
       </div>
     </div>
     <div class="welcome" id="welcomeScreen">
-      <div class="w-ring">🦕</div>
-      <div class="w-title">티라노 놀이터에 오신 걸 환영해요</div>
-      <div class="w-sub">왼쪽에서 방을 선택하거나<br>새 방을 만들어 대화를 시작해보세요.</div>
+      <div class="w-ring">?쫾</div>
+      <div class="w-title">?곕씪????댄꽣???ㅼ떊 嫄??섏쁺?댁슂</div>
+      <div class="w-sub">?쇱そ?먯꽌 諛⑹쓣 ?좏깮?섍굅??br>??諛⑹쓣 留뚮뱾????붾? ?쒖옉?대낫?몄슂.</div>
       <div class="w-acts">
-        <button class="w-btn p" id="wCreate">+ 방 만들기</button>
-        <button class="w-btn g" id="wBrowse">방 둘러보기 →</button>
+        <button class="w-btn p" id="wCreate">+ 諛?留뚮뱾湲?/button>
+        <button class="w-btn g" id="wBrowse">諛??섎윭蹂닿린 ??/button>
       </div>
     </div>
     <div style="display:none;flex:1;flex-direction:column;overflow:hidden" id="chatScreen">
       <div class="msgs" id="msgs"></div>
       <div class="inp-area">
-        <div class="inp-av" id="inpAv" style="background:#c64ab8">티</div>
+        <div class="inp-av" id="inpAv" style="background:#c64ab8">??/div>
         <div class="inp-box">
-          <input type="text" placeholder="메시지를 입력하세요..." id="msgInp"/>
-          <span class="inp-ic">😊</span>
+          <input type="text" placeholder="硫붿떆吏瑜??낅젰?섏꽭??.." id="msgInp"/>
+          <span class="inp-ic">?삃</span>
         </div>
-        <button class="send-btn" id="sendBtn">전송</button>
+        <button class="send-btn" id="sendBtn">?꾩넚</button>
       </div>
     </div>
   </div>
 
-  <!-- 설정 모달 -->
+  <!-- ?ㅼ젙 紐⑤떖 -->
   <div class="settings-overlay" id="settingsModal" style="display:none">
     <div class="settings-modal">
-      <div class="settings-header"><h2>설정</h2><button class="settings-close" id="settingsClose">✕</button></div>
+      <div class="settings-header"><h2>?ㅼ젙</h2><button class="settings-close" id="settingsClose">??/button></div>
       <div class="settings-body">
         <div class="settings-nav">
-          <div class="settings-nav-item active" onclick="switchSettingsTab('layout',this)"><span class="nav-icon">🧩</span>레이아웃</div>
-          <div class="settings-nav-item" onclick="switchSettingsTab('color',this)"><span class="nav-icon">🎨</span>채팅 색상</div>
+          <div class="settings-nav-item active" onclick="switchSettingsTab('layout',this)"><span class="nav-icon">?㎥</span>?덉씠?꾩썐</div>
+          <div class="settings-nav-item" onclick="switchSettingsTab('color',this)"><span class="nav-icon">?렓</span>梨꾪똿 ?됱긽</div>
         </div>
         <div class="settings-content">
           <div id="tabLayout">
-            <div class="settings-section-title">메시지 표시 방식</div>
+            <div class="settings-section-title">硫붿떆吏 ?쒖떆 諛⑹떇</div>
             <div class="layout-cards">
               <div class="layout-card active" id="cardBubble" onclick="selectLayout('bubble')">
-                <div class="layout-card-icon lc-bubble">💬</div>
-                <div class="layout-card-info"><div class="layout-card-name">말풍선</div><div class="layout-card-desc">기본 채팅 스타일</div></div>
-                <span class="layout-card-badge" id="badgeBubble">사용 중</span>
+                <div class="layout-card-icon lc-bubble">?뮠</div>
+                <div class="layout-card-info"><div class="layout-card-name">留먰뭾??/div><div class="layout-card-desc">湲곕낯 梨꾪똿 ?ㅽ???/div></div>
+                <span class="layout-card-badge" id="badgeBubble">?ъ슜 以?/span>
               </div>
               <div class="layout-card" id="cardNotepad" onclick="selectLayout('notepad')">
-                <div class="layout-card-icon lc-notepad">📝</div>
-                <div class="layout-card-info"><div class="layout-card-name">메모장</div><div class="layout-card-desc">코드 에디터 스타일</div></div>
-                <span class="layout-card-badge" id="badgeNotepad" style="display:none">사용 중</span>
+                <div class="layout-card-icon lc-notepad">?뱷</div>
+                <div class="layout-card-info"><div class="layout-card-name">硫붾え??/div><div class="layout-card-desc">肄붾뱶 ?먮뵒???ㅽ???/div></div>
+                <span class="layout-card-badge" id="badgeNotepad" style="display:none">?ъ슜 以?/span>
               </div>
               <div class="layout-card" id="cardExcel" onclick="selectLayout('excel')">
-                <div class="layout-card-icon lc-excel">📊</div>
-                <div class="layout-card-info"><div class="layout-card-name">엑셀</div><div class="layout-card-desc">스프레드시트 표 형태</div></div>
-                <span class="layout-card-badge" id="badgeExcel" style="display:none">사용 중</span>
+                <div class="layout-card-icon lc-excel">?뱤</div>
+                <div class="layout-card-info"><div class="layout-card-name">?묒?</div><div class="layout-card-desc">?ㅽ봽?덈뱶?쒗듃 ???뺥깭</div></div>
+                <span class="layout-card-badge" id="badgeExcel" style="display:none">?ъ슜 以?/span>
               </div>
             </div>
           </div>
           <div id="tabColor" style="display:none">
-            <div class="settings-section-title">내 말풍선 색상</div>
+            <div class="settings-section-title">??留먰뭾???됱긽</div>
             <div id="bubbleSwatches" style="display:flex;gap:8px;flex-wrap:wrap"></div>
           </div>
         </div>
@@ -143,83 +142,83 @@
   </div>
 </div>
 
-<!-- 방 만들기 -->
+<!-- 諛?留뚮뱾湲?-->
 <div class="overlay" id="dialog" style="display:none">
   <div class="dialog pop">
-    <h3>새 방 만들기</h3>
-    <p>방 이름을 입력하고 공개 여부를 설정하세요.</p>
-    <input type="text" placeholder="방 이름 (예: 직장 탈출방)" id="roomNameInp" maxlength="30"/>
+    <h3>??諛?留뚮뱾湲?/h3>
+    <p>諛??대쫫???낅젰?섍퀬 怨듦컻 ?щ?瑜??ㅼ젙?섏꽭??</p>
+    <input type="text" placeholder="諛??대쫫 (?? 吏곸옣 ?덉텧諛?" id="roomNameInp" maxlength="30"/>
     <div class="vis-row">
-      <button class="vis-btn sel" id="visOpen">🌐 오픈</button>
-      <button class="vis-btn" id="visSecret">🔒 비밀</button>
+      <button class="vis-btn sel" id="visOpen">?뙋 ?ㅽ뵂</button>
+      <button class="vis-btn" id="visSecret">?뵏 鍮꾨?</button>
     </div>
     <div id="passcodeWrap" style="display:none">
-      <input type="password" id="passcodeInp" placeholder="암호 입력 (4~20자)" maxlength="20"/>
+      <input type="password" id="passcodeInp" placeholder="?뷀샇 ?낅젰 (4~20??" maxlength="20"/>
     </div>
     <div class="d-btns">
-      <button class="d-btn cancel" id="dCancel">취소</button>
-      <button class="d-btn ok" id="dCreate">만들기</button>
+      <button class="d-btn cancel" id="dCancel">痍⑥냼</button>
+      <button class="d-btn ok" id="dCreate">留뚮뱾湲?/button>
     </div>
   </div>
 </div>
 
-<!-- 비밀방 암호 모달 -->
+<!-- 鍮꾨?諛??뷀샇 紐⑤떖 -->
 <div class="overlay" id="passcodeModal" style="display:none">
   <div class="passcode-modal-box pop">
-    <div class="passcode-title">🔒 비밀방</div>
-    <div class="passcode-sub" id="passcodeModalSub">이 방은 암호가 설정되어 있습니다.</div>
-    <input type="password" class="passcode-inp" id="passcodeCheckInp" placeholder="암호를 입력하세요" maxlength="20"/>
-    <div class="passcode-err" id="passcodeErr">암호가 틀렸습니다. 다시 시도해주세요.</div>
+    <div class="passcode-title">?뵏 鍮꾨?諛?/div>
+    <div class="passcode-sub" id="passcodeModalSub">??諛⑹? ?뷀샇媛 ?ㅼ젙?섏뼱 ?덉뒿?덈떎.</div>
+    <input type="password" class="passcode-inp" id="passcodeCheckInp" placeholder="?뷀샇瑜??낅젰?섏꽭?? maxlength="20"/>
+    <div class="passcode-err" id="passcodeErr">?뷀샇媛 ??몄뒿?덈떎. ?ㅼ떆 ?쒕룄?댁＜?몄슂.</div>
     <div class="d-btns">
-      <button class="d-btn cancel" onclick="closePasscodeModal()">취소</button>
-      <button class="d-btn ok" onclick="confirmPasscode()">입장</button>
+      <button class="d-btn cancel" onclick="closePasscodeModal()">痍⑥냼</button>
+      <button class="d-btn ok" onclick="confirmPasscode()">?낆옣</button>
     </div>
   </div>
 </div>
 
-<!-- 엑셀 앱 -->
+<!-- ?묒? ??-->
 <div id="appExcel">
   <div class="xl-titlebar">
-    <span class="xl-titlebar-ico">📊</span>
-    <span class="xl-titlebar-title" id="xlTitle">채팅방.xlsx - SpreadChat</span>
+    <span class="xl-titlebar-ico">?뱤</span>
+    <span class="xl-titlebar-title" id="xlTitle">梨꾪똿諛?xlsx - SpreadChat</span>
     <div class="xl-titlebar-btns">
-      <div class="xl-tb-btn" onclick="selectLayout('notepad')">📝</div>
-      <div class="xl-tb-btn" onclick="selectLayout('bubble')">💬</div>
-      <div class="xl-tb-btn close" onclick="selectLayout('bubble')">✕</div>
+      <div class="xl-tb-btn" onclick="selectLayout('notepad')">?뱷</div>
+      <div class="xl-tb-btn" onclick="selectLayout('bubble')">?뮠</div>
+      <div class="xl-tb-btn close" onclick="selectLayout('bubble')">??/div>
     </div>
   </div>
   <div class="xl-ribbon-tabs">
-    <div class="xl-rtab active">홈</div><div class="xl-rtab">삽입(N)</div>
-    <div class="xl-rtab">데이터(A)</div><div class="xl-rtab">검토(R)</div>
-    <div class="xl-rtab" onclick="openLayoutModal()" style="margin-left:auto;opacity:.8">레이아웃 변경</div>
+    <div class="xl-rtab active">??/div><div class="xl-rtab">?쎌엯(N)</div>
+    <div class="xl-rtab">?곗씠??A)</div><div class="xl-rtab">寃??R)</div>
+    <div class="xl-rtab" onclick="openLayoutModal()" style="margin-left:auto;opacity:.8">?덉씠?꾩썐 蹂寃?/div>
   </div>
   <div class="xl-ribbon">
     <div class="xl-rgroup">
-      <div class="xl-rgroup-btns"><div class="xl-rb"><span class="rb-ico">📋</span><span class="rb-lbl">붙여넣기</span></div></div>
-      <div class="xl-rgroup-label">클립보드</div>
+      <div class="xl-rgroup-btns"><div class="xl-rb"><span class="rb-ico">?뱥</span><span class="rb-lbl">遺숈뿬?ｊ린</span></div></div>
+      <div class="xl-rgroup-label">?대┰蹂대뱶</div>
     </div>
     <div class="xl-rgroup" style="margin-left:auto;border-right:none">
       <div class="xl-rgroup-btns">
-        <div class="xl-rb-small">🟢 <span id="xlOnlineCnt">연결 중</span></div>
-        <div class="xl-rb-small" onclick="showDialog()" style="color:#217346;font-weight:700">+ 새 방</div>
+        <div class="xl-rb-small">?윟 <span id="xlOnlineCnt">?곌껐 以?/span></div>
+        <div class="xl-rb-small" onclick="showDialog()" style="color:#217346;font-weight:700">+ ??諛?/div>
       </div>
-      <div class="xl-rgroup-label">채팅방</div>
+      <div class="xl-rgroup-label">梨꾪똿諛?/div>
     </div>
   </div>
   <div class="xl-formula">
     <div class="xl-cellref" id="xlCellRef">D1</div>
-    <div class="xl-formula-btn">✕</div><div class="xl-formula-btn">✓</div>
+    <div class="xl-formula-btn">??/div><div class="xl-formula-btn">??/div>
     <div class="xl-fx">fx</div>
-    <div class="xl-fval" id="xlFval">메시지를 입력하세요</div>
+    <div class="xl-fval" id="xlFval">硫붿떆吏瑜??낅젰?섏꽭??/div>
   </div>
   <div class="xl-body">
     <div class="xl-side">
-      <div class="xl-side-head"><span>채팅방</span><span class="xl-side-add" onclick="showDialog()">＋</span></div>
+      <div class="xl-side-head"><span>梨꾪똿諛?/span><span class="xl-side-add" onclick="showDialog()">竊?/span></div>
       <div class="xl-sheets" id="xlSheets"></div>
       <div class="xl-side-foot">
         <div class="xl-side-user">
-          <div class="xl-side-uav" id="xlMyAv" style="background:#c64ab8">티</div>
-          <span id="xlMyName">나</span>
+          <div class="xl-side-uav" id="xlMyAv" style="background:#c64ab8">??/div>
+          <span id="xlMyName">??/span>
         </div>
       </div>
     </div>
@@ -235,56 +234,56 @@
     </div>
   </div>
   <div class="xl-inp-wrap">
-    <div class="xl-inp-name" id="xlInpName">나</div>
-    <input class="xl-inp-field" id="xlInp" placeholder="메시지를 입력하세요... (Enter 전송)"/>
-    <button class="xl-inp-btn" id="xlSendBtn">전송 ↵</button>
+    <div class="xl-inp-name" id="xlInpName">??/div>
+    <input class="xl-inp-field" id="xlInp" placeholder="硫붿떆吏瑜??낅젰?섏꽭??.. (Enter ?꾩넚)"/>
+    <button class="xl-inp-btn" id="xlSendBtn">?꾩넚 ??/button>
   </div>
   <div class="xl-sheettabs"><div class="xl-stab active" id="xlActiveTab">Sheet1</div></div>
   <div class="xl-statusbar">
-    <div class="xl-stat">준비</div>
-    <div class="xl-stat" id="xlStatRoom">시트: —</div>
-    <div class="xl-stat" id="xlStatCount">행: 0</div>
+    <div class="xl-stat">以鍮?/div>
+    <div class="xl-stat" id="xlStatRoom">?쒗듃: ??/div>
+    <div class="xl-stat" id="xlStatCount">?? 0</div>
     <div class="xl-stat" style="margin-left:auto">SpreadChat</div>
   </div>
 </div>
 
-<!-- 메모장 앱 -->
+<!-- 硫붾え????-->
 <div id="appNotepad">
   <div class="np-titlebar">
-    <span class="np-title-ico">📝</span>
-    <span class="np-title-text" id="npTitleText">*채팅방 - TyranoPad</span>
+    <span class="np-title-ico">?뱷</span>
+    <span class="np-title-text" id="npTitleText">*梨꾪똿諛?- TyranoPad</span>
     <div class="np-title-btns">
-      <div class="np-title-btn" onclick="selectLayout('excel')">─</div>
-      <div class="np-title-btn close" onclick="selectLayout('bubble')">✕</div>
+      <div class="np-title-btn" onclick="selectLayout('excel')">?</div>
+      <div class="np-title-btn close" onclick="selectLayout('bubble')">??/div>
     </div>
   </div>
   <div class="np-menubar">
-    <span class="np-menu">파일(F)</span><span class="np-menu">편집(E)</span>
-    <span class="np-menu">보기(V)</span><span class="np-menu">설정(T)</span>
-    <span class="np-menu" onclick="openLayoutModal()" style="margin-left:auto">레이아웃(?)</span>
+    <span class="np-menu">?뚯씪(F)</span><span class="np-menu">?몄쭛(E)</span>
+    <span class="np-menu">蹂닿린(V)</span><span class="np-menu">?ㅼ젙(T)</span>
+    <span class="np-menu" onclick="openLayoutModal()" style="margin-left:auto">?덉씠?꾩썐(?)</span>
   </div>
   <div class="np-toolbar">
-    <div class="np-tool">📄</div><div class="np-tool">💾</div>
-    <div class="np-tool-sep"></div><div class="np-tool">🔍</div>
+    <div class="np-tool">?뱞</div><div class="np-tool">?뮶</div>
+    <div class="np-tool-sep"></div><div class="np-tool">?뵇</div>
     <div class="np-tool-sep"></div>
-    <div class="np-tool" onclick="showDialog()" style="font-size:11px;width:auto;padding:0 6px;color:#217346;font-weight:700;font-family:'Malgun Gothic',sans-serif">+ 새 방</div>
+    <div class="np-tool" onclick="showDialog()" style="font-size:11px;width:auto;padding:0 6px;color:#217346;font-weight:700;font-family:'Malgun Gothic',sans-serif">+ ??諛?/div>
   </div>
   <div class="np-tabs">
     <div class="np-tab active" id="npTabName">
       <span class="np-tab-dot" style="background:#008000"></span>
-      <span id="npTabLabel">일반.log</span>
+      <span id="npTabLabel">?쇰컲.log</span>
     </div>
     <div class="np-tab"><span class="np-tab-dot" style="background:#0000ff"></span>presence.txt</div>
     <div class="np-tab"><span class="np-tab-dot" style="background:#800000"></span>settings.ini</div>
   </div>
   <div class="np-body">
     <div class="np-sidebar">
-      <div class="np-sb-head"><span>채팅방 목록</span></div>
+      <div class="np-sb-head"><span>梨꾪똿諛?紐⑸줉</span></div>
       <div class="np-sb-items" id="npSideList"></div>
       <div class="np-sb-foot">
         <div class="np-sb-user">
-          <div class="np-sb-uav" id="npMyAv" style="background:#c64ab8">티</div>
-          <span id="npMyName">나</span>
+          <div class="np-sb-uav" id="npMyAv" style="background:#c64ab8">??/div>
+          <span id="npMyName">??/span>
         </div>
       </div>
     </div>
@@ -294,11 +293,11 @@
     </div>
   </div>
   <div class="np-inp">
-    <div class="np-inp-lbl">새 메시지 입력 (Enter: 전송)</div>
+    <div class="np-inp-lbl">??硫붿떆吏 ?낅젰 (Enter: ?꾩넚)</div>
     <div class="np-inp-row">
       <div class="np-inp-ln" id="npNextLn">1</div>
-      <div class="np-inp-prefix" id="npPrefix">[나] → </div>
-      <input class="np-inp-field" id="npInp" placeholder="여기에 입력하세요..."/>
+      <div class="np-inp-prefix" id="npPrefix">[?? ??</div>
+      <input class="np-inp-field" id="npInp" placeholder="?ш린???낅젰?섏꽭??.."/>
       <button class="np-inp-btn" id="npSendBtn">Write</button>
     </div>
   </div>
@@ -310,33 +309,33 @@
   </div>
 </div>
 
-<!-- 레이아웃 전환 모달 -->
+<!-- ?덉씠?꾩썐 ?꾪솚 紐⑤떖 -->
 <div id="layoutModal">
   <div style="background:#f0f0f0;border:2px outset #fff;width:340px;max-width:90vw;font-family:'Malgun Gothic',sans-serif;box-shadow:4px 4px 8px rgba(0,0,0,.4)">
     <div style="background:#000080;color:#fff;padding:4px 8px;display:flex;align-items:center;justify-content:space-between;user-select:none">
-      <span style="font-size:12px;font-weight:700">레이아웃 변경</span>
-      <div onclick="closeLayoutModal()" style="width:16px;height:14px;background:#c0c0c0;border:1px outset #fff;display:flex;align-items:center;justify-content:center;font-size:10px;color:#000;cursor:pointer;font-weight:700">✕</div>
+      <span style="font-size:12px;font-weight:700">?덉씠?꾩썐 蹂寃?/span>
+      <div onclick="closeLayoutModal()" style="width:16px;height:14px;background:#c0c0c0;border:1px outset #fff;display:flex;align-items:center;justify-content:center;font-size:10px;color:#000;cursor:pointer;font-weight:700">??/div>
     </div>
     <div style="padding:16px 14px 10px;display:flex;flex-direction:column;gap:4px">
-      <div style="font-size:11px;color:#333;margin-bottom:8px">메시지 표시 방식을 선택하세요:</div>
+      <div style="font-size:11px;color:#333;margin-bottom:8px">硫붿떆吏 ?쒖떆 諛⑹떇???좏깮?섏꽭??</div>
       <div onclick="selectLayout('bubble');closeLayoutModal()" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border:2px inset #808080;background:#fff;cursor:pointer" onmouseover="this.style.background='#d4e4f7'" onmouseout="this.style.background='#fff'">
-        <span style="font-size:18px">💬</span>
-        <div><div style="font-size:12px;font-weight:700;color:#000">말풍선</div><div style="font-size:10px;color:#555">기본 채팅 스타일</div></div>
-        <span id="lmBadgeBubble" style="display:none;margin-left:auto;font-size:10px;background:#000080;color:#fff;padding:1px 6px">사용 중</span>
+        <span style="font-size:18px">?뮠</span>
+        <div><div style="font-size:12px;font-weight:700;color:#000">留먰뭾??/div><div style="font-size:10px;color:#555">湲곕낯 梨꾪똿 ?ㅽ???/div></div>
+        <span id="lmBadgeBubble" style="display:none;margin-left:auto;font-size:10px;background:#000080;color:#fff;padding:1px 6px">?ъ슜 以?/span>
       </div>
       <div onclick="selectLayout('notepad');closeLayoutModal()" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border:2px inset #808080;background:#fff;cursor:pointer" onmouseover="this.style.background='#d4e4f7'" onmouseout="this.style.background='#fff'">
-        <span style="font-size:18px">📝</span>
-        <div><div style="font-size:12px;font-weight:700;color:#000">메모장 (Notepad++)</div><div style="font-size:10px;color:#555">코드 에디터 스타일</div></div>
-        <span id="lmBadgeNotepad" style="display:none;margin-left:auto;font-size:10px;background:#000080;color:#fff;padding:1px 6px">사용 중</span>
+        <span style="font-size:18px">?뱷</span>
+        <div><div style="font-size:12px;font-weight:700;color:#000">硫붾え??(Notepad++)</div><div style="font-size:10px;color:#555">肄붾뱶 ?먮뵒???ㅽ???/div></div>
+        <span id="lmBadgeNotepad" style="display:none;margin-left:auto;font-size:10px;background:#000080;color:#fff;padding:1px 6px">?ъ슜 以?/span>
       </div>
       <div onclick="selectLayout('excel');closeLayoutModal()" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border:2px inset #808080;background:#fff;cursor:pointer" onmouseover="this.style.background='#d4e4f7'" onmouseout="this.style.background='#fff'">
-        <span style="font-size:18px">📊</span>
-        <div><div style="font-size:12px;font-weight:700;color:#000">엑셀 (Microsoft Excel)</div><div style="font-size:10px;color:#555">스프레드시트 표 형태</div></div>
-        <span id="lmBadgeExcel" style="display:none;margin-left:auto;font-size:10px;background:#000080;color:#fff;padding:1px 6px">사용 중</span>
+        <span style="font-size:18px">?뱤</span>
+        <div><div style="font-size:12px;font-weight:700;color:#000">?묒? (Microsoft Excel)</div><div style="font-size:10px;color:#555">?ㅽ봽?덈뱶?쒗듃 ???뺥깭</div></div>
+        <span id="lmBadgeExcel" style="display:none;margin-left:auto;font-size:10px;background:#000080;color:#fff;padding:1px 6px">?ъ슜 以?/span>
       </div>
     </div>
     <div style="padding:6px 14px 12px;display:flex;justify-content:flex-end">
-      <button onclick="closeLayoutModal()" style="padding:4px 16px;background:#e1e1e1;border:2px outset #fff;font-size:11px;font-family:'Malgun Gothic',sans-serif;cursor:pointer">취소</button>
+      <button onclick="closeLayoutModal()" style="padding:4px 16px;background:#e1e1e1;border:2px outset #fff;font-size:11px;font-family:'Malgun Gothic',sans-serif;cursor:pointer">痍⑥냼</button>
     </div>
   </div>
 </div>
@@ -344,3 +343,4 @@
 <script src="chat-shell.js"></script>
 </body>
 </html>
+
