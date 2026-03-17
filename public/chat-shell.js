@@ -284,6 +284,7 @@ function closeBrowseModal(){const el=document.getElementById('browseModal');if(e
 
 async function openRoom(id,skipCheck=false){
   const r=rooms.find(x=>x.id===id);if(!r)return;
+  const wasJoined=isJoined(id);
   if(!skipCheck&&r.visibility==='secret'){
     const {data}=await sb.from('rooms').select('passcode').eq('id',id).single();
     if(data&&data.passcode&&getPasscode(id)!==data.passcode){
@@ -313,7 +314,7 @@ async function openRoom(id,skipCheck=false){
   renderAllSides();
   await loadMessages(id);
   subscribeRoom(id);
-  await sendMsg(`${myNick}님이 채팅방에 입장하셨습니다 👋`,true);
+  if(!wasJoined)await sendMsg(`${myNick}님이 놀이터에 입장하셨습니다 👋`,true);
 }
 
 function closePasscodeModal(){document.getElementById('passcodeModal').style.display='none';document.getElementById('passcodeCheckInp').value='';document.getElementById('passcodeErr').style.display='none';pendingRoomId=null;}
