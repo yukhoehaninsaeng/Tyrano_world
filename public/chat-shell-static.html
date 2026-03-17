@@ -140,6 +140,9 @@ body{height:100vh;height:100dvh;overflow:hidden}
 .msg-row.first{margin-top:10px}
 .msg-row.me{flex-direction:row-reverse}
 .av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.av-wrap{position:relative;flex-shrink:0;width:30px}
+.av-wrap.h{visibility:hidden}
+.av-crown{position:absolute;top:-9px;left:50%;transform:translateX(-50%);font-size:12px;line-height:1;pointer-events:none}
 .av.h{visibility:hidden}
 .bwrap{display:flex;flex-direction:column;max-width:62%}
 @media(max-width:480px){.bwrap{max-width:82%}}
@@ -214,6 +217,33 @@ body{height:100vh;height:100dvh;overflow:hidden}
 .d-btn.ok:hover{background:#c8103e}
 @keyframes pop{from{opacity:0;transform:scale(.9) translateY(4px)}to{opacity:1;transform:scale(1) translateY(0)}}
 .pop{animation:pop .16s cubic-bezier(.34,1.3,.64,1) both}
+
+/* ── 채팅 햄버거 메뉴 ── */
+.chat-menu-overlay{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.45)}
+.chat-menu-panel{position:fixed;top:0;right:0;bottom:0;width:220px;max-width:80vw;background:var(--bg2);border-left:0.5px solid var(--border);display:flex;flex-direction:column;z-index:41;transform:translateX(100%);transition:transform .25s cubic-bezier(.34,1.1,.64,1)}
+.chat-menu-panel.open{transform:translateX(0)}
+.cmp-head{padding:18px 16px 14px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.cmp-title{font-size:14px;font-weight:800;color:var(--text)}
+.cmp-close{font-size:16px;cursor:pointer;color:var(--text3);padding:4px}
+.cmp-room{padding:14px 16px;border-bottom:0.5px solid var(--border);flex-shrink:0}
+.cmp-room-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px}
+.cmp-room-sub{font-size:11px;color:var(--text3)}
+.cmp-owner{padding:14px 16px;border-bottom:0.5px solid var(--border);flex-shrink:0}
+.cmp-owner-label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px}
+.cmp-owner-row{display:flex;align-items:center;gap:8px}
+.cmp-owner-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;position:relative;flex-shrink:0}
+.cmp-crown{position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:13px;line-height:1}
+.cmp-owner-name{font-size:13px;font-weight:600;color:var(--text)}
+.cmp-actions{padding:12px 10px;display:flex;flex-direction:column;gap:6px;flex:1}
+.cmp-btn{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;transition:background .12s;border:none;background:transparent;color:var(--text2);font-family:inherit;width:100%;text-align:left}
+.cmp-btn:hover{background:var(--bg3)}
+.cmp-btn.danger{color:#e8174a}
+.cmp-btn.danger:hover{background:rgba(232,23,74,.08)}
+.cmp-btn-icon{font-size:16px;width:24px;text-align:center}
+
+/* ── 왕관 아바타 ── */
+.av-wrap{position:relative;flex-shrink:0}
+.av-crown{position:absolute;top:-9px;left:50%;transform:translateX(-50%);font-size:12px;line-height:1;pointer-events:none}
 
 /* ── 비밀방 암호 모달 ── */
 .passcode-modal-box{background:var(--bg2);border:0.5px solid var(--border2);border-radius:16px;padding:28px 24px;width:280px;max-width:90vw;display:flex;flex-direction:column;gap:14px;animation:pop .16s cubic-bezier(.34,1.3,.64,1) both}
@@ -436,6 +466,7 @@ body{height:100vh;height:100dvh;overflow:hidden}
       <div class="ch-r">
         <span class="layout-badge" id="layoutBadge">말풍선</span>
         <button class="ch-btn" id="layoutSettingsBtn">⚙️ 레이아웃</button>
+        <button class="ch-btn" id="chatMenuBtn" style="display:none">☰</button>
       </div>
     </div>
     <div class="welcome" id="welcomeScreen">
@@ -460,8 +491,38 @@ body{height:100vh;height:100dvh;overflow:hidden}
     </div>
   </div>
 
-  <!-- 설정 모달 -->
-  <div class="settings-overlay" id="settingsModal" style="display:none">
+  <!-- 채팅방 햄버거 메뉴 -->
+  <div class="chat-menu-overlay" id="chatMenuOverlay" style="display:none" onclick="closeChatMenu()"></div>
+  <div class="chat-menu-panel" id="chatMenuPanel">
+    <div class="cmp-head">
+      <span class="cmp-title">채팅방 메뉴</span>
+      <span class="cmp-close" onclick="closeChatMenu()">✕</span>
+    </div>
+    <div class="cmp-room">
+      <div class="cmp-room-name" id="cmpRoomName">—</div>
+      <div class="cmp-room-sub" id="cmpRoomSub">—</div>
+    </div>
+    <div class="cmp-owner">
+      <div class="cmp-owner-label">방장</div>
+      <div class="cmp-owner-row">
+        <div class="cmp-owner-av" id="cmpOwnerAv">
+          <span class="cmp-crown">👑</span>
+          <span id="cmpOwnerIni">?</span>
+        </div>
+        <span class="cmp-owner-name" id="cmpOwnerName">—</span>
+      </div>
+    </div>
+    <div class="cmp-actions">
+      <button class="cmp-btn" onclick="leaveRoom()">
+        <span class="cmp-btn-icon">🚪</span> 방 나가기
+      </button>
+      <button class="cmp-btn danger" id="cmpDeleteBtn" style="display:none" onclick="deleteRoom()">
+        <span class="cmp-btn-icon">🗑️</span> 방 삭제하기
+      </button>
+    </div>
+  </div>
+
+  <!-- 설정 모달 -->  <div class="settings-overlay" id="settingsModal" style="display:none">
     <div class="settings-modal">
       <div class="settings-header"><h2>설정</h2><button class="settings-close" id="settingsClose">✕</button></div>
       <div class="settings-body">
@@ -797,7 +858,7 @@ window.addEventListener('resize',()=>{
 async function loadRooms(){
   const {data,error}=await sb.from('rooms').select('*').order('created_at',{ascending:false});
   if(error||!data)return;
-  rooms=data.map(r=>({id:r.id,name:r.title,visibility:r.visibility,passcode:r.passcode||null,preview:'방에 입장해 대화하세요',cnt:0}));
+  rooms=data.map(r=>({id:r.id,name:r.title,visibility:r.visibility,passcode:r.passcode||null,owner_name:r.owner_name||'',preview:'방에 입장해 대화하세요',cnt:0}));
   renderAllSides();
   for(const room of rooms){
     const {data:last}=await sb.from('messages').select('content,sender_name').eq('room_id',room.id).order('created_at',{ascending:false}).limit(1);
@@ -875,6 +936,59 @@ function renderNpSide(){
     </div>`).join('');
 }
 
+// ── 채팅방 햄버거 메뉴 ──
+function openChatMenu(){
+  const r=rooms.find(x=>x.id===activeRoom);
+  if(!r)return;
+  // 방 정보
+  document.getElementById('cmpRoomName').textContent=r.name;
+  document.getElementById('cmpRoomSub').textContent=r.visibility==='secret'?'🔒 비밀방':'🌐 오픈방';
+  // 방장 아바타
+  const owner=r.owner_name||'—';
+  const av=document.getElementById('cmpOwnerAv');
+  av.style.background=ac(owner);
+  document.getElementById('cmpOwnerIni').textContent=ini(owner);
+  document.getElementById('cmpOwnerName').textContent=owner;
+  // 방장이면 삭제 버튼 표시
+  document.getElementById('cmpDeleteBtn').style.display=myNick===owner?'flex':'none';
+  // 패널 열기
+  document.getElementById('chatMenuOverlay').style.display='block';
+  setTimeout(()=>document.getElementById('chatMenuPanel').classList.add('open'),10);
+}
+function closeChatMenu(){
+  document.getElementById('chatMenuPanel').classList.remove('open');
+  setTimeout(()=>document.getElementById('chatMenuOverlay').style.display='none',260);
+}
+
+// 방 나가기
+function leaveRoom(){
+  closeChatMenu();
+  activeRoom=null;
+  localStorage.removeItem(LAST_ROOM_KEY);
+  document.getElementById('welcomeScreen').style.display='flex';
+  document.getElementById('chatScreen').style.display='none';
+  document.getElementById('roomTitle').textContent='방을 선택하세요';
+  document.getElementById('roomSub').style.display='none';
+  document.getElementById('chatMenuBtn').style.display='none';
+  if(msgChannel){sb.removeChannel(msgChannel);msgChannel=null;}
+  renderAllSides();
+}
+
+// 방 삭제 (방장만)
+async function deleteRoom(){
+  const r=rooms.find(x=>x.id===activeRoom);
+  if(!r||myNick!==r.owner_name)return;
+  if(!confirm(`"${r.name}" 방을 삭제할까요?\n모든 메시지가 사라집니다.`))return;
+  closeChatMenu();
+  // 메시지 먼저 삭제 후 방 삭제
+  await sb.from('messages').delete().eq('room_id',activeRoom);
+  const {error}=await sb.from('rooms').delete().eq('id',activeRoom);
+  if(error){alert('삭제 실패: '+error.message);return;}
+  rooms=rooms.filter(x=>x.id!==activeRoom);
+  leaveRoom();
+}
+document.getElementById('chatMenuBtn').onclick=openChatMenu;
+
 // ── 방 열기 (암호 체크 포함) ──
 async function openRoom(id, skipCheck=false){
   const r=rooms.find(x=>x.id===id);
@@ -901,6 +1015,8 @@ async function openRoom(id, skipCheck=false){
   activeRoom=id;
   localStorage.setItem(LAST_ROOM_KEY,id);
   if(window.innerWidth<=768)closeSidebar();
+  // 채팅방 햄버거 버튼 표시
+  document.getElementById('chatMenuBtn').style.display='';
 
   document.getElementById('welcomeScreen').style.display='none';
   document.getElementById('chatScreen').style.display='flex';
@@ -954,19 +1070,24 @@ function renderCurrentLayout(){
 
 function renderBubble(id){
   const list=msgsData[id]||[];
+  const room=rooms.find(x=>x.id===id);
+  const owner=room?.owner_name||'';
   const el=document.getElementById('msgs');if(!el)return;
   let h='<div class="day-sep">오늘</div><div class="sys-notice">모든 채팅 내용은 밤 12시가 되면 초기화됩니다.</div>';
   list.forEach((m,i)=>{
     const me=m.u===myNick,prev=list[i-1],next=list[i+1];
     const first=!prev||prev.u!==m.u,last=!next||next.u!==m.u;
+    const isOwner=owner&&m.u===owner;
     let cls=me?'m':'o';
     if(!first&&!last)cls+=' mid';else if(!first&&last)cls+=' bot';
     const bStyle=me?`style="background:${myBubbleColor}"`:'';
-    const av=`<div class="av${last?'':' h'}" style="background:${ac(m.u)}">${ini(m.u)}</div>`;
-    const sn=(!me&&first)?`<div class="sname" style="color:${ac(m.u)}">${m.u}</div>`:'';
+    // 왕관 포함 아바타
+    const crown=isOwner?`<span class="av-crown">👑</span>`:'';
+    const avEl=`<div class="av-wrap${last?'':' h'}"><div class="av" style="background:${ac(m.u)}">${ini(m.u)}</div>${crown}</div>`;
+    const sn=(!me&&first)?`<div class="sname" style="color:${ac(m.u)}">${m.u}${isOwner?' 👑':''}</div>`:'';
     const bm=`<div class="bmeta"><div class="bubble ${cls}" ${bStyle}>${m.msg}</div><div class="mc">${last?`<div class="ts">${m.t}</div>`:''}</div></div>`;
     const bw=`<div class="bwrap">${sn}${bm}</div>`;
-    h+=`<div class="msg-row${first?' first':''}${me?' me':''}">${me?`${bw}${av}`:`${av}${bw}`}</div>`;
+    h+=`<div class="msg-row${first?' first':''}${me?' me':''}">${me?`${bw}${avEl}`:`${avEl}${bw}`}</div>`;
   });
   el.innerHTML=h;el.scrollTop=el.scrollHeight;
 }
@@ -1033,13 +1154,13 @@ async function createRoom(){
   const pw=visMode==='secret'?document.getElementById('passcodeInp').value.trim():'';
   if(visMode==='secret'&&pw.length<4){alert('암호는 최소 4자 이상이어야 합니다.');return;}
   const btn=document.getElementById('dCreate');btn.textContent='생성 중...';btn.disabled=true;
-  const {data,error}=await sb.from('rooms').insert({title:n,visibility:visMode,passcode:pw||null}).select().single();
+  const {data,error}=await sb.from('rooms').insert({title:n,visibility:visMode,passcode:pw||null,owner_name:myNick}).select().single();
   btn.textContent='만들기';btn.disabled=false;
   if(error){alert('방 생성 실패: '+error.message);return;}
   if(data.passcode)saveRoomPasscode(data.id,data.passcode);
   hideDialog();
   if(!rooms.some(r=>r.id===data.id))
-    rooms.unshift({id:data.id,name:data.title,visibility:data.visibility,passcode:data.passcode||null,preview:'방이 생성되었어요!',cnt:0});
+    rooms.unshift({id:data.id,name:data.title,visibility:data.visibility,passcode:data.passcode||null,owner_name:data.owner_name||myNick,preview:'방이 생성되었어요!',cnt:0});
   renderAllSides();
   openRoom(data.id,true);
 }
