@@ -4,10 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>티라노 놀이터</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-
-/* ── 초대장 ── */
 #inviteScreen{position:fixed;inset:0;z-index:200;background:#0d0d0f;display:flex;align-items:center;justify-content:center;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif}
 .inv-card{width:360px;max-width:90vw;background:#1a1a1c;border:0.5px solid #3a3a3c;border-radius:24px;padding:40px 36px 36px;display:flex;flex-direction:column;align-items:center;text-align:center;animation:cardIn .5s cubic-bezier(.34,1.2,.64,1) both}
 @keyframes cardIn{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:none}}
@@ -37,9 +36,6 @@
 @keyframes fadeOut{to{opacity:0;pointer-events:none}}
 .fading{animation:fadeOut .4s ease forwards}
 
-/* ════════════════════════════════════════
-   말풍선 앱 (기본 다크/라이트)
-════════════════════════════════════════ */
 #appBubble{
   --bg:#111113;--bg2:#1a1a1c;--bg3:#222224;--bg4:#2a2a2c;
   --border:#2e2e30;--border2:#3a3a3c;
@@ -57,8 +53,6 @@
   --inp-bg:#ebe8e2;--inp-border:#d4d0c9;--inp-text:#1a1816;--inp-ph:#a09c95;
 }
 body{height:100vh;overflow:hidden}
-
-/* 사이드바 (버블용) */
 .sb{width:220px;min-width:220px;background:var(--bg2);border-right:0.5px solid var(--border);display:flex;flex-direction:column;overflow:hidden;transition:background .25s,border-color .25s}
 .sb-head{padding:16px 14px 12px;display:flex;align-items:center;gap:10px;border-bottom:0.5px solid var(--border);flex-shrink:0}
 .sb-dino{width:32px;height:32px;border-radius:9px;background:#8CCF43;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px}
@@ -111,8 +105,6 @@ body{height:100vh;overflow:hidden}
 #appBubble:not(.light) .sw-knob{transform:translateX(0);background:#ccc}
 .foot-ic{font-size:13px;cursor:pointer;color:var(--text3);width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .foot-ic:hover{background:var(--bg4);color:var(--text)}
-
-/* 메인 영역 (버블) */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);transition:background .25s;min-width:0}
 .ch{padding:0 18px;height:52px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .ch-room{font-size:15px;font-weight:800;color:var(--text)}
@@ -155,7 +147,6 @@ body{height:100vh;overflow:hidden}
 .bubble.m.mid{border-radius:16px 4px 4px 16px}
 .bubble.m.bot{border-radius:16px 4px 16px 16px}
 .mc{display:flex;flex-direction:column;align-items:flex-end;padding-bottom:2px;gap:1px}
-.unread{font-size:11px;font-weight:700;color:#e8b84b;line-height:1}
 .ts{font-size:10px;color:var(--text3)}
 .inp-area{padding:10px 14px;border-top:0.5px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0}
 .inp-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
@@ -166,192 +157,6 @@ body{height:100vh;overflow:hidden}
 .inp-ic{font-size:14px;cursor:pointer;color:var(--text3)}
 .send-btn{background:var(--accent);border:none;border-radius:18px;color:#fff;font-size:12px;font-weight:700;padding:8px 16px;cursor:pointer;font-family:inherit;transition:background .15s;flex-shrink:0}
 .send-btn:hover{background:#c8103e}
-
-/* ════════════════════════════════════════
-   엑셀 전체화면 — Windows 스타일
-════════════════════════════════════════ */
-#appExcel{
-  display:none;flex-direction:column;height:100vh;
-  font-family:'Malgun Gothic','굴림',sans-serif;
-  background:#fff;overflow:hidden;
-}
-/* 타이틀바 */
-.xl-titlebar{background:#217346;display:flex;align-items:center;height:22px;padding:0 8px;flex-shrink:0;user-select:none}
-.xl-titlebar-ico{font-size:12px;margin-right:6px}
-.xl-titlebar-title{flex:1;font-size:11px;color:#fff;font-family:'Malgun Gothic',sans-serif}
-.xl-titlebar-btns{display:flex;gap:0}
-.xl-tb-btn{width:44px;height:22px;display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(255,255,255,.9);cursor:pointer;transition:background .1s}
-.xl-tb-btn:hover{background:rgba(255,255,255,.2)}
-.xl-tb-btn.close:hover{background:#c42b1c}
-/* 리본 탭 바 */
-.xl-ribbon-tabs{background:#217346;display:flex;padding:0 4px;flex-shrink:0}
-.xl-rtab{padding:4px 12px 3px;font-size:11px;font-family:'Malgun Gothic',sans-serif;color:rgba(255,255,255,.8);cursor:pointer;border-radius:2px 2px 0 0;border:1px solid transparent;border-bottom:none;position:relative;bottom:-1px}
-.xl-rtab:hover{color:#fff;background:rgba(255,255,255,.1)}
-.xl-rtab.active{background:#f0f0f0;color:#217346;font-weight:700;border-color:#c0c0c0}
-/* 리본 패널 */
-.xl-ribbon{background:#f0f0f0;border-bottom:2px solid #217346;display:flex;align-items:stretch;padding:2px 4px;gap:1px;flex-shrink:0;min-height:58px}
-.xl-rgroup{display:flex;flex-direction:column;align-items:stretch;border-right:1px solid #d4d4d4;padding:0 6px 0 4px;gap:1px;min-width:60px}
-.xl-rgroup:last-child{border-right:none;margin-left:auto}
-.xl-rgroup-label{font-size:9px;color:#666;text-align:center;padding:2px 0 1px;font-family:'Malgun Gothic',sans-serif;margin-top:auto}
-.xl-rgroup-btns{display:flex;gap:1px;justify-content:center;flex:1;align-items:center}
-.xl-rb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:3px 6px;font-size:10px;font-family:'Malgun Gothic',sans-serif;color:#333;cursor:pointer;border:1px solid transparent;border-radius:2px;min-width:36px;min-height:36px;background:transparent}
-.xl-rb:hover{background:#e0e8e0;border-color:#b8d0b8}
-.xl-rb .rb-ico{font-size:16px;line-height:1}
-.xl-rb .rb-lbl{font-size:9px;color:#444;white-space:nowrap}
-.xl-rb-small{display:flex;align-items:center;gap:3px;padding:2px 6px;font-size:10px;font-family:'Malgun Gothic',sans-serif;color:#333;cursor:pointer;border:1px solid transparent;border-radius:2px;background:transparent;white-space:nowrap}
-.xl-rb-small:hover{background:#e0e8e0;border-color:#b8d0b8}
-/* 이름 상자 + 수식 입력줄 */
-.xl-formula{display:flex;align-items:center;background:#fff;border-bottom:1px solid #d0d0d0;height:24px;flex-shrink:0}
-.xl-cellref{width:64px;border-right:2px solid #d0d0d0;padding:0 6px;font-size:11px;font-weight:700;color:#000;text-align:center;line-height:24px;font-family:'Malgun Gothic',sans-serif;background:#fff}
-.xl-formula-btn{width:22px;height:24px;display:flex;align-items:center;justify-content:center;border-right:1px solid #d0d0d0;font-size:11px;color:#217346;cursor:pointer;font-family:'Symbol',serif;background:#f8f8f8}
-.xl-formula-btn:hover{background:#e8f0e8}
-.xl-fx{padding:0 6px;color:#217346;font-size:11px;font-style:italic;font-weight:700;border-right:1px solid #d0d0d0;line-height:24px;font-family:'Malgun Gothic',sans-serif;background:#f8f8f8;cursor:default}
-.xl-fval{flex:1;padding:0 8px;font-size:11px;color:#000;line-height:24px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Malgun Gothic',sans-serif}
-/* 바디 */
-.xl-body{display:flex;flex:1;overflow:hidden}
-/* 왼쪽 탐색 패널 */
-.xl-side{width:155px;min-width:155px;background:#f5f5f5;border-right:1px solid #c0c0c0;display:flex;flex-direction:column;overflow:hidden}
-.xl-side-head{background:#e8e8e8;border-bottom:1px solid #c0c0c0;padding:4px 8px;font-size:11px;font-weight:700;color:#333;font-family:'Malgun Gothic',sans-serif;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;user-select:none}
-.xl-side-add{cursor:pointer;font-size:15px;color:#217346;line-height:1;font-weight:700}
-.xl-side-add:hover{color:#107c41}
-.xl-sheets{flex:1;overflow-y:auto;padding:2px 0}
-.xl-sheets::-webkit-scrollbar{width:12px}
-.xl-sheets::-webkit-scrollbar-track{background:#f0f0f0}
-.xl-sheets::-webkit-scrollbar-thumb{background:#c0c0c0;border:2px solid #f0f0f0}
-.xl-sheet-item{padding:5px 10px;cursor:pointer;font-size:11px;color:#333;display:flex;align-items:center;gap:6px;font-family:'Malgun Gothic',sans-serif}
-.xl-sheet-item:hover{background:#d8ecff}
-.xl-sheet-item.active{background:#cce8ff;color:#003d73;font-weight:700;border-left:2px solid #217346}
-.xl-sheet-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
-.xl-side-foot{border-top:1px solid #c0c0c0;padding:6px 8px;background:#f0f0f0;flex-shrink:0}
-.xl-side-user{font-size:11px;color:#333;display:flex;align-items:center;gap:6px;font-family:'Malgun Gothic',sans-serif}
-.xl-side-uav{width:20px;height:20px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
-/* 시트 본체 */
-.xl-sheet{flex:1;display:flex;flex-direction:column;overflow:hidden}
-.xl-colheads{display:flex;background:#f2f2f2;border-bottom:1px solid #d0d0d0;height:20px;flex-shrink:0}
-.xl-ch{border-right:1px solid #d0d0d0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#444;font-weight:700;font-family:'Malgun Gothic',sans-serif;background:#f2f2f2}
-.xl-ch.a{width:32px}.xl-ch.b{width:100px}.xl-ch.c{width:70px}.xl-ch.d{flex:1;min-width:0}.xl-ch.e{width:80px}.xl-ch.f{width:50px}
-.xl-rowwrap{flex:1;display:flex;overflow:hidden}
-.xl-rownums{width:32px;min-width:32px;background:#f2f2f2;border-right:1px solid #d0d0d0;overflow-y:hidden;flex-shrink:0}
-.xl-rn{height:20px;display:flex;align-items:center;justify-content:flex-end;padding-right:4px;font-size:10px;color:#444;border-bottom:1px solid #e8e8e8;font-family:'Malgun Gothic',sans-serif}
-.xl-rows{flex:1;overflow-y:auto}
-.xl-rows::-webkit-scrollbar{width:17px}
-.xl-rows::-webkit-scrollbar-track{background:#f0f0f0;border-left:1px solid #d0d0d0}
-.xl-rows::-webkit-scrollbar-thumb{background:#a8a8a8;border:3px solid #f0f0f0;border-radius:0}
-.xl-rows::-webkit-scrollbar-button{background:#e0e0e0;height:17px;border:1px solid #c0c0c0}
-.xl-row{display:flex;height:20px;border-bottom:1px solid #e8e8e8;align-items:center;cursor:default}
-.xl-row:nth-child(odd){background:#fff}
-.xl-row:nth-child(even){background:#fafafa}
-.xl-row:hover{background:#e3efff}
-.xl-row.selected{background:#b8d4f8;outline:2px solid #217346;outline-offset:-1px}
-.xl-cell{border-right:1px solid #e0e0e0;padding:0 4px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;height:100%;display:flex;align-items:center;font-size:11px;font-family:'Malgun Gothic',sans-serif}
-.xl-cell.a{width:32px;justify-content:center;font-size:12px}
-.xl-cell.b{width:100px;font-weight:700}
-.xl-cell.c{width:70px;color:#555;font-size:10px;justify-content:center}
-.xl-cell.d{flex:1;min-width:0}
-.xl-cell.e{width:80px;font-size:10px;color:#555;justify-content:center}
-.xl-cell.f{width:50px;color:#999;font-size:10px;justify-content:center;font-family:'Malgun Gothic',sans-serif}
-/* 입력줄 */
-.xl-inp-wrap{background:#f0f0f0;border-top:2px solid #217346;display:flex;align-items:center;gap:6px;padding:4px 8px;flex-shrink:0}
-.xl-inp-name{background:#fff;border:1px inset #aaa;color:#217346;padding:3px 8px;font-size:11px;font-weight:700;white-space:nowrap;flex-shrink:0;font-family:'Malgun Gothic',sans-serif}
-.xl-inp-field{flex:1;border:1px solid #7a7a7a;border-radius:0;padding:3px 6px;font-size:11px;color:#000;outline:none;font-family:'Malgun Gothic',sans-serif;background:#fff}
-.xl-inp-field:focus{border-color:#217346;box-shadow:0 0 0 1px #217346}
-.xl-inp-btn{background:#e1e1e1;color:#000;border:1px outset #aaa;border-radius:0;padding:3px 12px;font-size:11px;cursor:pointer;font-family:'Malgun Gothic',sans-serif}
-.xl-inp-btn:hover{background:#c8d8ff}
-.xl-inp-btn:active{border-style:inset}
-/* 상태 표시줄 */
-.xl-statusbar{display:flex;background:#f0f0f0;border-top:1px solid #c0c0c0;height:22px;align-items:center;font-size:11px;color:#444;flex-shrink:0;font-family:'Malgun Gothic',sans-serif}
-.xl-stat{padding:0 10px;border-right:1px solid #d0d0d0;height:100%;display:flex;align-items:center;white-space:nowrap}
-/* 하단 시트탭 */
-.xl-sheettabs{display:flex;background:#f0f0f0;border-top:1px solid #c0c0c0;height:20px;align-items:flex-end;flex-shrink:0;padding-left:4px;gap:2px}
-.xl-stab{padding:2px 10px;font-size:10px;border:1px solid #b0b0b0;border-bottom:none;background:#d4d4d4;color:#333;cursor:pointer;border-radius:3px 3px 0 0;font-family:'Malgun Gothic',sans-serif}
-.xl-stab:hover{background:#e4e4e4}
-.xl-stab.active{background:#fff;color:#217346;font-weight:700}
-
-/* ════════════════════════════════════════
-   메모장 전체화면 — Notepad++ Windows 스타일
-════════════════════════════════════════ */
-#appNotepad{
-  display:none;flex-direction:column;height:100vh;
-  font-family:'Malgun Gothic','굴림',sans-serif;
-  background:#f0f0f0;overflow:hidden;
-}
-/* 타이틀바 */
-.np-titlebar{background:#1c1c1c;color:#ffffff;display:flex;align-items:center;height:22px;padding:0 0 0 8px;flex-shrink:0;user-select:none}
-.np-title-ico{font-size:13px;margin-right:6px}
-.np-title-text{flex:1;font-size:11px;font-family:'Malgun Gothic',sans-serif}
-.np-title-btns{display:flex;gap:0;margin-left:auto;height:22px}
-.np-title-btn{width:44px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;cursor:pointer;transition:background .1s;font-family:'Malgun Gothic',sans-serif}
-.np-title-btn:hover{background:rgba(255,255,255,.2)}
-.np-title-btn.close:hover{background:#c42b1c}
-/* 메뉴바 */
-.np-menubar{background:#f0f0f0;border-bottom:1px solid #c0c0c0;display:flex;padding:1px 2px;height:22px;align-items:center;flex-shrink:0}
-.np-menu{padding:1px 8px;font-size:11px;font-family:'Malgun Gothic',sans-serif;color:#000;cursor:pointer;height:18px;display:flex;align-items:center;border:1px solid transparent}
-.np-menu:hover{background:#d4e4f7;border-color:#7eb4ea}
-.np-menu:active{background:#c0d8f0;border-style:inset}
-/* 툴바 */
-.np-toolbar{background:#f0f0f0;border-bottom:1px solid #d0d0d0;display:flex;padding:2px 4px;gap:1px;align-items:center;flex-shrink:0;height:28px}
-.np-tool{width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;border:1px solid transparent;border-radius:2px}
-.np-tool:hover{background:#c8dcf0;border-color:#7eb4ea}
-.np-tool-sep{width:1px;height:18px;background:#c0c0c0;margin:0 3px}
-/* 탭바 */
-.np-tabs{display:flex;background:#d4d0c8;padding:3px 3px 0;flex-shrink:0;border-bottom:1px solid #808080;gap:2px}
-.np-tab{padding:3px 14px 2px;font-size:11px;font-family:'Malgun Gothic',sans-serif;background:#d4d0c8;border:1px solid #808080;border-bottom:none;cursor:pointer;border-radius:3px 3px 0 0;color:#333;display:flex;align-items:center;gap:5px}
-.np-tab:hover:not(.active){background:#e4e0d8}
-.np-tab.active{background:#fff;color:#000;border-color:#808080;font-weight:600;position:relative;bottom:-1px;border-bottom:1px solid #fff}
-.np-tab-dot{width:7px;height:7px;border-radius:1px;flex-shrink:0}
-/* 바디 */
-.np-body{display:flex;flex:1;overflow:hidden;background:#fff}
-/* 왼쪽 파일 패널 */
-.np-sidebar{width:180px;min-width:180px;background:#f5f5f5;border-right:2px solid #808080;display:flex;flex-direction:column;overflow:hidden}
-.np-sb-head{background:#d4d0c8;border-bottom:1px solid #808080;padding:3px 8px;font-size:11px;font-weight:700;color:#000;font-family:'Malgun Gothic',sans-serif;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;user-select:none}
-.np-sb-items{flex:1;overflow-y:auto;padding:2px 0;background:#fff}
-.np-sb-items::-webkit-scrollbar{width:17px}
-.np-sb-items::-webkit-scrollbar-track{background:#f0f0f0}
-.np-sb-items::-webkit-scrollbar-thumb{background:#a8a8a8;border:3px solid #f0f0f0}
-.np-sb-items::-webkit-scrollbar-button{background:#e0e0e0;height:17px;border:1px solid #c0c0c0}
-.np-sb-item{padding:3px 8px;cursor:pointer;font-size:11px;color:#000;font-family:'Malgun Gothic',sans-serif;display:flex;align-items:center;gap:6px}
-.np-sb-item:hover{background:#cce8ff}
-.np-sb-item.active{background:#0078d7;color:#fff;font-weight:700}
-.np-sb-item.active .np-sb-item-dot{border-color:#fff}
-.np-sb-item-dot{width:8px;height:8px;border-radius:1px;flex-shrink:0;border:1px solid #808080}
-.np-sb-foot{border-top:1px solid #c0c0c0;padding:5px 8px;background:#f0f0f0;flex-shrink:0}
-.np-sb-user{font-size:11px;color:#000;display:flex;align-items:center;gap:6px;font-family:'Malgun Gothic',sans-serif}
-.np-sb-uav{width:18px;height:18px;border-radius:1px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
-/* 에디터 */
-.np-editor-wrap{flex:1;display:flex;overflow:hidden;background:#fff}
-.np-lnum{width:44px;min-width:44px;background:#f0f0f0;border-right:1px solid #c0c0c0;overflow:hidden;flex-shrink:0}
-.np-ln{height:18px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:11px;color:#808080;border-bottom:1px solid #f0f0f0;font-family:'Courier New',monospace}
-.np-ln.hl{color:#0000ff;background:#e8f0ff}
-.np-editor{flex:1;overflow-y:auto;background:#fff}
-.np-editor::-webkit-scrollbar{width:17px}
-.np-editor::-webkit-scrollbar-track{background:#f0f0f0;border-left:1px solid #c0c0c0}
-.np-editor::-webkit-scrollbar-thumb{background:#a8a8a8;border:3px solid #f0f0f0;border-radius:0}
-.np-editor::-webkit-scrollbar-button{background:#e0e0e0;height:17px;border:1px solid #c0c0c0}
-.np-line{height:18px;padding:0 6px;display:flex;align-items:center;font-size:12px;border-bottom:1px solid transparent;white-space:nowrap;overflow:hidden;cursor:default;font-family:'Courier New',Consolas,monospace}
-.np-line:hover{background:#e8f4ff}
-.np-line.hl{background:#d0e8ff}
-/* Notepad++ 신택스 컬러 (라이트 테마) */
-.c-bracket{color:#808000}.c-time{color:#808080}.c-arrow{color:#808080}.c-msg{color:#000000}.c-me-msg{color:#008000}
-.c-me{color:#008000;font-weight:700}.c-u1{color:#0000ff;font-weight:700}.c-u2{color:#ff6600;font-weight:700}.c-u3{color:#800080;font-weight:700}.c-u4{color:#800000;font-weight:700}
-.c-react{color:#a0522d}.c-comment{color:#008080;font-style:italic}.c-sys{color:#808000;font-style:italic}
-/* 입력창 */
-.np-inp{background:#f0f0f0;border-top:2px solid #808080;flex-shrink:0}
-.np-inp-lbl{padding:2px 8px;font-size:10px;color:#555;font-family:'Malgun Gothic',sans-serif;background:#e8e8e8;border-bottom:1px solid #c0c0c0}
-.np-inp-row{display:flex;align-items:center;background:#fff;border-top:1px solid #d0d0d0}
-.np-inp-ln{width:44px;min-width:44px;background:#f0f0f0;border-right:1px solid #c0c0c0;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:11px;color:#0000ff;font-weight:700;height:26px;font-family:'Courier New',monospace}
-.np-inp-prefix{padding:0 4px 0 6px;font-size:12px;color:#008000;font-weight:700;white-space:nowrap;font-family:'Courier New',monospace}
-.np-inp-field{flex:1;border:none;outline:none;background:transparent;font-family:'Courier New',monospace;font-size:12px;color:#008000;padding:4px 2px}
-.np-inp-btn{margin:2px 6px;padding:2px 10px;background:#e1e1e1;color:#000;border:1px outset #aaa;border-radius:0;font-size:11px;font-family:'Malgun Gothic',sans-serif;cursor:pointer}
-.np-inp-btn:hover{background:#d4e4f7;border-color:#7eb4ea}
-.np-inp-btn:active{border-style:inset}
-/* 상태 표시줄 */
-.np-statusbar{display:flex;background:#f0f0f0;border-top:1px solid #c0c0c0;height:20px;align-items:center;font-size:10px;font-family:'Malgun Gothic',sans-serif;color:#333;flex-shrink:0}
-.np-stat{padding:0 10px;border-right:1px solid #c0c0c0;height:100%;display:flex;align-items:center;white-space:nowrap}
-.np-stat.accent{color:#0000aa;font-weight:700}
-
-/* ════════════════════════════════════════
-   설정 모달 (버블 전용)
-════════════════════════════════════════ */
 .settings-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:flex;align-items:center;justify-content:center}
 .settings-modal{background:var(--bg2);border:0.5px solid var(--border2);border-radius:16px;width:520px;max-width:95vw;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;animation:popIn .2s cubic-bezier(.34,1.2,.64,1) both}
 @keyframes popIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
@@ -380,8 +185,6 @@ body{height:100vh;overflow:hidden}
 .layout-card-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px}
 .layout-card-desc{font-size:12px;color:var(--text3)}
 .layout-card-badge{font-size:11px;font-weight:700;color:var(--accent);background:rgba(232,23,74,.12);padding:2px 8px;border-radius:20px;flex-shrink:0}
-
-/* 방 만들기 */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;z-index:50}
 .dialog{background:var(--bg2);border:0.5px solid var(--border2);border-radius:16px;padding:24px;width:300px}
 .dialog h3{font-size:16px;font-weight:800;color:var(--text);margin-bottom:4px}
@@ -404,18 +207,16 @@ body{height:100vh;overflow:hidden}
 </head>
 <body>
 
-<!-- ── 초대장 ── -->
 <div id="inviteScreen">
   <div class="inv-card">
     <div class="inv-main-step" id="invMain">
       <div class="inv-stamp">🦕</div>
       <div class="inv-from">You're invited to</div>
       <div class="inv-title">티라노<span> 놀이터</span></div>
-      <div class="inv-sub">공룡들이 모이는 익명 채팅 공간.<br>놀이터을 만들고, 대화하고, 즐기세요.</div>
+      <div class="inv-sub">공룡들이 모이는 익명 채팅 공간.<br>놀이터를 만들고, 대화하고, 즐기세요.</div>
       <div class="inv-divider"></div>
       <div class="inv-info">
-        <div class="inv-info-item"><span class="inv-info-num">0</span><span class="inv-info-lbl">현재 접속</span></div>
-        <div class="inv-info-item"><span class="inv-info-num">0</span><span class="inv-info-lbl">활성 놀이터</span></div>
+        <div class="inv-info-item"><span class="inv-info-num" id="invRoomCnt">0</span><span class="inv-info-lbl">활성 방</span></div>
         <div class="inv-info-item"><span class="inv-info-num">24h</span><span class="inv-info-lbl">익명 채팅</span></div>
       </div>
       <button class="inv-enter-btn" id="invNextBtn">닉네임 설정하기 →</button>
@@ -432,37 +233,27 @@ body{height:100vh;overflow:hidden}
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     말풍선 전체 화면
-══════════════════════════════════════ -->
 <div id="appBubble">
   <div class="sb">
     <div class="sb-head">
       <div class="sb-dino">🦕</div>
       <div class="sb-title">티라노<br>놀이터</div>
       <div class="sb-head-right">
-        <span class="hicon">🔔</span>
-        <div class="live-dot"></div>
+        <div class="live-dot" id="connDot" style="background:#888" title="연결 중..."></div>
         <span class="hicon" id="settingsBtn">⚙️</span>
       </div>
     </div>
-    <div class="sb-label">카테고리</div>
-    <div class="cat-list">
-      <div class="cat-item active"><span class="cat-icon">🌐</span><span class="cat-lbl">오픈방</span></div>
-      <div class="cat-item"><span class="cat-icon">🔒</span><span class="cat-lbl">비밀방</span></div>
-      <div class="cat-item"><span class="cat-icon">💌</span><span class="cat-lbl">건의함</span></div>
-    </div>
     <div class="sb-rooms-head">
-      <span class="sb-rooms-title">내 방 목록</span>
+      <span class="sb-rooms-title">채팅방 목록</span>
       <div class="add-btn" id="addBtn">+</div>
     </div>
-    <div class="sb-search"><div class="sb-si"><span class="search-ic">⌕</span><input type="text" placeholder="내 방 검색" id="searchInp"/></div></div>
+    <div class="sb-search"><div class="sb-si"><span class="search-ic">⌕</span><input type="text" placeholder="방 검색" id="searchInp"/></div></div>
     <div class="room-list" id="roomList"></div>
     <div class="sb-foot">
       <div class="my-av" id="myAv" style="background:#c64ab8">티</div>
       <div class="my-info">
         <div class="my-name"><div class="live-dot"></div><span id="myName">티라노대장</span></div>
-        <div class="my-sub">1 online</div>
+        <div class="my-sub" id="mySub">접속 중...</div>
       </div>
       <div class="foot-right">
         <div class="theme-sw" id="themeSw">
@@ -505,6 +296,7 @@ body{height:100vh;overflow:hidden}
       </div>
     </div>
   </div>
+
   <!-- 설정 모달 -->
   <div class="settings-overlay" id="settingsModal" style="display:none">
     <div class="settings-modal">
@@ -523,22 +315,12 @@ body{height:100vh;overflow:hidden}
         </div>
         <div class="settings-content">
           <div id="tabLayout">
-            <div class="settings-section-title">메시지 표시 방식을 변경합니다</div>
+            <div class="settings-section-title">메시지 표시 방식</div>
             <div class="layout-cards">
               <div class="layout-card active" id="cardBubble" onclick="selectLayout('bubble')">
                 <div class="layout-card-icon lc-bubble">💬</div>
                 <div class="layout-card-info"><div class="layout-card-name">말풍선</div><div class="layout-card-desc">기본 채팅 스타일</div></div>
                 <span class="layout-card-badge" id="badgeBubble">사용 중</span>
-              </div>
-              <div class="layout-card" id="cardNotepad" onclick="selectLayout('notepad')">
-                <div class="layout-card-icon lc-notepad">📝</div>
-                <div class="layout-card-info"><div class="layout-card-name">메모장</div><div class="layout-card-desc">코드 에디터처럼 보이는 레이아웃</div></div>
-                <span class="layout-card-badge" id="badgeNotepad" style="display:none">사용 중</span>
-              </div>
-              <div class="layout-card" id="cardExcel" onclick="selectLayout('excel')">
-                <div class="layout-card-icon lc-excel">📊</div>
-                <div class="layout-card-info"><div class="layout-card-name">엑셀</div><div class="layout-card-desc">스프레드시트 표 형태</div></div>
-                <span class="layout-card-badge" id="badgeExcel" style="display:none">사용 중</span>
               </div>
             </div>
           </div>
@@ -550,12 +332,13 @@ body{height:100vh;overflow:hidden}
       </div>
     </div>
   </div>
-  <!-- 방 만들기 -->
+
+  <!-- 방 만들기 다이얼로그 -->
   <div class="overlay" id="dialog" style="display:none">
     <div class="dialog pop">
-      <h3>새 놀이터 만들기</h3>
-      <p>놀이터 이름을 입력하고 공개 여부를 설정하세요.</p>
-      <input type="text" placeholder="놀이터 이름 (예: 직장 탈출 놀이터)" id="roomNameInp" maxlength="30"/>
+      <h3>새 방 만들기</h3>
+      <p>방 이름을 입력하고 공개 여부를 설정하세요.</p>
+      <input type="text" placeholder="방 이름 (예: 직장 탈출방)" id="roomNameInp" maxlength="30"/>
       <div class="vis-row">
         <button class="vis-btn sel" id="visOpen">🌐 오픈</button>
         <button class="vis-btn" id="visSecret">🔒 비밀</button>
@@ -568,593 +351,317 @@ body{height:100vh;overflow:hidden}
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     엑셀 전체 화면 — Windows 스타일
-══════════════════════════════════════ -->
-<div id="appExcel">
-  <!-- 윈도우 타이틀바 -->
-  <div class="xl-titlebar">
-    <span class="xl-titlebar-ico">📊</span>
-    <span class="xl-titlebar-title" id="xlTitle">월루방.xlsx - SpreadChat</span>
-    <div class="xl-titlebar-btns">
-      <div class="xl-tb-btn" onclick="selectLayout('notepad')" title="메모장으로">📝</div>
-      <div class="xl-tb-btn" onclick="selectLayout('bubble')" title="채팅뷰로">💬</div>
-      <div class="xl-tb-btn" title="최소화">─</div>
-      <div class="xl-tb-btn" title="최대화">□</div>
-      <div class="xl-tb-btn close" onclick="selectLayout('bubble')" title="닫기">✕</div>
-    </div>
-  </div>
-  <!-- 리본 탭 -->
-  <div class="xl-ribbon-tabs">
-    <div class="xl-rtab active">홈</div>
-    <div class="xl-rtab">삽입(N)</div>
-    <div class="xl-rtab">페이지 레이아웃(P)</div>
-    <div class="xl-rtab">수식(M)</div>
-    <div class="xl-rtab">데이터(A)</div>
-    <div class="xl-rtab">검토(R)</div>
-    <div class="xl-rtab">보기(W)</div>
-    <div class="xl-rtab" onclick="openXlSettings()" style="margin-left:auto;opacity:.8">레이아웃 변경</div>
-  </div>
-  <!-- 리본 패널 -->
-  <div class="xl-ribbon">
-    <div class="xl-rgroup">
-      <div class="xl-rgroup-btns">
-        <div class="xl-rb"><span class="rb-ico">📋</span><span class="rb-lbl">붙여넣기</span></div>
-        <div style="display:flex;flex-direction:column;gap:1px">
-          <div class="xl-rb-small">✂ 잘라내기</div>
-          <div class="xl-rb-small">📄 복사</div>
-          <div class="xl-rb-small">🖌 서식 복사</div>
-        </div>
-      </div>
-      <div class="xl-rgroup-label">클립보드</div>
-    </div>
-    <div class="xl-rgroup">
-      <div class="xl-rgroup-btns">
-        <div class="xl-rb-small" style="font-weight:700">B 굵게</div>
-        <div class="xl-rb-small" style="font-style:italic">I 기울임</div>
-        <div class="xl-rb-small" style="text-decoration:underline">U 밑줄</div>
-      </div>
-      <div class="xl-rgroup-label">글꼴</div>
-    </div>
-    <div class="xl-rgroup">
-      <div class="xl-rgroup-btns">
-        <div class="xl-rb-small">≡ 자동 합계</div>
-        <div class="xl-rb-small">▼ 필터</div>
-        <div class="xl-rb-small">↑↓ 정렬</div>
-      </div>
-      <div class="xl-rgroup-label">편집</div>
-    </div>
-    <div class="xl-rgroup" style="margin-left:auto;border-right:none">
-      <div class="xl-rgroup-btns">
-        <div class="xl-rb-small" id="xlOnline">🟢 <span id="xlOnlineCnt">47명 접속중</span></div>
-        <div class="xl-rb-small" onclick="showDialog()" style="color:#217346;font-weight:700">+ 새 놀이터</div>
-      </div>
-      <div class="xl-rgroup-label">채팅방</div>
-    </div>
-  </div>
-  <!-- 이름상자 + 수식입력줄 -->
-  <div class="xl-formula">
-    <div class="xl-cellref" id="xlCellRef">D1</div>
-    <div class="xl-formula-btn">✕</div>
-    <div class="xl-formula-btn">✓</div>
-    <div class="xl-fx">fx</div>
-    <div class="xl-fval" id="xlFval">메시지를 입력하세요</div>
-  </div>
-  <div class="xl-body">
-    <!-- 왼쪽: 채팅방 목록 -->
-    <div class="xl-side">
-      <div class="xl-side-head">
-        <span>채팅방</span>
-        <span class="xl-side-add" id="xlAddRoom" title="새 방">＋</span>
-      </div>
-      <div class="xl-sheets" id="xlSheets"></div>
-      <div class="xl-side-foot">
-        <div class="xl-side-user">
-          <div class="xl-side-uav" id="xlMyAv" style="background:#c64ab8">티</div>
-          <span id="xlMyName">나</span>
-        </div>
-      </div>
-    </div>
-    <!-- 오른쪽: 시트 -->
-    <div class="xl-sheet">
-      <div class="xl-colheads">
-        <div class="xl-ch a">A</div>
-        <div class="xl-ch b">B</div>
-        <div class="xl-ch c">C</div>
-        <div class="xl-ch d">D</div>
-        <div class="xl-ch e">E</div>
-        <div class="xl-ch f">F</div>
-      </div>
-      <div class="xl-rowwrap">
-        <div class="xl-rownums" id="xlRowNums"></div>
-        <div class="xl-rows" id="xlRows"></div>
-      </div>
-    </div>
-  </div>
-  <!-- 입력 -->
-  <div class="xl-inp-wrap">
-    <div class="xl-inp-name" id="xlInpName">나</div>
-    <input class="xl-inp-field" id="xlInp" placeholder="메시지를 입력하세요... (Enter 전송)"/>
-    <button class="xl-inp-btn" id="xlSendBtn">전송 ↵</button>
-  </div>
-  <!-- 하단 시트탭 + 상태바 -->
-  <div class="xl-sheettabs" id="xlSheetTabs">
-    <div class="xl-stab active" id="xlActiveTab">Sheet1</div>
-    <div class="xl-stab">Sheet2</div>
-    <div class="xl-stab">Sheet3</div>
-  </div>
-  <div class="xl-statusbar">
-    <div class="xl-stat">준비</div>
-    <div class="xl-stat" id="xlStatRoom">시트: —</div>
-    <div class="xl-stat" id="xlStatCount">행: 0</div>
-    <div class="xl-stat" style="margin-left:auto">평균: —  개수: 0  합계: 0</div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════
-     메모장 전체 화면 — Notepad++ Windows 스타일
-══════════════════════════════════════ -->
-<div id="appNotepad">
-  <!-- 윈도우 타이틀바 -->
-  <div class="np-titlebar">
-    <span class="np-title-ico">📝</span>
-    <span class="np-title-text" id="npTitleText">*채팅방 - TyranoPad</span>
-    <div class="np-title-btns">
-      <div class="np-title-btn" onclick="selectLayout('excel')" title="엑셀로">─</div>
-      <div class="np-title-btn" title="최대화">□</div>
-      <div class="np-title-btn close" onclick="selectLayout('bubble')" title="닫기">✕</div>
-    </div>
-  </div>
-  <!-- 윈도우 메뉴바 -->
-  <div class="np-menubar">
-    <span class="np-menu">파일(F)</span>
-    <span class="np-menu">편집(E)</span>
-    <span class="np-menu">검색(S)</span>
-    <span class="np-menu">보기(V)</span>
-    <span class="np-menu">인코딩(N)</span>
-    <span class="np-menu">언어(L)</span>
-    <span class="np-menu">설정(T)</span>
-    <span class="np-menu">채널(C)</span>
-    <span class="np-menu" onclick="openNpSettings()" style="margin-left:auto">레이아웃(?)</span>
-  </div>
-  <!-- 툴바 -->
-  <div class="np-toolbar">
-    <div class="np-tool" title="새 파일">📄</div>
-    <div class="np-tool" title="열기">📂</div>
-    <div class="np-tool" title="저장">💾</div>
-    <div class="np-tool-sep"></div>
-    <div class="np-tool" title="잘라내기">✂</div>
-    <div class="np-tool" title="복사">📋</div>
-    <div class="np-tool" title="붙여넣기">📌</div>
-    <div class="np-tool-sep"></div>
-    <div class="np-tool" title="실행 취소">↩</div>
-    <div class="np-tool" title="다시 실행">↪</div>
-    <div class="np-tool-sep"></div>
-    <div class="np-tool" title="찾기">🔍</div>
-    <div class="np-tool-sep"></div>
-    <div class="np-tool" onclick="showDialog()" title="새 방 만들기" style="font-size:11px;width:auto;padding:0 6px;color:#217346;font-weight:700;font-family:'Malgun Gothic',sans-serif">+ 새 방</div>
-  </div>
-  <!-- 탭바 -->
-  <div class="np-tabs">
-    <div class="np-tab active" id="npTabName">
-      <span class="np-tab-dot" style="background:#008000"></span>
-      <span id="npTabLabel">일반.log</span>
-    </div>
-    <div class="np-tab">
-      <span class="np-tab-dot" style="background:#0000ff"></span>
-      presence.txt
-    </div>
-    <div class="np-tab">
-      <span class="np-tab-dot" style="background:#800000"></span>
-      settings.ini
-    </div>
-  </div>
-  <!-- 바디 -->
-  <div class="np-body">
-    <!-- 왼쪽 파일 트리 패널 -->
-    <div class="np-sidebar">
-      <div class="np-sb-head">
-        <span>채팅방 목록</span>
-      </div>
-      <div class="np-sb-items" id="npSideList"></div>
-      <div class="np-sb-foot">
-        <div class="np-sb-user">
-          <div class="np-sb-uav" id="npMyAv" style="background:#c64ab8">티</div>
-          <span id="npMyName">나</span>
-        </div>
-      </div>
-    </div>
-    <!-- 에디터 -->
-    <div class="np-editor-wrap">
-      <div class="np-lnum" id="npLnum"></div>
-      <div class="np-editor" id="npEditor"></div>
-    </div>
-  </div>
-  <!-- 입력창 -->
-  <div class="np-inp">
-    <div class="np-inp-lbl">새 메시지 입력 (Enter: 전송)</div>
-    <div class="np-inp-row">
-      <div class="np-inp-ln" id="npNextLn">1</div>
-      <div class="np-inp-prefix" id="npPrefix">[나] → </div>
-      <input class="np-inp-field" id="npInp" placeholder="여기에 입력하세요..."/>
-      <button class="np-inp-btn" id="npSendBtn">Write</button>
-    </div>
-  </div>
-  <!-- 상태바 -->
-  <div class="np-statusbar">
-    <div class="np-stat accent" id="npStatLn">Ln : 1    Col : 1    Sel : 0 | 0</div>
-    <div class="np-stat">Windows (CR LF)</div>
-    <div class="np-stat">UTF-8</div>
-    <div class="np-stat" id="npStatCount">0 lines</div>
-    <div class="np-stat" style="margin-left:auto" id="npStatRoom">INS</div>
-  </div>
-</div>
-
-<!-- 레이아웃 전환 모달 — Windows 다이얼로그 스타일 -->
-<div id="layoutModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:150;align-items:center;justify-content:center">
-  <div style="background:#f0f0f0;border:2px outset #fff;width:340px;font-family:'Malgun Gothic',sans-serif;box-shadow:4px 4px 8px rgba(0,0,0,.4)">
-    <!-- 타이틀바 -->
-    <div style="background:#000080;color:#fff;padding:4px 8px;display:flex;align-items:center;justify-content:space-between;user-select:none">
-      <span style="font-size:12px;font-weight:700">레이아웃 변경</span>
-      <div onclick="closeLayoutModal()" style="width:16px;height:14px;background:#c0c0c0;border:1px outset #fff;display:flex;align-items:center;justify-content:center;font-size:10px;color:#000;cursor:pointer;font-weight:700">✕</div>
-    </div>
-    <!-- 본문 -->
-    <div style="padding:16px 14px 10px;display:flex;flex-direction:column;gap:4px">
-      <div style="font-size:11px;color:#333;margin-bottom:8px">메시지 표시 방식을 선택하세요:</div>
-      <div onclick="selectLayout('bubble');closeLayoutModal()" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border:2px inset #808080;background:#fff;cursor:pointer" onmouseover="this.style.background='#d4e4f7'" onmouseout="this.style.background='#fff'">
-        <span style="font-size:18px">💬</span>
-        <div><div style="font-size:12px;font-weight:700;color:#000">말풍선</div><div style="font-size:10px;color:#555">기본 채팅 스타일</div></div>
-        <span id="lmBadgeBubble" style="display:none;margin-left:auto;font-size:10px;background:#000080;color:#fff;padding:1px 6px">사용 중</span>
-      </div>
-      <div onclick="selectLayout('notepad');closeLayoutModal()" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border:2px inset #808080;background:#fff;cursor:pointer" onmouseover="this.style.background='#d4e4f7'" onmouseout="this.style.background='#fff'">
-        <span style="font-size:18px">📝</span>
-        <div><div style="font-size:12px;font-weight:700;color:#000">메모장 (Notepad++)</div><div style="font-size:10px;color:#555">코드 에디터 스타일</div></div>
-        <span id="lmBadgeNotepad" style="display:none;margin-left:auto;font-size:10px;background:#000080;color:#fff;padding:1px 6px">사용 중</span>
-      </div>
-      <div onclick="selectLayout('excel');closeLayoutModal()" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border:2px inset #808080;background:#fff;cursor:pointer" onmouseover="this.style.background='#d4e4f7'" onmouseout="this.style.background='#fff'">
-        <span style="font-size:18px">📊</span>
-        <div><div style="font-size:12px;font-weight:700;color:#000">엑셀 (Microsoft Excel)</div><div style="font-size:10px;color:#555">스프레드시트 표 형태</div></div>
-        <span id="lmBadgeExcel" style="display:none;margin-left:auto;font-size:10px;background:#000080;color:#fff;padding:1px 6px">사용 중</span>
-      </div>
-    </div>
-    <!-- 버튼 영역 -->
-    <div style="padding:6px 14px 12px;display:flex;justify-content:flex-end;gap:6px">
-      <button onclick="closeLayoutModal()" style="padding:4px 16px;background:#e1e1e1;border:2px outset #fff;font-size:11px;font-family:'Malgun Gothic',sans-serif;cursor:pointer">취소</button>
-    </div>
-  </div>
-</div>
-
 <script>
-const STORAGE_KEY='tyrano_visited_v1';
-const NICK_KEY='tyrano_nickname_v1';
-const LAYOUT_KEY='tyrano_layout_v1';
-const BUBBLE_COLOR_KEY='tyrano_bubblecolor_v1';
+// ── Supabase 설정 ─────────────────────────────
+const SUPABASE_URL = 'https://kycisbrdvjmqgciwhhvo.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5Y2lzYnJkdmptcWdjaXdoaHZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MDQzNjQsImV4cCI6MjA4OTE4MDM2NH0.zyXAAwtMf6KMVwCyk9OB_7ytsQtOK2jDd8fTSmevvEA';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } });
 
-const AV_COLORS=['#e8734a','#4a9ee8','#4ac674','#c64ab8','#e8c44a','#4ab8c6','#9f3060','#7a4ac6'];
-const BUBBLE_PALETTE=['#9f3060','#217346','#1565c0','#6a1b9a','#e65100','#4a148c','#1b5e20','#37474f'];
+// ── 상수 / 로컬 상태 ──────────────────────────
+const STORAGE_KEY = 'tyrano_visited_v1';
+const NICK_KEY    = 'tyrano_nickname_v1';
+const LAYOUT_KEY  = 'tyrano_layout_v1';
+const BUBBLE_COLOR_KEY = 'tyrano_bubblecolor_v1';
+
+const AV_COLORS = ['#e8734a','#4a9ee8','#4ac674','#c64ab8','#e8c44a','#4ab8c6','#9f3060','#7a4ac6'];
+const BUBBLE_PALETTE = ['#9f3060','#217346','#1565c0','#6a1b9a','#e65100','#4a148c','#1b5e20','#37474f'];
 
 function ac(n){let h=0;for(let i=0;i<n.length;i++)h=n.charCodeAt(i)+((h<<5)-h);return AV_COLORS[Math.abs(h)%AV_COLORS.length]}
-function ini(n){return n.trim()[0]?.toUpperCase()||'?'}
-function ts(){return new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}
-function rnd(n){const a=['졸린','배고픈','신나는','수줍은','당당한'];const b=['티라노','공룡','스테고','프테라'];return a[~~(Math.random()*a.length)]+b[~~(Math.random()*b.length)]+(~~(Math.random()*900)+100)}
+function ini(n){return (n||'?').trim()[0].toUpperCase()}
+function fmtTime(iso){return new Date(iso).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}
+function rnd(){const a=['졸린','배고픈','신나는','수줍은','당당한'];const b=['티라노','공룡','스테고','프테라'];return a[~~(Math.random()*a.length)]+b[~~(Math.random()*b.length)]+(~~(Math.random()*900)+100)}
 
-let myNick='', myBubbleColor=localStorage.getItem(BUBBLE_COLOR_KEY)||'#9f3060';
-let currentLayout=localStorage.getItem(LAYOUT_KEY)||'bubble';
-let isLight=false, activeRoom=null, visMode='open';
+let myNick = '';
+let myBubbleColor = localStorage.getItem(BUBBLE_COLOR_KEY) || '#9f3060';
+let currentLayout = localStorage.getItem(LAYOUT_KEY) || 'bubble';
+let isLight = false;
+let activeRoom = null;
+let visMode = 'open';
+let rooms = [];
+let msgsData = {};        // roomId → [{u, t, msg}]
+let msgChannel = null;    // 현재 구독 중인 Realtime 채널
 
-// ── 닉네임 ──────────────────────────────────
-function applyNick(nick){
-  myNick=nick||rnd();
-  localStorage.setItem(NICK_KEY,myNick);
-  const c=ac(myNick), i=ini(myNick);
-  ['myAv','inpAv','xlMyAv','npMyAv'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el){el.textContent=i;el.style.background=c;}
+// ── 닉네임 ───────────────────────────────────
+function applyNick(nick) {
+  myNick = nick || rnd();
+  localStorage.setItem(NICK_KEY, myNick);
+  const c = ac(myNick), i = ini(myNick);
+  ['myAv','inpAv'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = i; el.style.background = c; }
   });
-  document.getElementById('myName').textContent=myNick;
-  document.getElementById('xlMyName').textContent=myNick;
-  document.getElementById('npMyName').textContent=myNick;
-  document.getElementById('xlInpName').textContent=myNick;
-  document.getElementById('npPrefix').textContent='['+myNick+'] → ';
+  document.getElementById('myName').textContent = myNick;
+  document.getElementById('npPrefix') && (document.getElementById('npPrefix').textContent = '['+myNick+'] → ');
 }
 
-// ── 초대장 ──────────────────────────────────
-const invScreen=document.getElementById('inviteScreen');
-function enterApp(){invScreen.classList.add('fading');setTimeout(()=>invScreen.style.display='none',400)}
+// ── 초대장 ───────────────────────────────────
+const invScreen = document.getElementById('inviteScreen');
+function enterApp() { invScreen.classList.add('fading'); setTimeout(() => invScreen.style.display = 'none', 400); }
 
-if(localStorage.getItem(STORAGE_KEY)){
-  invScreen.style.display='none';
-  applyNick(localStorage.getItem(NICK_KEY)||'');
+(async () => {
+  // 초대장에 현재 방 개수 표시
+  const { count } = await sb.from('rooms').select('*', { count: 'exact', head: true });
+  const el = document.getElementById('invRoomCnt');
+  if (el && count != null) el.textContent = count;
+})();
+
+if (localStorage.getItem(STORAGE_KEY)) {
+  invScreen.style.display = 'none';
+  applyNick(localStorage.getItem(NICK_KEY) || '');
 } else {
   applyNick('');
-  document.getElementById('invNextBtn').onclick=()=>{
+  document.getElementById('invNextBtn').onclick = () => {
     document.getElementById('invMain').classList.add('hide');
     document.getElementById('invNick').classList.add('show');
-    setTimeout(()=>document.getElementById('nickInput').focus(),100);
+    setTimeout(() => document.getElementById('nickInput').focus(), 100);
   };
-  function doEnter(){
+  function doEnter() {
     applyNick(document.getElementById('nickInput').value.trim());
-    localStorage.setItem(STORAGE_KEY,'1');
+    localStorage.setItem(STORAGE_KEY, '1');
     enterApp();
   }
-  document.getElementById('invEnterBtn').onclick=doEnter;
-  document.getElementById('nickInput').addEventListener('keydown',e=>{if(e.key==='Enter')doEnter()});
-  document.getElementById('nickSkip').onclick=()=>{applyNick('');localStorage.setItem(STORAGE_KEY,'1');enterApp()};
+  document.getElementById('invEnterBtn').onclick = doEnter;
+  document.getElementById('nickInput').addEventListener('keydown', e => { if (e.key === 'Enter') doEnter(); });
+  document.getElementById('nickSkip').onclick = () => { applyNick(''); localStorage.setItem(STORAGE_KEY, '1'); enterApp(); };
 }
 
-// ── 레이아웃 전환 (전체 화면 교체) ──────────
-function selectLayout(layout){
-  currentLayout=layout;
-  localStorage.setItem(LAYOUT_KEY,layout);
-  document.getElementById('appBubble').style.display=layout==='bubble'?'flex':'none';
-  document.getElementById('appExcel').style.display=layout==='excel'?'flex':'none';
-  document.getElementById('appNotepad').style.display=layout==='notepad'?'flex':'none';
-  // 버블 설정 모달 뱃지
-  ['bubble','notepad','excel'].forEach(l=>{
-    const card=document.getElementById('card'+l[0].toUpperCase()+l.slice(1));
-    const badge=document.getElementById('badge'+l[0].toUpperCase()+l.slice(1));
-    if(card) card.classList.toggle('active',l===layout);
-    if(badge) badge.style.display=l===layout?'':'none';
+// ── Supabase: 방 목록 로드 ────────────────────
+async function loadRooms() {
+  const { data, error } = await sb.from('rooms').select('*').order('created_at', { ascending: false });
+  if (error || !data) return;
+  rooms = data.map(r => ({
+    id: r.id,
+    name: r.title,
+    visibility: r.visibility,
+    preview: '방에 입장해 대화하세요',
+    cnt: 0
+  }));
+  renderRooms();
+  // 각 방의 마지막 메시지를 preview로 업데이트
+  for (const room of rooms) {
+    const { data: last } = await sb.from('messages')
+      .select('content, sender_name')
+      .eq('room_id', room.id)
+      .order('created_at', { ascending: false })
+      .limit(1);
+    if (last && last[0]) room.preview = last[0].sender_name + ': ' + last[0].content;
+  }
+  renderRooms();
+}
+
+// ── Supabase: 메시지 로드 ─────────────────────
+async function loadMessages(roomId) {
+  const { data, error } = await sb.from('messages')
+    .select('*')
+    .eq('room_id', roomId)
+    .order('created_at', { ascending: true });
+  if (error) return;
+  msgsData[roomId] = (data || []).map(m => ({
+    id: m.id,
+    u: m.sender_name,
+    t: fmtTime(m.created_at),
+    msg: m.content
+  }));
+  renderBubble(roomId);
+}
+
+// ── Supabase: 메시지 전송 ─────────────────────
+async function sendMsg(v) {
+  if (!v || !activeRoom) return;
+  const { error } = await sb.from('messages').insert({
+    room_id: activeRoom,
+    sender_name: myNick,
+    content: v
   });
-  // 레이아웃 모달 뱃지
-  ['Bubble','Notepad','Excel'].forEach(l=>{
-    const b=document.getElementById('lmBadge'+l);
-    if(b) b.style.display=l.toLowerCase()===layout?'inline':'none';
+  if (error) alert('전송 실패: ' + error.message);
+}
+
+// ── Supabase: Realtime 방 메시지 구독 ─────────
+function subscribeRoom(roomId) {
+  if (msgChannel) sb.removeChannel(msgChannel);
+  msgChannel = sb.channel('room-msgs-' + roomId)
+    .on('postgres_changes', {
+      event: 'INSERT', schema: 'public', table: 'messages',
+      filter: 'room_id=eq.' + roomId
+    }, payload => {
+      const m = payload.new;
+      if (!msgsData[roomId]) msgsData[roomId] = [];
+      // 중복 방지
+      if (!msgsData[roomId].some(x => x.id === m.id)) {
+        msgsData[roomId].push({ id: m.id, u: m.sender_name, t: fmtTime(m.created_at), msg: m.content });
+        renderBubble(roomId);
+        // 사이드바 preview 업데이트
+        const r = rooms.find(x => x.id === roomId);
+        if (r) { r.preview = m.sender_name + ': ' + m.content; renderRooms(); }
+      }
+    })
+    .subscribe(status => {
+      document.getElementById('connDot').style.background = status === 'SUBSCRIBED' ? 'var(--green)' : '#888';
+    });
+}
+
+// ── Supabase: Realtime 방 목록 구독 (신규 방 자동 반영) ──
+sb.channel('rooms-global')
+  .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'rooms' }, payload => {
+    const r = payload.new;
+    if (!rooms.some(x => x.id === r.id)) {
+      rooms.unshift({ id: r.id, name: r.title, visibility: r.visibility, preview: '새 방이 열렸어요!', cnt: 0 });
+      renderRooms();
+    }
+  })
+  .subscribe();
+
+// ── 사이드바 렌더 ─────────────────────────────
+function renderRooms() {
+  const q = document.getElementById('searchInp').value.trim().toLowerCase();
+  const f = rooms.filter(r => r.name.toLowerCase().includes(q));
+  document.getElementById('roomList').innerHTML = f.length
+    ? f.map(r => `
+      <div class="room-item${activeRoom === r.id ? ' active' : ''}" onclick="openRoom('${r.id}')">
+        <div class="ri-top">
+          <span class="ri-name">${r.visibility === 'secret' ? '🔒 ' : ''}${r.name}</span>
+        </div>
+        <div class="ri-preview">${r.preview}</div>
+      </div>`).join('')
+    : '<div class="empty-state">아직 방이 없어요.<br>새 방을 만들어보세요 🕳️</div>';
+}
+
+// ── 방 열기 ───────────────────────────────────
+async function openRoom(id) {
+  activeRoom = id;
+  const r = rooms.find(x => x.id === id);
+  if (!r) return;
+  document.getElementById('welcomeScreen').style.display = 'none';
+  document.getElementById('chatScreen').style.display = 'flex';
+  document.getElementById('roomTitle').textContent = r.name;
+  const sub = document.getElementById('roomSub');
+  sub.textContent = r.visibility === 'secret' ? '비밀방' : '오픈방';
+  sub.style.display = '';
+  renderRooms();
+  await loadMessages(id);
+  subscribeRoom(id);
+}
+
+// ── 말풍선 렌더 ───────────────────────────────
+function renderBubble(id) {
+  const list = msgsData[id] || [];
+  const el = document.getElementById('msgs');
+  if (!el) return;
+  let h = '<div class="day-sep">오늘</div><div class="sys-notice">모든 채팅 내용은 밤 12시가 되면 초기화됩니다.</div>';
+  list.forEach((m, i) => {
+    const me = m.u === myNick;
+    const prev = list[i-1], next = list[i+1];
+    const first = !prev || prev.u !== m.u, last = !next || next.u !== m.u;
+    let cls = me ? 'm' : 'o';
+    if (!first && !last) cls += ' mid'; else if (!first && last) cls += ' bot';
+    const bStyle = me ? `style="background:${myBubbleColor}"` : '';
+    const av = `<div class="av${last ? '' : ' h'}" style="background:${ac(m.u)}">${ini(m.u)}</div>`;
+    const sn = (!me && first) ? `<div class="sname" style="color:${ac(m.u)}">${m.u}</div>` : '';
+    const bm = `<div class="bmeta"><div class="bubble ${cls}" ${bStyle}>${m.msg}</div><div class="mc">${last ? `<div class="ts">${m.t}</div>` : ''}</div></div>`;
+    const bw = `<div class="bwrap">${sn}${bm}</div>`;
+    h += `<div class="msg-row${first ? ' first' : ''}${me ? ' me' : ''}">${me ? `${bw}${av}` : `${av}${bw}`}</div>`;
   });
-  if(activeRoom) renderCurrentLayout();
+  el.innerHTML = h;
+  el.scrollTop = el.scrollHeight;
+}
+
+// ── 메시지 전송 이벤트 ────────────────────────
+function mkSend(inputId) {
+  const inp = document.getElementById(inputId);
+  return async () => {
+    const v = inp.value.trim();
+    if (!v) return;
+    inp.value = '';
+    await sendMsg(v);
+  };
+}
+document.getElementById('sendBtn').onclick = mkSend('msgInp');
+document.getElementById('msgInp').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); mkSend('msgInp')(); }
+});
+
+// ── 방 만들기 ─────────────────────────────────
+function showDialog() { document.getElementById('dialog').style.display = 'flex'; }
+function hideDialog() { document.getElementById('dialog').style.display = 'none'; document.getElementById('roomNameInp').value = ''; }
+
+async function createRoom() {
+  const n = document.getElementById('roomNameInp').value.trim();
+  if (!n) return;
+  document.getElementById('dCreate').textContent = '생성 중...';
+  document.getElementById('dCreate').disabled = true;
+  const { data, error } = await sb.from('rooms').insert({
+    title: n,
+    visibility: visMode
+  }).select().single();
+  document.getElementById('dCreate').textContent = '만들기';
+  document.getElementById('dCreate').disabled = false;
+  if (error) { alert('방 생성 실패: ' + error.message); return; }
+  hideDialog();
+  // Realtime이 자동으로 목록에 추가하지만, 바로 입장하기 위해 수동 추가
+  if (!rooms.some(r => r.id === data.id)) {
+    rooms.unshift({ id: data.id, name: data.title, visibility: data.visibility, preview: '방이 생성되었어요!', cnt: 0 });
+  }
+  renderRooms();
+  openRoom(data.id);
+}
+
+document.getElementById('addBtn').onclick = showDialog;
+document.getElementById('wCreate').onclick = showDialog;
+document.getElementById('wBrowse').onclick = () => { if (rooms.length) openRoom(rooms[0].id); };
+document.getElementById('dCancel').onclick = hideDialog;
+document.getElementById('dCreate').onclick = createRoom;
+document.getElementById('roomNameInp').addEventListener('keydown', e => { if (e.key === 'Enter') createRoom(); });
+document.getElementById('searchInp').addEventListener('input', renderRooms);
+document.getElementById('visOpen').onclick = function() { visMode = 'open'; this.classList.add('sel'); document.getElementById('visSecret').classList.remove('sel'); };
+document.getElementById('visSecret').onclick = function() { visMode = 'secret'; this.classList.add('sel'); document.getElementById('visOpen').classList.remove('sel'); };
+
+// ── 설정 모달 ─────────────────────────────────
+function openSettings(tab = 'layout') { document.getElementById('settingsModal').style.display = 'flex'; switchSettingsTab(tab, null); }
+function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
+function switchSettingsTab(tab, el) {
+  document.querySelectorAll('.settings-nav-item').forEach(x => x.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.getElementById('tabLayout').style.display = tab === 'layout' ? 'block' : 'none';
+  document.getElementById('tabColor').style.display = tab === 'color' ? 'block' : 'none';
+}
+document.getElementById('settingsBtn').onclick = () => openSettings('layout');
+document.getElementById('settingsBtn2').onclick = () => openSettings('layout');
+document.getElementById('layoutSettingsBtn').onclick = () => openSettings('layout');
+document.getElementById('settingsClose').onclick = closeSettings;
+document.getElementById('settingsModal').onclick = function(e) { if (e.target === this) closeSettings(); };
+
+function selectLayout(layout) {
+  currentLayout = layout;
+  localStorage.setItem(LAYOUT_KEY, layout);
   closeSettings();
 }
 
-// ── 설정 모달 (버블) ─────────────────────────
-function openSettings(tab='layout'){
-  document.getElementById('settingsModal').style.display='flex';
-  switchSettingsTab(tab,document.querySelector(`[onclick*="${tab}"]`));
+// ── 색상 스와치 ───────────────────────────────
+function renderSwatches() {
+  document.getElementById('bubbleSwatches').innerHTML = BUBBLE_PALETTE.map(c => `
+    <div style="width:26px;height:26px;border-radius:50%;background:${c};cursor:pointer;border:2px solid ${c === myBubbleColor ? '#fff' : 'transparent'};transition:transform .15s"
+      onclick="setBubbleColor('${c}')"
+      onmouseover="this.style.transform='scale(1.2)'"
+      onmouseout="this.style.transform=''"></div>`).join('');
 }
-function closeSettings(){document.getElementById('settingsModal').style.display='none'}
-function switchSettingsTab(tab,el){
-  document.querySelectorAll('.settings-nav-item').forEach(x=>x.classList.remove('active'));
-  if(el) el.classList.add('active');
-  document.getElementById('tabLayout').style.display=tab==='layout'?'block':'none';
-  document.getElementById('tabColor').style.display=tab==='color'?'block':'none';
-}
-document.getElementById('settingsBtn').onclick=()=>openSettings('layout');
-document.getElementById('settingsBtn2').onclick=()=>openSettings('layout');
-document.getElementById('layoutSettingsBtn').onclick=()=>openSettings('layout');
-document.getElementById('settingsClose').onclick=closeSettings;
-document.getElementById('settingsModal').onclick=function(e){if(e.target===this)closeSettings()};
-
-// 엑셀/노트패드에서 레이아웃 모달
-function openXlSettings(){document.getElementById('layoutModal').style.display='flex'}
-function openNpSettings(){document.getElementById('layoutModal').style.display='flex'}
-function closeLayoutModal(){document.getElementById('layoutModal').style.display='none'}
-document.getElementById('layoutModal').onclick=function(e){if(e.target===this)closeLayoutModal()}
-
-// ── 색상 스와치 ──────────────────────────────
-function renderSwatches(){
-  document.getElementById('bubbleSwatches').innerHTML=BUBBLE_PALETTE.map(c=>`
-    <div style="width:26px;height:26px;border-radius:50%;background:${c};cursor:pointer;border:2px solid ${c===myBubbleColor?'#fff':'transparent'};transition:transform .15s" onclick="setBubbleColor('${c}')" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform=''"></div>
-  `).join('');
-}
-function setBubbleColor(c){
-  myBubbleColor=c;localStorage.setItem(BUBBLE_COLOR_KEY,c);
-  document.querySelectorAll('.bubble.m').forEach(el=>el.style.background=c);
+function setBubbleColor(c) {
+  myBubbleColor = c;
+  localStorage.setItem(BUBBLE_COLOR_KEY, c);
+  document.querySelectorAll('.bubble.m').forEach(el => el.style.background = c);
   renderSwatches();
 }
 renderSwatches();
 
-// ── 데이터 ───────────────────────────────────
-let rooms=[];
-let msgsData={};
-const DEMOS=[];
-
-// ── 사이드바 렌더링 ──────────────────────────
-function mapApiRoom(room){
-  const cnt=typeof room.participantCount==='number'?room.participantCount:0;
-  const preview=(room.concept||room.description||'').trim()||'?? ???? ????.';
-  return {
-    id:room.id,
-    slug:room.slug,
-    name:room.name,
-    sub:'?? ? '+cnt+'?',
-    cnt,
-    preview
-  };
-}
-
-async function syncRoomsFromApi(){
-  try{
-    const res=await fetch('/api/rooms',{cache:'no-store'});
-    if(!res.ok) return;
-    const data=await res.json();
-    if(!Array.isArray(data)) return;
-    rooms=data.map(mapApiRoom);
-    if(activeRoom && !rooms.some(r=>r.id===activeRoom)){
-      activeRoom=null;
-      document.getElementById('welcomeScreen').style.display='flex';
-      document.getElementById('chatScreen').style.display='none';
-    }
-    renderRooms();renderXlSheets();renderNpSide();
-  }catch{}
-}
-
-function renderRooms(){
-  const q=document.getElementById('searchInp').value.trim().toLowerCase();
-  const f=rooms.filter(r=>r.name.toLowerCase().includes(q));
-  document.getElementById('roomList').innerHTML=f.length?f.map(r=>`
-    <div class="room-item${activeRoom===r.id?' active':''}" onclick="openRoom('${r.id}')">
-      <div class="ri-top"><span class="ri-name">${r.name}</span><span class="ri-cnt"><span class="ri-dot"></span>${r.cnt}명</span></div>
-      <div class="ri-preview">${r.preview}</div>
-    </div>`).join(''):'<div class="empty-state">참여한 방이 없어요.<br>새 방을 만들어보세요 🕳️</div>';
-}
-function renderXlSheets(){
-  document.getElementById('xlSheets').innerHTML=rooms.map(r=>`
-    <div class="xl-sheet-item${activeRoom===r.id?' active':''}" onclick="openRoom('${r.id}')">
-      <span class="xl-sheet-dot" style="background:${ac(r.name)}"></span>
-      <span>${r.name}</span>
-      <span style="font-size:10px;color:#4a8c64">${r.cnt}</span>
-    </div>`).join('');
-}
-function renderNpSide(){
-  document.getElementById('npSideList').innerHTML=rooms.map(r=>`
-    <div class="np-sb-item${activeRoom===r.id?' active':''}" onclick="openRoom('${r.id}')">
-      <span class="np-sb-item-dot" style="background:${ac(r.name)}"></span>
-      # ${r.name}
-    </div>`).join('');
-}
-
-// ── 방 열기 ──────────────────────────────────
-function openRoom(id){
-  activeRoom=id;const r=rooms.find(x=>x.id===id);if(!r)return;
-  if(!msgsData[id])msgsData[id]=DEMOS.map(m=>({...m}));
-  // 버블
-  document.getElementById('welcomeScreen').style.display='none';
-  document.getElementById('chatScreen').style.display='flex';
-  document.getElementById('roomTitle').textContent=r.name;
-  const sub=document.getElementById('roomSub');sub.textContent=r.sub;sub.style.display='';
-  // 엑셀
-  document.getElementById('xlTitle').textContent='SpreadChat — '+r.name+'.xlsx';
-  document.getElementById('xlStatRoom').textContent='시트: '+r.name;
-  const atab=document.getElementById('xlActiveTab');if(atab)atab.textContent=r.name;
-  // 노트패드
-  document.getElementById('npTitleText').textContent='*'+r.name+' - TyranoPad';
-  document.getElementById('npTabLabel').textContent=r.name.replace(/\s/g,'_')+'.log';
-  document.getElementById('npStatRoom').textContent=r.name;
-  renderRooms();renderXlSheets();renderNpSide();
-  renderCurrentLayout();
-}
-
-function renderCurrentLayout(){
-  if(!activeRoom) return;
-  if(currentLayout==='bubble') renderBubble(activeRoom);
-  else if(currentLayout==='excel') renderExcel(activeRoom);
-  else if(currentLayout==='notepad') renderNotepad(activeRoom);
-}
-
-// ── 말풍선 렌더 ──────────────────────────────
-function renderBubble(id){
-  const list=msgsData[id]||[];
-  const el=document.getElementById('msgs');
-  let h='<div class="day-sep">오늘</div><div class="sys-notice">모든 채팅 내용은 밤 12시가 되면 초기화됩니다.</div>';
-  list.forEach((m,i)=>{
-    const me=m.u===myNick;
-    const prev=list[i-1],next=list[i+1];
-    const first=!prev||prev.u!==m.u,last=!next||next.u!==m.u;
-    let cls=me?'m':'o';
-    if(!first&&!last)cls+=' mid';else if(!first&&last)cls+=' bot';
-    const bStyle=me?`style="background:${myBubbleColor}"`:'';
-    const av=`<div class="av${last?'':' h'}" style="background:${ac(m.u)}">${ini(m.u)}</div>`;
-    const sn=(!me&&first)?`<div class="sname" style="color:${ac(m.u)}">${m.u}</div>`:'';
-    const bm=`<div class="bmeta"><div class="bubble ${cls}" ${bStyle}>${m.msg}</div><div class="mc">${m.r?`<div class="unread">${m.r}</div>`:''} ${last?`<div class="ts">${m.t}</div>`:''}</div></div>`;
-    const bw=`<div class="bwrap">${sn}${bm}</div>`;
-    h+=`<div class="msg-row${first?' first':''}${me?' me':''}">${me?`${bw}${av}`:`${av}${bw}`}</div>`;
-  });
-  el.innerHTML=h;el.scrollTop=el.scrollHeight;
-}
-
-// ── 엑셀 렌더 ────────────────────────────────
-function renderExcel(id){
-  const list=msgsData[id]||[];
-  document.getElementById('xlRowNums').innerHTML=list.map((_,i)=>`<div class="xl-rn">${i+1}</div>`).join('');
-  document.getElementById('xlRows').innerHTML=list.map((m,i)=>`
-    <div class="xl-row${m.u===myNick?' selected':''}" onclick="document.getElementById('xlCellRef').textContent='D${i+1}';document.getElementById('xlFval').textContent='${m.msg.replace(/'/g,"\\'").replace(/</g,'&lt;')}'">
-      <div class="xl-cell a">${m.u===myNick?'●':'○'}</div>
-      <div class="xl-cell b" style="color:${ac(m.u)}">${m.u}</div>
-      <div class="xl-cell c">${m.t}</div>
-      <div class="xl-cell d">${m.msg}</div>
-      <div class="xl-cell e">${m.r?'읽음 '+m.r:''}</div>
-      <div class="xl-cell f">${i+1}</div>
-    </div>`).join('');
-  document.getElementById('xlStatCount').textContent='행: '+list.length;
-  document.getElementById('xlRows').scrollTop=999999;
-}
-
-// ── 메모장 렌더 ──────────────────────────────
-function uCls(u){
-  if(u===myNick)return'c-me';
-  const map={'강아지927':'c-u1','아근하는 디잔토끼':'c-u2','강태공':'c-u3'};
-  return map[u]||'c-u4';
-}
-function renderNotepad(id){
-  const list=msgsData[id]||[];
-  document.getElementById('npLnum').innerHTML=list.map((_,i)=>`<div class="np-ln">${i+1}</div>`).join('');
-  document.getElementById('npEditor').innerHTML=list.length===0
-    ?'<div class="np-line"><span class="c-comment">// 메시지가 없습니다</span></div>'
-    :list.map(m=>`<div class="np-line">
-        <span class="c-bracket">[</span><span class="c-time">${m.t}</span><span class="c-bracket">]</span>&nbsp;
-        <span class="${uCls(m.u)}">${m.u}</span>
-        <span class="c-arrow"> → </span>
-        <span class="${m.u===myNick?'c-me-msg':'c-msg'}">${m.msg}</span>
-        ${m.r?`&nbsp;<span class="c-comment">// 읽음 ${m.r}</span>`:''}
-      </div>`).join('');
-  document.getElementById('npEditor').scrollTop=999999;
-  document.getElementById('npNextLn').textContent=list.length+1;
-  document.getElementById('npStatCount').textContent=list.length+' lines';
-  document.getElementById('npStatLn').textContent='Ln: '+(list.length+1)+'  Col: 1';
-}
-
-// ── 메시지 전송 ──────────────────────────────
-function pushMsg(v){
-  if(!v||!activeRoom)return;
-  msgsData[activeRoom].push({u:myNick,t:ts(),msg:v,r:0});
-  renderCurrentLayout();
-  const replies=['맞아요 ㅎㅎ','오 진짜요?','ㅋㅋㅋ 공감','헐 ㄷㄷ','저도 그렇게 생각해요'];
-  const others=['강아지927','아근하는 디잔토끼','강태공'];
-  if(Math.random()>.35){
-    const who=others[~~(Math.random()*others.length)];
-    setTimeout(()=>{
-      msgsData[activeRoom].push({u:who,t:ts(),msg:replies[~~(Math.random()*replies.length)],r:~~(Math.random()*10)+1});
-      renderCurrentLayout();
-    },700+Math.random()*1200);
-  }
-}
-function mkSend(inputId){
-  const inp=document.getElementById(inputId);
-  return ()=>{const v=inp.value.trim();if(v){pushMsg(v);inp.value=''}};
-}
-document.getElementById('sendBtn').onclick=mkSend('msgInp');
-document.getElementById('xlSendBtn').onclick=mkSend('xlInp');
-document.getElementById('npSendBtn').onclick=mkSend('npInp');
-['msgInp','xlInp','npInp'].forEach(id=>{
-  document.getElementById(id).addEventListener('keydown',e=>{
-    if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();mkSend(id)();}
-  });
-});
-
-// ── 방 만들기 ────────────────────────────────
-function showDialog(){document.getElementById('dialog').style.display='flex'}
-function hideDialog(){document.getElementById('dialog').style.display='none';document.getElementById('roomNameInp').value=''}
-function createRoom(){
-  const n=document.getElementById('roomNameInp').value.trim();if(!n)return;
-  const id='r'+Date.now();
-  rooms.unshift({id,name:n,sub:`${visMode==='open'?'오픈':'비밀'} · 1명`,cnt:1,preview:'새 방이 열렸어요!'});
-  msgsData[id]=[{u:'SYSTEM',t:ts(),msg:`'${n}' 방이 생성되었습니다 🎉`,r:0}];
-  hideDialog();openRoom(id);
-}
-document.getElementById('addBtn').onclick=showDialog;
-document.getElementById('xlAddRoom').onclick=showDialog;
-document.getElementById('wCreate').onclick=showDialog;
-document.getElementById('wBrowse').onclick=()=>{if(rooms.length)openRoom(rooms[0].id)};
-document.getElementById('dCancel').onclick=hideDialog;
-document.getElementById('dCreate').onclick=createRoom;
-document.getElementById('roomNameInp').addEventListener('keydown',e=>{if(e.key==='Enter')createRoom()});
-document.getElementById('searchInp').addEventListener('input',renderRooms);
-document.querySelectorAll('.cat-item').forEach(el=>{
-  el.onclick=()=>{document.querySelectorAll('.cat-item').forEach(x=>x.classList.remove('active'));el.classList.add('active')};
-});
-document.getElementById('visOpen').onclick=function(){visMode='open';this.classList.add('sel');document.getElementById('visSecret').classList.remove('sel')};
-document.getElementById('visSecret').onclick=function(){visMode='secret';this.classList.add('sel');document.getElementById('visOpen').classList.remove('sel')};
-
-// ── 테마 ─────────────────────────────────────
-document.getElementById('themeSw').onclick=function(){
-  isLight=!isLight;
-  document.getElementById('appBubble').classList.toggle('light',isLight);
+// ── 테마 ──────────────────────────────────────
+document.getElementById('themeSw').onclick = function() {
+  isLight = !isLight;
+  document.getElementById('appBubble').classList.toggle('light', isLight);
 };
 
-// ── 초기화 ───────────────────────────────────
-selectLayout(currentLayout);
-renderRooms();renderXlSheets();renderNpSide();
-syncRoomsFromApi();
-setInterval(syncRoomsFromApi,5000);
+// ── 초기화 ────────────────────────────────────
+(async () => {
+  await loadRooms();
+})();
 </script>
 </body>
 </html>
