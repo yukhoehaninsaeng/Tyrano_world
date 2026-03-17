@@ -145,7 +145,12 @@ async function loadMessages(roomId){
 }
 async function sendMsg(v,isSys=false){
   if(!activeRoom)return;
-  await sb.from('messages').insert({room_id:activeRoom,sender_name:isSys?'SYSTEM':myNick,content:v,is_system:isSys});
+  const payload={room_id:activeRoom,sender_name:isSys?'SYSTEM':myNick,content:v,is_system:isSys};
+  const {data,error}=await sb.from('messages').insert(payload).select();
+  if(error){
+    console.error('[sendMsg] 400 상세:', error.message, error.details, error.hint, error.code);
+    console.error('[sendMsg] 전송 payload:', JSON.stringify(payload));
+  }
 }
 
 function subscribeRoom(roomId){
