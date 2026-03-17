@@ -320,15 +320,27 @@ function renderNotepad(id){
 }
 
 // ── 전송 ──
-function mkSend(inputId){
-  const inp=document.getElementById(inputId);
-  return async()=>{const v=inp.value.trim();if(!v)return;inp.value='';await sendMsg(v,false);};
+async function doSend(inputId) {
+  const inp = document.getElementById(inputId);
+  if (!inp) return;
+  const v = inp.value.trim();
+  if (!v) return;
+  inp.value = '';
+  await sendMsg(v, false);
 }
-document.getElementById('sendBtn').onclick=mkSend('msgInp');
-document.getElementById('xlSendBtn').onclick=mkSend('xlInp');
-document.getElementById('npSendBtn').onclick=mkSend('npInp');
-['msgInp','xlInp','npInp'].forEach(id=>{
-  document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();mkSend(id)();}});
+
+document.getElementById('sendBtn').onclick = () => doSend('msgInp');
+document.getElementById('xlSendBtn').onclick = () => doSend('xlInp');
+document.getElementById('npSendBtn').onclick = () => doSend('npInp');
+
+document.getElementById('msgInp').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); doSend('msgInp'); }
+});
+document.getElementById('xlInp').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); doSend('xlInp'); }
+});
+document.getElementById('npInp').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); doSend('npInp'); }
 });
 
 // ── 방 만들기 ──
