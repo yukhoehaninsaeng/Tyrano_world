@@ -8,18 +8,6 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 
-
-/*  비밀방 암호 입력 모달 */
-.passcode-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:60}
-.passcode-modal{background:var(--bg2);border:0.5px solid var(--border2);border-radius:16px;padding:28px 24px;width:280px;max-width:90vw;display:flex;flex-direction:column;gap:14px;animation:pop .16s cubic-bezier(.34,1.3,.64,1) both}
-.passcode-title{font-size:16px;font-weight:800;color:var(--text)}
-.passcode-sub{font-size:12px;color:var(--text3);margin-top:-8px}
-.passcode-input{width:100%;background:var(--inp-bg);border:0.5px solid var(--inp-border);border-radius:8px;padding:10px 12px;font-size:14px;color:var(--inp-text);outline:none;font-family:inherit;letter-spacing:3px;text-align:center}
-.passcode-input:focus{border-color:var(--accent)}
-.passcode-input::placeholder{letter-spacing:0;font-size:12px}
-.passcode-err{font-size:12px;color:#e8174a;text-align:center;display:none}
-.passcode-btns{display:flex;gap:8px}
-
 /* ── 초대장 ── */
 #inviteScreen{position:fixed;inset:0;z-index:200;background:#0d0d0f;display:flex;align-items:center;justify-content:center;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif}
 .inv-card{width:360px;max-width:90vw;background:#1a1a1c;border:0.5px solid #3a3a3c;border-radius:24px;padding:40px 36px 36px;display:flex;flex-direction:column;align-items:center;text-align:center;animation:cardIn .5s cubic-bezier(.34,1.2,.64,1) both}
@@ -72,7 +60,6 @@
 }
 body{height:100vh;height:100dvh;overflow:hidden}
 
-/* 사이드바 */
 .sb{width:220px;min-width:220px;background:var(--bg2);border-right:0.5px solid var(--border);display:flex;flex-direction:column;overflow:hidden;transition:background .25s,border-color .25s,transform .3s;flex-shrink:0}
 @media(max-width:768px){
   .sb{position:absolute;top:0;left:0;bottom:0;width:80vw;max-width:300px;z-index:30;transform:translateX(-100%);box-shadow:4px 0 24px rgba(0,0,0,.4)}
@@ -121,8 +108,6 @@ body{height:100vh;height:100dvh;overflow:hidden}
 #appBubble:not(.light) .sw-knob{transform:translateX(0);background:#ccc}
 .foot-ic{font-size:13px;cursor:pointer;color:var(--text3);width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .foot-ic:hover{background:var(--bg4);color:var(--text)}
-
-/* 메인 */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);transition:background .25s;min-width:0}
 .ch{padding:0 18px;height:52px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .ch-left{display:flex;align-items:center;gap:8px}
@@ -181,8 +166,6 @@ body{height:100vh;height:100dvh;overflow:hidden}
 .inp-ic{font-size:14px;cursor:pointer;color:var(--text3)}
 .send-btn{background:var(--accent);border:none;border-radius:18px;color:#fff;font-size:12px;font-weight:700;padding:8px 14px;cursor:pointer;font-family:inherit;transition:background .15s;flex-shrink:0;white-space:nowrap}
 .send-btn:hover{background:#c8103e}
-
-/* 설정 모달 */
 .settings-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:flex;align-items:center;justify-content:center}
 .settings-modal{background:var(--bg2);border:0.5px solid var(--border2);border-radius:16px;width:520px;max-width:95vw;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;animation:popIn .2s cubic-bezier(.34,1.2,.64,1) both}
 @keyframes popIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
@@ -212,7 +195,7 @@ body{height:100vh;height:100dvh;overflow:hidden}
 .layout-card-desc{font-size:12px;color:var(--text3)}
 .layout-card-badge{font-size:11px;font-weight:700;color:var(--accent);background:rgba(232,23,74,.12);padding:2px 8px;border-radius:20px;flex-shrink:0}
 
-/* 방 만들기 */
+/* 방 만들기 & 공통 오버레이 */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;z-index:50}
 .dialog{background:var(--bg2);border:0.5px solid var(--border2);border-radius:16px;padding:24px;width:300px;max-width:90vw}
 .dialog h3{font-size:16px;font-weight:800;color:var(--text);margin-bottom:4px}
@@ -231,6 +214,15 @@ body{height:100vh;height:100dvh;overflow:hidden}
 .d-btn.ok:hover{background:#c8103e}
 @keyframes pop{from{opacity:0;transform:scale(.9) translateY(4px)}to{opacity:1;transform:scale(1) translateY(0)}}
 .pop{animation:pop .16s cubic-bezier(.34,1.3,.64,1) both}
+
+/* ── 비밀방 암호 모달 ── */
+.passcode-modal-box{background:var(--bg2);border:0.5px solid var(--border2);border-radius:16px;padding:28px 24px;width:280px;max-width:90vw;display:flex;flex-direction:column;gap:14px;animation:pop .16s cubic-bezier(.34,1.3,.64,1) both}
+.passcode-title{font-size:16px;font-weight:800;color:var(--text)}
+.passcode-sub{font-size:12px;color:var(--text3);margin-top:-8px}
+.passcode-inp{width:100%;background:var(--inp-bg);border:0.5px solid var(--inp-border);border-radius:8px;padding:10px 12px;font-size:14px;color:var(--inp-text);outline:none;font-family:inherit;letter-spacing:3px;text-align:center}
+.passcode-inp:focus{border-color:var(--accent)}
+.passcode-inp::placeholder{letter-spacing:0;font-size:12px}
+.passcode-err{font-size:12px;color:#e8174a;text-align:center;display:none}
 
 /* ════════ 엑셀 전체화면 ════════ */
 #appExcel{display:none;flex-direction:column;height:100vh;height:100dvh;font-family:'Malgun Gothic','굴림',sans-serif;background:#fff;overflow:hidden}
@@ -368,8 +360,6 @@ body{height:100vh;height:100dvh;overflow:hidden}
 .np-stat{padding:0 10px;border-right:1px solid #c0c0c0;height:100%;display:flex;align-items:center;white-space:nowrap}
 .np-stat.accent{color:#0000aa;font-weight:700}
 @media(max-width:480px){.np-stat:not(.accent):not(:last-child){display:none}}
-
-/* 레이아웃 전환 모달 */
 #layoutModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:150;align-items:center;justify-content:center}
 </style>
 </head>
@@ -436,7 +426,6 @@ body{height:100vh;height:100dvh;overflow:hidden}
       </div>
     </div>
   </div>
-
   <div class="main">
     <div class="ch">
       <div class="ch-left">
@@ -474,10 +463,7 @@ body{height:100vh;height:100dvh;overflow:hidden}
   <!-- 설정 모달 -->
   <div class="settings-overlay" id="settingsModal" style="display:none">
     <div class="settings-modal">
-      <div class="settings-header">
-        <h2>설정</h2>
-        <button class="settings-close" id="settingsClose">✕</button>
-      </div>
+      <div class="settings-header"><h2>설정</h2><button class="settings-close" id="settingsClose">✕</button></div>
       <div class="settings-body">
         <div class="settings-nav">
           <div class="settings-nav-item active" onclick="switchSettingsTab('layout',this)"><span class="nav-icon">🧩</span>레이아웃</div>
@@ -512,48 +498,38 @@ body{height:100vh;height:100dvh;overflow:hidden}
       </div>
     </div>
   </div>
+</div>
 
-  <!-- 방 만들기 -->
-  <div class="overlay" id="dialog" style="display:none">
-    <div class="dialog pop">
-      <h3>새 방 만들기</h3>
-      <p>방 이름을 입력하고 공개 여부를 설정하세요.</p>
-      <input type="text" placeholder="방 이름 (예: 직장 탈출방)" id="roomNameInp" maxlength="30"/>
-      <div class="vis-row">
-        <button class="vis-btn sel" id="visOpen">🌐 오픈</button>
-        <button class="vis-btn" id="visSecret">🔒 비밀</button>
-      </div>
-    
-    <!-- 비밀방 입장 암호 확인 모달 -->
-    <div class="passcode-overlay" id="passcodeModal" style="display:none">
-      <div class="passcode-modal">
-        <div class="passcode-title">🔒 비밀방</div>
-        <div class="passcode-sub" id="passcodeModalSub">이 방은 암호가 설정되어 있습니다.</div>
-        <input type="password" class="passcode-input" id="passcodeCheckInp"
-          placeholder="암호를 입력하세요" maxlength="20"/>
-        <div class="passcode-err" id="passcodeErr">암호가 틀렸습니다. 다시 시도해주세요.</div>
-        <div class="passcode-btns">
-          <button class="d-btn cancel" id="passcodeCancel"
-            style="flex:1;padding:9px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;border:0.5px solid var(--border2);background:transparent;color:var(--text2)"
-            onclick="closePasscodeModal()">취소</button>
-          <button class="d-btn ok" id="passcodeConfirm"
-            style="flex:1;padding:9px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;border:0.5px solid var(--accent);background:var(--accent);color:#fff"
-            onclick="confirmPasscode()">입장</button>
-        </div>
-      </div>
+<!-- ★ 방 만들기 다이얼로그 (appBubble 바깥, body 직속) -->
+<div class="overlay" id="dialog" style="display:none">
+  <div class="dialog pop">
+    <h3>새 방 만들기</h3>
+    <p>방 이름을 입력하고 공개 여부를 설정하세요.</p>
+    <input type="text" placeholder="방 이름 (예: 직장 탈출방)" id="roomNameInp" maxlength="30"/>
+    <div class="vis-row">
+      <button class="vis-btn sel" id="visOpen">🌐 오픈</button>
+      <button class="vis-btn" id="visSecret">🔒 비밀</button>
     </div>
-
-      <!-- 비밀방 암호 입력 필드 (처음엔 숨김) -->
     <div id="passcodeWrap" style="display:none">
-      <input type="password" id="passcodeInp" class="dialog-input"
-        placeholder="암호 입력 (4~20자)" maxlength="20"
-        style="width:100%;background:var(--inp-bg);border:0.5px solid var(--inp-border);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--inp-text);outline:none;font-family:inherit;margin-bottom:10px"/>
+      <input type="password" id="passcodeInp" placeholder="암호 입력 (4~20자)" maxlength="20"/>
     </div>
+    <div class="d-btns">
+      <button class="d-btn cancel" id="dCancel">취소</button>
+      <button class="d-btn ok" id="dCreate">만들기</button>
+    </div>
+  </div>
+</div>
 
-      <div class="d-btns">
-        <button class="d-btn cancel" id="dCancel">취소</button>
-        <button class="d-btn ok" id="dCreate">만들기</button>
-      </div>
+<!-- ★ 비밀방 입장 암호 모달 (body 직속, 독립적으로 존재) -->
+<div class="overlay" id="passcodeModal" style="display:none">
+  <div class="passcode-modal-box pop">
+    <div class="passcode-title">🔒 비밀방</div>
+    <div class="passcode-sub" id="passcodeModalSub">이 방은 암호가 설정되어 있습니다.</div>
+    <input type="password" class="passcode-inp" id="passcodeCheckInp" placeholder="암호를 입력하세요" maxlength="20"/>
+    <div class="passcode-err" id="passcodeErr">암호가 틀렸습니다. 다시 시도해주세요.</div>
+    <div class="d-btns">
+      <button class="d-btn cancel" onclick="closePasscodeModal()">취소</button>
+      <button class="d-btn ok" onclick="confirmPasscode()">입장</button>
     </div>
   </div>
 </div>
@@ -578,14 +554,12 @@ body{height:100vh;height:100dvh;overflow:hidden}
   </div>
   <div class="xl-ribbon">
     <div class="xl-rgroup">
-      <div class="xl-rgroup-btns">
-        <div class="xl-rb"><span class="rb-ico">📋</span><span class="rb-lbl">붙여넣기</span></div>
-      </div>
+      <div class="xl-rgroup-btns"><div class="xl-rb"><span class="rb-ico">📋</span><span class="rb-lbl">붙여넣기</span></div></div>
       <div class="xl-rgroup-label">클립보드</div>
     </div>
     <div class="xl-rgroup" style="margin-left:auto;border-right:none">
       <div class="xl-rgroup-btns">
-        <div class="xl-rb-small" id="xlOnline">🟢 <span id="xlOnlineCnt">연결 중</span></div>
+        <div class="xl-rb-small">🟢 <span id="xlOnlineCnt">연결 중</span></div>
         <div class="xl-rb-small" onclick="showDialog()" style="color:#217346;font-weight:700">+ 새 방</div>
       </div>
       <div class="xl-rgroup-label">채팅방</div>
@@ -593,14 +567,13 @@ body{height:100vh;height:100dvh;overflow:hidden}
   </div>
   <div class="xl-formula">
     <div class="xl-cellref" id="xlCellRef">D1</div>
-    <div class="xl-formula-btn">✕</div>
-    <div class="xl-formula-btn">✓</div>
+    <div class="xl-formula-btn">✕</div><div class="xl-formula-btn">✓</div>
     <div class="xl-fx">fx</div>
     <div class="xl-fval" id="xlFval">메시지를 입력하세요</div>
   </div>
   <div class="xl-body">
     <div class="xl-side">
-      <div class="xl-side-head"><span>채팅방</span><span class="xl-side-add" id="xlAddRoom" onclick="showDialog()">＋</span></div>
+      <div class="xl-side-head"><span>채팅방</span><span class="xl-side-add" onclick="showDialog()">＋</span></div>
       <div class="xl-sheets" id="xlSheets"></div>
       <div class="xl-side-foot">
         <div class="xl-side-user">
@@ -625,9 +598,7 @@ body{height:100vh;height:100dvh;overflow:hidden}
     <input class="xl-inp-field" id="xlInp" placeholder="메시지를 입력하세요... (Enter 전송)"/>
     <button class="xl-inp-btn" id="xlSendBtn">전송 ↵</button>
   </div>
-  <div class="xl-sheettabs" id="xlSheetTabs">
-    <div class="xl-stab active" id="xlActiveTab">Sheet1</div>
-  </div>
+  <div class="xl-sheettabs"><div class="xl-stab active" id="xlActiveTab">Sheet1</div></div>
   <div class="xl-statusbar">
     <div class="xl-stat">준비</div>
     <div class="xl-stat" id="xlStatRoom">시트: —</div>
@@ -642,24 +613,21 @@ body{height:100vh;height:100dvh;overflow:hidden}
     <span class="np-title-ico">📝</span>
     <span class="np-title-text" id="npTitleText">*채팅방 - TyranoPad</span>
     <div class="np-title-btns">
-      <div class="np-title-btn" onclick="selectLayout('excel')" title="엑셀로">─</div>
-      <div class="np-title-btn close" onclick="selectLayout('bubble')" title="닫기">✕</div>
+      <div class="np-title-btn" onclick="selectLayout('excel')">─</div>
+      <div class="np-title-btn close" onclick="selectLayout('bubble')">✕</div>
     </div>
   </div>
   <div class="np-menubar">
-    <span class="np-menu">파일(F)</span>
-    <span class="np-menu">편집(E)</span>
-    <span class="np-menu">보기(V)</span>
-    <span class="np-menu">설정(T)</span>
+    <span class="np-menu">파일(F)</span><span class="np-menu">편집(E)</span>
+    <span class="np-menu">보기(V)</span><span class="np-menu">설정(T)</span>
     <span class="np-menu" onclick="openLayoutModal()" style="margin-left:auto">레이아웃(?)</span>
   </div>
   <div class="np-toolbar">
-    <div class="np-tool" title="새 파일">📄</div>
-    <div class="np-tool" title="저장">💾</div>
+    <div class="np-tool">📄</div><div class="np-tool">💾</div>
     <div class="np-tool-sep"></div>
-    <div class="np-tool" title="찾기">🔍</div>
+    <div class="np-tool">🔍</div>
     <div class="np-tool-sep"></div>
-    <div class="np-tool" onclick="showDialog()" title="새 방" style="font-size:11px;width:auto;padding:0 6px;color:#217346;font-weight:700;font-family:'Malgun Gothic',sans-serif">+ 새 방</div>
+    <div class="np-tool" onclick="showDialog()" style="font-size:11px;width:auto;padding:0 6px;color:#217346;font-weight:700;font-family:'Malgun Gothic',sans-serif">+ 새 방</div>
   </div>
   <div class="np-tabs">
     <div class="np-tab active" id="npTabName">
@@ -734,27 +702,43 @@ body{height:100vh;height:100dvh;overflow:hidden}
 </div>
 
 <script>
-const SUPABASE_URL = 'https://kycisbrdvjmqgciwhhvo.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5Y2lzYnJkdmptcWdjaXdoaHZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MDQzNjQsImV4cCI6MjA4OTE4MDM2NH0.zyXAAwtMf6KMVwCyk9OB_7ytsQtOK2jDd8fTSmevvEA';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } });
+// ── Supabase ──
+const SUPABASE_URL='https://kycisbrdvjmqgciwhhvo.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5Y2lzYnJkdmptcWdjaXdoaHZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MDQzNjQsImV4cCI6MjA4OTE4MDM2NH0.zyXAAwtMf6KMVwCyk9OB_7ytsQtOK2jDd8fTSmevvEA';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:false}});
 
-const STORAGE_KEY = 'tyrano_visited_v1';
-const NICK_KEY    = 'tyrano_nickname_v1';
-const LAYOUT_KEY  = 'tyrano_layout_v1';
-const BUBBLE_COLOR_KEY = 'tyrano_bubblecolor_v1';
+// ── localStorage 키 ──
+const STORAGE_KEY        ='tyrano_visited_v1';
+const NICK_KEY           ='tyrano_nickname_v1';
+const LAYOUT_KEY         ='tyrano_layout_v1';
+const BUBBLE_COLOR_KEY   ='tyrano_bubblecolor_v1';
+const THEME_KEY          ='tyrano_theme_v1';
+const LAST_ROOM_KEY      ='tyrano_last_room_v1';
+const ROOM_PASSCODES_KEY ='tyrano_room_passcodes_v1';
 
-const AV_COLORS = ['#e8734a','#4a9ee8','#4ac674','#c64ab8','#e8c44a','#4ab8c6','#9f3060','#7a4ac6'];
-const BUBBLE_PALETTE = ['#9f3060','#217346','#1565c0','#6a1b9a','#e65100','#4a148c','#1b5e20','#37474f'];
+// ── 상수 ──
+const AV_COLORS=['#e8734a','#4a9ee8','#4ac674','#c64ab8','#e8c44a','#4ab8c6','#9f3060','#7a4ac6'];
+const BUBBLE_PALETTE=['#9f3060','#217346','#1565c0','#6a1b9a','#e65100','#4a148c','#1b5e20','#37474f'];
 
+// ── 유틸 ──
 function ac(n){let h=0;for(let i=0;i<n.length;i++)h=n.charCodeAt(i)+((h<<5)-h);return AV_COLORS[Math.abs(h)%AV_COLORS.length]}
-function ini(n){return (n||'?').trim()[0].toUpperCase()}
+function ini(n){return(n||'?').trim()[0].toUpperCase()}
 function fmtTime(iso){return new Date(iso).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}
 function rnd(){const a=['졸린','배고픈','신나는','수줍은','당당한'],b=['티라노','공룡','스테고','프테라'];return a[~~(Math.random()*a.length)]+b[~~(Math.random()*b.length)]+(~~(Math.random()*900)+100)}
 
-let myNick='', myBubbleColor=localStorage.getItem(BUBBLE_COLOR_KEY)||'#9f3060';
+// ── 상태 ──
+let myNick='';
+let myBubbleColor=localStorage.getItem(BUBBLE_COLOR_KEY)||'#9f3060';
 let currentLayout=localStorage.getItem(LAYOUT_KEY)||'bubble';
-let isLight=false, activeRoom=null, visMode='open';
+let isLight=localStorage.getItem(THEME_KEY)==='light';
+let activeRoom=null, visMode='open';
 let rooms=[], msgsData={}, msgChannel=null;
+let pendingRoomId=null;
+
+// ── 암호 저장 헬퍼 ──
+function loadRoomPasscodes(){try{return JSON.parse(localStorage.getItem(ROOM_PASSCODES_KEY))||{};}catch{return{}}}
+function saveRoomPasscode(id,pw){const m=loadRoomPasscodes();m[id]=pw;localStorage.setItem(ROOM_PASSCODES_KEY,JSON.stringify(m))}
+function getRoomPasscode(id){return loadRoomPasscodes()[id]||null}
 
 // ── 닉네임 ──
 function applyNick(nick){
@@ -762,9 +746,7 @@ function applyNick(nick){
   localStorage.setItem(NICK_KEY,myNick);
   const c=ac(myNick),i=ini(myNick);
   ['myAv','inpAv','xlMyAv','npMyAv'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent=i;el.style.background=c;}});
-  document.getElementById('myName').textContent=myNick;
-  document.getElementById('xlMyName').textContent=myNick;
-  document.getElementById('npMyName').textContent=myNick;
+  ['myName','xlMyName','npMyName'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=myNick;});
   document.getElementById('xlInpName').textContent=myNick;
   document.getElementById('npPrefix').textContent='['+myNick+'] → ';
 }
@@ -782,7 +764,7 @@ function enterApp(){invScreen.classList.add('fading');setTimeout(()=>invScreen.s
 if(localStorage.getItem(STORAGE_KEY)){
   invScreen.style.display='none';
   applyNick(localStorage.getItem(NICK_KEY)||'');
-} else {
+}else{
   applyNick('');
   document.getElementById('invNextBtn').onclick=()=>{
     document.getElementById('invMain').classList.add('hide');
@@ -815,7 +797,7 @@ window.addEventListener('resize',()=>{
 async function loadRooms(){
   const {data,error}=await sb.from('rooms').select('*').order('created_at',{ascending:false});
   if(error||!data)return;
-  rooms=data.map(r=>({id:r.id,name:r.title,visibility:r.visibility,preview:'방에 입장해 대화하세요',cnt:0}));
+  rooms=data.map(r=>({id:r.id,name:r.title,visibility:r.visibility,passcode:r.passcode||null,preview:'방에 입장해 대화하세요',cnt:0}));
   renderAllSides();
   for(const room of rooms){
     const {data:last}=await sb.from('messages').select('content,sender_name').eq('room_id',room.id).order('created_at',{ascending:false}).limit(1);
@@ -824,22 +806,20 @@ async function loadRooms(){
   renderAllSides();
 }
 
-// ── Supabase: 메시지 로드 ──
+// ── Supabase: 메시지 로드 / 전송 ──
 async function loadMessages(roomId){
   const {data,error}=await sb.from('messages').select('*').eq('room_id',roomId).order('created_at',{ascending:true});
   if(error)return;
   msgsData[roomId]=(data||[]).map(m=>({id:m.id,u:m.sender_name,t:fmtTime(m.created_at),msg:m.content}));
   renderCurrentLayout();
 }
-
-// ── Supabase: 메시지 전송 ──
 async function sendMsg(v){
   if(!v||!activeRoom)return;
   const {error}=await sb.from('messages').insert({room_id:activeRoom,sender_name:myNick,content:v});
   if(error)alert('전송 실패: '+error.message);
 }
 
-// ── Supabase: Realtime 구독 ──
+// ── Supabase: Realtime ──
 function subscribeRoom(roomId){
   if(msgChannel)sb.removeChannel(msgChannel);
   msgChannel=sb.channel('room-msgs-'+roomId)
@@ -863,7 +843,7 @@ sb.channel('rooms-global')
   .on('postgres_changes',{event:'INSERT',schema:'public',table:'rooms'},payload=>{
     const r=payload.new;
     if(!rooms.some(x=>x.id===r.id)){
-      rooms.unshift({id:r.id,name:r.title,visibility:r.visibility,preview:'새 방이 열렸어요!',cnt:0});
+      rooms.unshift({id:r.id,name:r.title,visibility:r.visibility,passcode:r.passcode||null,preview:'새 방이 열렸어요!',cnt:0});
       renderAllSides();
     }
   }).subscribe();
@@ -880,7 +860,6 @@ function renderRooms(){
         <div class="ri-preview">${r.preview}</div></div>`).join('')
     :'<div class="empty-state">아직 방이 없어요.<br>새 방을 만들어보세요 🕳️</div>';
 }
-
 function renderXlSheets(){
   document.getElementById('xlSheets').innerHTML=rooms.map(r=>`
     <div class="xl-sheet-item${activeRoom===r.id?' active':''}" onclick="openRoom('${r.id}')">
@@ -888,7 +867,6 @@ function renderXlSheets(){
       <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.name}</span>
     </div>`).join('');
 }
-
 function renderNpSide(){
   document.getElementById('npSideList').innerHTML=rooms.map(r=>`
     <div class="np-sb-item${activeRoom===r.id?' active':''}" onclick="openRoom('${r.id}')">
@@ -897,30 +875,76 @@ function renderNpSide(){
     </div>`).join('');
 }
 
-// ── 방 열기 ──
-async function openRoom(id){
-  activeRoom=id;
+// ── 방 열기 (암호 체크 포함) ──
+async function openRoom(id, skipCheck=false){
   const r=rooms.find(x=>x.id===id);
   if(!r)return;
+
+  // 비밀방 암호 체크
+  if(!skipCheck && r.visibility==='secret'){
+    const {data}=await sb.from('rooms').select('passcode').eq('id',id).single();
+    if(data && data.passcode){
+      const saved=getRoomPasscode(id);
+      if(saved!==data.passcode){
+        pendingRoomId=id;
+        document.getElementById('passcodeModalSub').textContent=`"${r.name}" 방은 암호가 설정되어 있습니다.`;
+        document.getElementById('passcodeCheckInp').value='';
+        document.getElementById('passcodeErr').style.display='none';
+        document.getElementById('passcodeModal').style.display='flex';
+        setTimeout(()=>document.getElementById('passcodeCheckInp').focus(),100);
+        return; // 암호 입력 전까지 여기서 중단
+      }
+    }
+  }
+
+  // 입장 처리
+  activeRoom=id;
+  localStorage.setItem(LAST_ROOM_KEY,id);
   if(window.innerWidth<=768)closeSidebar();
-  // 버블
+
   document.getElementById('welcomeScreen').style.display='none';
   document.getElementById('chatScreen').style.display='flex';
   document.getElementById('roomTitle').textContent=r.name;
-  const sub=document.getElementById('roomSub');sub.textContent=r.visibility==='secret'?'비밀방':'오픈방';sub.style.display='';
-  // 엑셀
+  const sub=document.getElementById('roomSub');
+  sub.textContent=r.visibility==='secret'?'🔒 비밀방':'오픈방';
+  sub.style.display='';
   document.getElementById('xlTitle').textContent='SpreadChat — '+r.name+'.xlsx';
   document.getElementById('xlStatRoom').textContent='시트: '+r.name;
   const atab=document.getElementById('xlActiveTab');if(atab)atab.textContent=r.name;
-  // 메모장
   document.getElementById('npTitleText').textContent='*'+r.name+' - TyranoPad';
   document.getElementById('npTabLabel').textContent=r.name.replace(/\s/g,'_')+'.log';
   document.getElementById('npStatRoom').textContent=r.name;
+
   renderAllSides();
   await loadMessages(id);
   subscribeRoom(id);
 }
 
+// ── 비밀방 암호 확인 모달 ──
+function closePasscodeModal(){
+  document.getElementById('passcodeModal').style.display='none';
+  document.getElementById('passcodeCheckInp').value='';
+  document.getElementById('passcodeErr').style.display='none';
+  pendingRoomId=null;
+}
+async function confirmPasscode(){
+  const entered=document.getElementById('passcodeCheckInp').value.trim();
+  if(!pendingRoomId)return;
+  const {data}=await sb.from('rooms').select('passcode').eq('id',pendingRoomId).single();
+  if(!data||data.passcode!==entered){
+    document.getElementById('passcodeErr').style.display='block';
+    document.getElementById('passcodeCheckInp').value='';
+    document.getElementById('passcodeCheckInp').focus();
+    return;
+  }
+  saveRoomPasscode(pendingRoomId,entered);
+  const rid=pendingRoomId;
+  closePasscodeModal();
+  openRoom(rid,true);
+}
+document.getElementById('passcodeCheckInp').addEventListener('keydown',e=>{if(e.key==='Enter')confirmPasscode()});
+
+// ── 렌더 ──
 function renderCurrentLayout(){
   if(!activeRoom)return;
   if(currentLayout==='bubble')renderBubble(activeRoom);
@@ -928,7 +952,6 @@ function renderCurrentLayout(){
   else if(currentLayout==='notepad')renderNotepad(activeRoom);
 }
 
-// ── 말풍선 렌더 ──
 function renderBubble(id){
   const list=msgsData[id]||[];
   const el=document.getElementById('msgs');if(!el)return;
@@ -948,7 +971,6 @@ function renderBubble(id){
   el.innerHTML=h;el.scrollTop=el.scrollHeight;
 }
 
-// ── 엑셀 렌더 ──
 function renderExcel(id){
   const list=msgsData[id]||[];
   document.getElementById('xlRowNums').innerHTML=list.map((_,i)=>`<div class="xl-rn">${i+1}</div>`).join('');
@@ -965,7 +987,6 @@ function renderExcel(id){
   document.getElementById('xlRows').scrollTop=999999;
 }
 
-// ── 메모장 렌더 ──
 function uCls(u){if(u===myNick)return'c-me';const h=u.split('').reduce((a,c)=>a+c.charCodeAt(0),0);return['c-u1','c-u2','c-u3','c-u4'][h%4]}
 function renderNotepad(id){
   const list=msgsData[id]||[];
@@ -998,28 +1019,49 @@ document.getElementById('npSendBtn').onclick=mkSend('npInp');
 
 // ── 방 만들기 ──
 function showDialog(){document.getElementById('dialog').style.display='flex'}
-function hideDialog(){document.getElementById('dialog').style.display='none';document.getElementById('roomNameInp').value=''}
+function hideDialog(){
+  document.getElementById('dialog').style.display='none';
+  document.getElementById('roomNameInp').value='';
+  document.getElementById('passcodeInp').value='';
+  document.getElementById('passcodeWrap').style.display='none';
+  visMode='open';
+  document.getElementById('visOpen').classList.add('sel');
+  document.getElementById('visSecret').classList.remove('sel');
+}
 async function createRoom(){
   const n=document.getElementById('roomNameInp').value.trim();if(!n)return;
+  const pw=visMode==='secret'?document.getElementById('passcodeInp').value.trim():'';
+  if(visMode==='secret'&&pw.length<4){alert('암호는 최소 4자 이상이어야 합니다.');return;}
   const btn=document.getElementById('dCreate');btn.textContent='생성 중...';btn.disabled=true;
-  const {data,error}=await sb.from('rooms').insert({title:n,visibility:visMode}).select().single();
+  const {data,error}=await sb.from('rooms').insert({title:n,visibility:visMode,passcode:pw||null}).select().single();
   btn.textContent='만들기';btn.disabled=false;
   if(error){alert('방 생성 실패: '+error.message);return;}
+  if(data.passcode)saveRoomPasscode(data.id,data.passcode);
   hideDialog();
-  if(!rooms.some(r=>r.id===data.id))rooms.unshift({id:data.id,name:data.title,visibility:data.visibility,preview:'방이 생성되었어요!',cnt:0});
+  if(!rooms.some(r=>r.id===data.id))
+    rooms.unshift({id:data.id,name:data.title,visibility:data.visibility,passcode:data.passcode||null,preview:'방이 생성되었어요!',cnt:0});
   renderAllSides();
-  openRoom(data.id);
+  openRoom(data.id,true);
 }
 document.getElementById('addBtn').onclick=showDialog;
-document.getElementById('xlAddRoom').onclick=showDialog;
 document.getElementById('wCreate').onclick=showDialog;
 document.getElementById('wBrowse').onclick=()=>{if(rooms.length)openRoom(rooms[0].id)};
 document.getElementById('dCancel').onclick=hideDialog;
 document.getElementById('dCreate').onclick=createRoom;
 document.getElementById('roomNameInp').addEventListener('keydown',e=>{if(e.key==='Enter')createRoom()});
 document.getElementById('searchInp').addEventListener('input',renderRooms);
-document.getElementById('visOpen').onclick=function(){visMode='open';this.classList.add('sel');document.getElementById('visSecret').classList.remove('sel')};
-document.getElementById('visSecret').onclick=function(){visMode='secret';this.classList.add('sel');document.getElementById('visOpen').classList.remove('sel')};
+document.getElementById('visOpen').onclick=function(){
+  visMode='open';this.classList.add('sel');
+  document.getElementById('visSecret').classList.remove('sel');
+  document.getElementById('passcodeWrap').style.display='none';
+  document.getElementById('passcodeInp').value='';
+};
+document.getElementById('visSecret').onclick=function(){
+  visMode='secret';this.classList.add('sel');
+  document.getElementById('visOpen').classList.remove('sel');
+  document.getElementById('passcodeWrap').style.display='block';
+  setTimeout(()=>document.getElementById('passcodeInp').focus(),50);
+};
 
 // ── 레이아웃 전환 ──
 function selectLayout(layout){
@@ -1028,19 +1070,16 @@ function selectLayout(layout){
   document.getElementById('appBubble').style.display=layout==='bubble'?'flex':'none';
   document.getElementById('appExcel').style.display=layout==='excel'?'flex':'none';
   document.getElementById('appNotepad').style.display=layout==='notepad'?'flex':'none';
-  // 버블 설정 모달 뱃지
   ['bubble','notepad','excel'].forEach(l=>{
     const card=document.getElementById('card'+l[0].toUpperCase()+l.slice(1));
     const badge=document.getElementById('badge'+l[0].toUpperCase()+l.slice(1));
     if(card)card.classList.toggle('active',l===layout);
     if(badge)badge.style.display=l===layout?'':'none';
   });
-  // 레이아웃 모달 뱃지
   ['Bubble','Notepad','Excel'].forEach(l=>{
     const b=document.getElementById('lmBadge'+l);
     if(b)b.style.display=l.toLowerCase()===layout?'inline':'none';
   });
-  // 레이아웃 뱃지 텍스트
   const names={bubble:'말풍선',notepad:'메모장',excel:'엑셀'};
   const lb=document.getElementById('layoutBadge');if(lb)lb.textContent=names[layout]||layout;
   if(activeRoom)renderCurrentLayout();
@@ -1062,7 +1101,6 @@ document.getElementById('settingsBtn2').onclick=()=>openSettings('layout');
 document.getElementById('layoutSettingsBtn').onclick=()=>openSettings('layout');
 document.getElementById('settingsClose').onclick=closeSettings;
 document.getElementById('settingsModal').onclick=function(e){if(e.target===this)closeSettings()};
-
 function openLayoutModal(){document.getElementById('layoutModal').style.display='flex'}
 function closeLayoutModal(){document.getElementById('layoutModal').style.display='none'}
 document.getElementById('layoutModal').onclick=function(e){if(e.target===this)closeLayoutModal()}
@@ -1077,189 +1115,22 @@ function setBubbleColor(c){myBubbleColor=c;localStorage.setItem(BUBBLE_COLOR_KEY
 renderSwatches();
 
 // ── 테마 ──
-document.getElementById('themeSw').onclick=function(){isLight=!isLight;document.getElementById('appBubble').classList.toggle('light',isLight)};
+if(isLight)document.getElementById('appBubble').classList.add('light');
+document.getElementById('themeSw').onclick=function(){
+  isLight=!isLight;
+  document.getElementById('appBubble').classList.toggle('light',isLight);
+  localStorage.setItem(THEME_KEY,isLight?'light':'dark');
+};
 
 // ── 초기화 ──
 selectLayout(currentLayout);
-(async()=>{ await loadRooms(); })();
-
-// ── 방 만들기 ──
-function showDialog(){document.getElementById('dialog').style.display='flex'}
-function hideDialog(){
-  document.getElementById('dialog').style.display='none';
-  document.getElementById('roomNameInp').value='';
-  document.getElementById('passcodeInp').value='';
-  document.getElementById('passcodeWrap').style.display='none';
-  // 오픈방으로 초기화
-  visMode='open';
-  document.getElementById('visOpen').classList.add('sel');
-  document.getElementById('visSecret').classList.remove('sel');
-}
-
-async function createRoom(){
-  const n=document.getElementById('roomNameInp').value.trim();
-  if(!n)return;
-  const passcode=visMode==='secret'?document.getElementById('passcodeInp').value.trim():'';
-  if(visMode==='secret'&&passcode.length<4){
-    alert('암호는 최소 4자 이상이어야 합니다.');return;
+(async()=>{
+  await loadRooms();
+  const lastId=localStorage.getItem(LAST_ROOM_KEY);
+  if(lastId&&rooms.some(r=>r.id===lastId)){
+    await openRoom(lastId,false);
   }
-  const btn=document.getElementById('dCreate');btn.textContent='생성 중...';btn.disabled=true;
-  const {data,error}=await sb.from('rooms').insert({
-    title:n,
-    visibility:visMode,
-    passcode:passcode||null
-  }).select().single();
-  btn.textContent='만들기';btn.disabled=false;
-  if(error){alert('방 생성 실패: '+error.message);return;}
-  hideDialog();
-  if(!rooms.some(r=>r.id===data.id)){
-    rooms.unshift({id:data.id,name:data.title,visibility:data.visibility,passcode:data.passcode,preview:'방이 생성되었어요!',cnt:0});
-  }
-  renderAllSides();
-  // 내가 만든 방이면 암호 기억
-  if(data.passcode) saveRoomPasscode(data.id, data.passcode);
-  openRoom(data.id, true);
-}
-
-document.getElementById('addBtn').onclick=showDialog;
-document.getElementById('xlAddRoom').onclick=showDialog;
-document.getElementById('wCreate').onclick=showDialog;
-document.getElementById('wBrowse').onclick=()=>{if(rooms.length)openRoom(rooms[0].id)};
-document.getElementById('dCancel').onclick=hideDialog;
-document.getElementById('dCreate').onclick=createRoom;
-document.getElementById('roomNameInp').addEventListener('keydown',e=>{if(e.key==='Enter')createRoom()});
-document.getElementById('searchInp').addEventListener('input',renderRooms);
-
-// 오픈/비밀 토글 — 비밀 선택 시 암호 입력창 표시
-document.getElementById('visOpen').onclick=function(){
-  visMode='open';
-  this.classList.add('sel');
-  document.getElementById('visSecret').classList.remove('sel');
-  document.getElementById('passcodeWrap').style.display='none';
-  document.getElementById('passcodeInp').value='';
-};
-document.getElementById('visSecret').onclick=function(){
-  visMode='secret';
-  this.classList.add('sel');
-  document.getElementById('visOpen').classList.remove('sel');
-  document.getElementById('passcodeWrap').style.display='block';
-  setTimeout(()=>document.getElementById('passcodeInp').focus(),50);
-};
-
-// ── 암호 로컬 저장 (방 만든 사람은 다시 입력 안 해도 됨) ──
-const ROOM_PASSCODES_KEY='tyrano_room_passcodes_v1';
-function loadRoomPasscodes(){
-  try{return JSON.parse(localStorage.getItem(ROOM_PASSCODES_KEY))||{};}catch{return{}}
-}
-function saveRoomPasscode(roomId, passcode){
-  const map=loadRoomPasscodes();
-  map[roomId]=passcode;
-  localStorage.setItem(ROOM_PASSCODES_KEY,JSON.stringify(map));
-}
-function getRoomPasscode(roomId){
-  return loadRoomPasscodes()[roomId]||null;
-}
-
-// ── 비밀방 입장 모달 ──
-let pendingRoomId=null;
-
-function closePasscodeModal(){
-  document.getElementById('passcodeModal').style.display='none';
-  document.getElementById('passcodeCheckInp').value='';
-  document.getElementById('passcodeErr').style.display='none';
-  pendingRoomId=null;
-}
-
-async function confirmPasscode(){
-  const entered=document.getElementById('passcodeCheckInp').value.trim();
-  const r=rooms.find(x=>x.id===pendingRoomId);
-  if(!r)return;
-  // DB에서 직접 passcode 가져와서 비교
-  const {data}=await sb.from('rooms').select('passcode').eq('id',pendingRoomId).single();
-  if(!data||data.passcode!==entered){
-    document.getElementById('passcodeErr').style.display='block';
-    document.getElementById('passcodeCheckInp').value='';
-    document.getElementById('passcodeCheckInp').focus();
-    return;
-  }
-  // 성공 → 로컬에 저장 후 입장
-  saveRoomPasscode(pendingRoomId, entered);
-  closePasscodeModal();
-  openRoom(pendingRoomId, true);
-}
-
-document.getElementById('passcodeCheckInp').addEventListener('keydown',e=>{
-  if(e.key==='Enter')confirmPasscode();
-});
-
-// ── 방 열기 (암호 체크 포함) — 기존 openRoom 함수 전체 교체 ──
-async function openRoom(id, skipPasscodeCheck=false){
-  const r=rooms.find(x=>x.id===id);
-  if(!r)return;
-
-  // 비밀방이고 암호가 있는 경우 체크
-  if(!skipPasscodeCheck && r.visibility==='secret'){
-    // DB에서 passcode 가져오기 (rooms 배열에 없을 수 있으므로)
-    const {data}=await sb.from('rooms').select('passcode').eq('id',id).single();
-    if(data && data.passcode){
-      const saved=getRoomPasscode(id);
-      if(saved!==data.passcode){
-        // 암호 모달 표시
-        pendingRoomId=id;
-        document.getElementById('passcodeModalSub').textContent=`"${r.name}" 방은 암호가 설정되어 있습니다.`;
-        document.getElementById('passcodeModal').style.display='flex';
-        setTimeout(()=>document.getElementById('passcodeCheckInp').focus(),100);
-        return;
-      }
-    }
-  }
-
-  activeRoom=id;
-  if(window.innerWidth<=768)closeSidebar();
-
-  // 버블
-  document.getElementById('welcomeScreen').style.display='none';
-  document.getElementById('chatScreen').style.display='flex';
-  document.getElementById('roomTitle').textContent=r.name;
-  const sub=document.getElementById('roomSub');
-  sub.textContent=r.visibility==='secret'?'🔒 비밀방':'오픈방';
-  sub.style.display='';
-  // 엑셀
-  document.getElementById('xlTitle').textContent='SpreadChat — '+r.name+'.xlsx';
-  document.getElementById('xlStatRoom').textContent='시트: '+r.name;
-  const atab=document.getElementById('xlActiveTab');if(atab)atab.textContent=r.name;
-  // 메모장
-  document.getElementById('npTitleText').textContent='*'+r.name+' - TyranoPad';
-  document.getElementById('npTabLabel').textContent=r.name.replace(/\s/g,'_')+'.log';
-  document.getElementById('npStatRoom').textContent=r.name;
-
-  renderAllSides();
-  await loadMessages(id);
-  subscribeRoom(id);
-}
-
-// ── loadRooms도 passcode 컬럼 포함하도록 수정 ──
-// 기존 loadRooms 함수를 아래로 교체
-async function loadRooms(){
-  const {data,error}=await sb.from('rooms').select('*').order('created_at',{ascending:false});
-  if(error||!data)return;
-  rooms=data.map(r=>({
-    id:r.id,
-    name:r.title,
-    visibility:r.visibility,
-    passcode:r.passcode||null,
-    preview:'방에 입장해 대화하세요',
-    cnt:0
-  }));
-  renderAllSides();
-  for(const room of rooms){
-    const {data:last}=await sb.from('messages').select('content,sender_name').eq('room_id',room.id).order('created_at',{ascending:false}).limit(1);
-    if(last&&last[0])room.preview=last[0].sender_name+': '+last[0].content;
-  }
-  renderAllSides();
-}
-
-
+})();
 </script>
 </body>
 </html>
