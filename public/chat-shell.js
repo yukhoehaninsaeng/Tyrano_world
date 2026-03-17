@@ -2,7 +2,6 @@ const SUPABASE_URL='https://kycisbrdvjmqgciwhhvo.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5Y2lzYnJkdmptcWdjaXdoaHZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MDQzNjQsImV4cCI6MjA4OTE4MDM2NH0.zyXAAwtMf6KMVwCyk9OB_7ytsQtOK2jDd8fTSmevvEA';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:false}});
 
-// ── localStorage 키 ──
 const STORAGE_KEY        ='tyrano_visited_v1';
 const NICK_KEY           ='tyrano_nickname_v1';
 const LAYOUT_KEY         ='tyrano_layout_v1';
@@ -28,19 +27,16 @@ let activeRoom=null, visMode='open';
 let rooms=[], msgsData={}, msgChannel=null, pendingRoomId=null;
 let currentDropdownRoomId=null;
 
-// ── 암호 저장 ──
 function loadPasscodes(){try{return JSON.parse(localStorage.getItem(ROOM_PASSCODES_KEY))||{};}catch{return{}}}
 function savePasscode(id,pw){const m=loadPasscodes();m[id]=pw;localStorage.setItem(ROOM_PASSCODES_KEY,JSON.stringify(m))}
 function getPasscode(id){return loadPasscodes()[id]||null}
 
-// ── 참여 방 저장 ──
 function loadJoined(){try{return JSON.parse(localStorage.getItem(JOINED_ROOMS_KEY))||[];}catch{return[]}}
 function saveJoined(ids){localStorage.setItem(JOINED_ROOMS_KEY,JSON.stringify(ids))}
 function addJoined(id){const j=loadJoined();if(!j.includes(id)){j.unshift(id);saveJoined(j)}}
 function removeJoined(id){saveJoined(loadJoined().filter(x=>x!==id))}
 function isJoined(id){return loadJoined().includes(id)}
 
-// ── 닉네임 ──
 function applyNick(nick){
   myNick=nick||rnd();
   localStorage.setItem(NICK_KEY,myNick);
@@ -51,7 +47,6 @@ function applyNick(nick){
   document.getElementById('npPrefix').textContent='['+myNick+'] → ';
 }
 
-// ── 초대장 ──
 const invScreen=document.getElementById('inviteScreen');
 function enterApp(){invScreen.classList.add('fading');setTimeout(()=>invScreen.style.display='none',400)}
 (async()=>{
@@ -73,12 +68,10 @@ if(localStorage.getItem(STORAGE_KEY)){
   document.getElementById('nickSkip').onclick=()=>{applyNick('');localStorage.setItem(STORAGE_KEY,'1');enterApp()};
 }
 
-// ── 모바일 사이드바 ──
 function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sbDimmer').classList.add('show');document.getElementById('sidebarCloseBtn').style.display='';}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sbDimmer').classList.remove('show');}
 window.addEventListener('resize',()=>{if(window.innerWidth>768)closeSidebar();document.getElementById('sidebarCloseBtn').style.display=window.innerWidth<=768?'':'none';});
 
-// ── 드롭다운 (⋮) ──
 function openRoomDropdown(e,roomId){
   e.stopPropagation();
   closeDropdown();
@@ -106,7 +99,6 @@ function openRoomDropdown(e,roomId){
 function closeDropdown(){const el=document.getElementById('roomDropdown');if(el)el.remove();currentDropdownRoomId=null;}
 document.addEventListener('click',e=>{if(!e.target.closest('#roomDropdown')&&!e.target.closest('.room-kebab'))closeDropdown();});
 
-// ── 방 나가기 ──
 function leaveRoom(){
   closeDropdown();if(!activeRoom)return;
   removeJoined(activeRoom);
@@ -119,7 +111,6 @@ function leaveRoom(){
   renderAllSides();
 }
 
-// ── 방 삭제 ──
 async function deleteRoom(roomId){
   closeDropdown();
   const r=rooms.find(x=>x.id===roomId);
@@ -134,7 +125,6 @@ async function deleteRoom(roomId){
   renderAllSides();
 }
 
-// ── Supabase: 방 목록 ──
 async function loadRooms(){
   const {data,error}=await sb.from('rooms').select('*').order('created_at',{ascending:false});
   if(error||!data)return;
@@ -147,7 +137,6 @@ async function loadRooms(){
   renderAllSides();
 }
 
-// ── Supabase: 메시지 ──
 async function loadMessages(roomId){
   const {data,error}=await sb.from('messages').select('*').eq('room_id',roomId).order('created_at',{ascending:true});
   if(error)return;
@@ -159,7 +148,6 @@ async function sendMsg(v,isSys=false){
   await sb.from('messages').insert({room_id:activeRoom,sender_name:isSys?'SYSTEM':myNick,content:v,is_system:isSys});
 }
 
-// ── Supabase: Realtime ──
 function subscribeRoom(roomId){
   if(msgChannel)sb.removeChannel(msgChannel);
   msgChannel=sb.channel('room-'+roomId)
@@ -193,48 +181,52 @@ sb.channel('rooms-global')
     renderAllSides();
   }).subscribe();
 
-// ── 렌더 ──
 function renderAllSides(){renderRooms();renderXlSheets();renderNpSide();}
 
+// ══════════════════════════════════════════
+// renderRooms: 카테고리 헤더 (참여중 / 미참여)
+// ══════════════════════════════════════════
 function renderRooms(){
   const q=document.getElementById('searchInp').value.trim().toLowerCase();
   const joined=loadJoined();
   const joinedRooms=rooms.filter(r=>joined.includes(r.id)&&r.name.toLowerCase().includes(q));
   const otherRooms=rooms.filter(r=>!joined.includes(r.id)&&r.name.toLowerCase().includes(q));
 
+  function roomItemHtml(r){
+    return `
+      <div class="room-item${activeRoom===r.id?' active':''}" onclick="openRoom('${r.id}')">
+        <div class="room-item-body">
+          <div class="ri-top"><span class="ri-name">${r.visibility==='secret'?'🔒 ':''}${r.name}</span></div>
+          <div class="ri-preview">${r.preview}</div>
+        </div>
+        <button class="room-kebab" onclick="openRoomDropdown(event,'${r.id}')" title="메뉴">⋮</button>
+      </div>`;
+  }
+
   let html='';
 
   // ── 참여중인 놀이터 ──
-  html+=`<div class="sb-section-label"><span>🏠 참여중인 놀이터</span><span class="sb-section-cnt">${joinedRooms.length}</span></div>`;
+  html+=`<div class="sb-cat-header">
+    <span class="sb-cat-icon">🏠</span>
+    <span class="sb-cat-name">참여중인 놀이터</span>
+    <span class="sb-cat-cnt">${joinedRooms.length}</span>
+  </div>`;
   if(joinedRooms.length){
-    html+=joinedRooms.map(r=>`
-      <div class="room-item${activeRoom===r.id?' active':''}" onclick="openRoom('${r.id}')">
-        <div class="room-item-body">
-          <div class="ri-top"><span class="ri-name">${r.visibility==='secret'?'🔒 ':''}${r.name}</span></div>
-          <div class="ri-preview">${r.preview}</div>
-        </div>
-        <button class="room-kebab" onclick="openRoomDropdown(event,'${r.id}')" title="메뉴">⋮</button>
-      </div>`).join('');
+    html+=joinedRooms.map(roomItemHtml).join('');
   }else{
-    html+=`<div class="empty-state" style="font-size:11px;padding:12px">아직 참여한 방이 없어요</div>`;
+    html+=`<div class="sb-cat-empty">아직 참여한 방이 없어요</div>`;
   }
 
-  // ── 구분선 ──
-  html+=`<div class="sb-section-divider"></div>`;
-
   // ── 재밌는 놀이터 ──
-  html+=`<div class="sb-section-label"><span>🌐 재밌는 놀이터</span><span class="sb-section-cnt">${otherRooms.length}</span></div>`;
+  html+=`<div class="sb-cat-header sb-cat-header--gap">
+    <span class="sb-cat-icon">🌐</span>
+    <span class="sb-cat-name">재밌는 놀이터</span>
+    <span class="sb-cat-cnt">${otherRooms.length}</span>
+  </div>`;
   if(otherRooms.length){
-    html+=otherRooms.map(r=>`
-      <div class="room-item${activeRoom===r.id?' active':''}" onclick="openRoom('${r.id}')">
-        <div class="room-item-body">
-          <div class="ri-top"><span class="ri-name">${r.visibility==='secret'?'🔒 ':''}${r.name}</span></div>
-          <div class="ri-preview">${r.preview}</div>
-        </div>
-        <button class="room-kebab" onclick="openRoomDropdown(event,'${r.id}')" title="메뉴">⋮</button>
-      </div>`).join('');
+    html+=otherRooms.map(roomItemHtml).join('');
   }else{
-    html+=`<div class="empty-state" style="font-size:11px;padding:12px">모든 방에 참여 중이에요 🎉</div>`;
+    html+=`<div class="sb-cat-empty">모든 방에 참여 중이에요 🎉</div>`;
   }
 
   document.getElementById('roomList').innerHTML=html;
@@ -254,16 +246,12 @@ function renderNpSide(){
     </div>`).join('');
 }
 
-// ── 방 둘러보기 팝업 ──
 function openBrowseModal(){
   const joined=loadJoined();
   const others=rooms.filter(r=>!joined.includes(r.id));
-
   const overlay=document.createElement('div');
-  overlay.className='browse-overlay';
-  overlay.id='browseModal';
+  overlay.className='browse-overlay';overlay.id='browseModal';
   overlay.onclick=e=>{if(e.target===overlay)closeBrowseModal();};
-
   let cardsHtml='';
   if(!others.length){
     cardsHtml=`<div class="browse-empty">🎉 모든 방에 이미 참여 중이에요!<br>새 방을 만들어보세요.</div>`;
@@ -282,7 +270,6 @@ function openBrowseModal(){
         <button class="browse-card-enter" onclick="closeBrowseModal();openRoom('${r.id}')">입장하기 →</button>
       </div>`).join('')}</div>`;
   }
-
   overlay.innerHTML=`
     <div class="browse-modal">
       <div class="browse-header">
@@ -295,7 +282,6 @@ function openBrowseModal(){
 }
 function closeBrowseModal(){const el=document.getElementById('browseModal');if(el)el.remove();}
 
-// ── 방 열기 ──
 async function openRoom(id,skipCheck=false){
   const r=rooms.find(x=>x.id===id);if(!r)return;
   if(!skipCheck&&r.visibility==='secret'){
@@ -311,7 +297,7 @@ async function openRoom(id,skipCheck=false){
     }
   }
   activeRoom=id;
-  addJoined(id); // 참여 목록에 추가
+  addJoined(id);
   localStorage.setItem(LAST_ROOM_KEY,id);
   if(window.innerWidth<=768)closeSidebar();
   document.getElementById('welcomeScreen').style.display='none';
@@ -330,7 +316,6 @@ async function openRoom(id,skipCheck=false){
   await sendMsg(`${myNick}님이 채팅방에 입장하셨습니다 👋`,true);
 }
 
-// ── 비밀방 암호 ──
 function closePasscodeModal(){document.getElementById('passcodeModal').style.display='none';document.getElementById('passcodeCheckInp').value='';document.getElementById('passcodeErr').style.display='none';pendingRoomId=null;}
 async function confirmPasscode(){
   const entered=document.getElementById('passcodeCheckInp').value.trim();if(!pendingRoomId)return;
@@ -341,7 +326,6 @@ async function confirmPasscode(){
 }
 document.getElementById('passcodeCheckInp').addEventListener('keydown',e=>{if(e.key==='Enter')confirmPasscode()});
 
-// ── 렌더 함수 ──
 function renderCurrentLayout(){
   if(!activeRoom)return;
   if(currentLayout==='bubble')renderBubble(activeRoom);
@@ -409,7 +393,6 @@ function renderNotepad(id){
   document.getElementById('npStatLn').textContent='Ln: '+(real.length+1)+'  Col: 1';
 }
 
-// ── 전송 ──
 async function doSend(inputId){
   const inp=document.getElementById(inputId);
   if(!inp)return;
@@ -425,7 +408,6 @@ document.getElementById('msgInp').addEventListener('keydown',e=>{if(e.key==='Ent
 document.getElementById('xlInp').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();doSend('xlInp');}});
 document.getElementById('npInp').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();doSend('npInp');}});
 
-// ── 방 만들기 ──
 function showDialog(){document.getElementById('dialog').style.display='flex'}
 function hideDialog(){
   document.getElementById('dialog').style.display='none';
@@ -450,7 +432,7 @@ async function createRoom(){
 }
 document.getElementById('addBtn').onclick=showDialog;
 document.getElementById('wCreate').onclick=showDialog;
-document.getElementById('wBrowse').onclick=openBrowseModal; // 팝업으로 변경
+document.getElementById('wBrowse').onclick=openBrowseModal;
 document.getElementById('dCancel').onclick=hideDialog;
 document.getElementById('dCreate').onclick=createRoom;
 document.getElementById('roomNameInp').addEventListener('keydown',e=>{if(e.key==='Enter')createRoom()});
@@ -458,7 +440,6 @@ document.getElementById('searchInp').addEventListener('input',renderRooms);
 document.getElementById('visOpen').onclick=function(){visMode='open';this.classList.add('sel');document.getElementById('visSecret').classList.remove('sel');document.getElementById('passcodeWrap').style.display='none';document.getElementById('passcodeInp').value='';};
 document.getElementById('visSecret').onclick=function(){visMode='secret';this.classList.add('sel');document.getElementById('visOpen').classList.remove('sel');document.getElementById('passcodeWrap').style.display='block';setTimeout(()=>document.getElementById('passcodeInp').focus(),50);};
 
-// ── 레이아웃 전환 ──
 function selectLayout(layout){
   currentLayout=layout;localStorage.setItem(LAYOUT_KEY,layout);
   document.getElementById('appBubble').style.display=layout==='bubble'?'flex':'none';
@@ -476,7 +457,6 @@ function selectLayout(layout){
   if(activeRoom)renderCurrentLayout();closeSettings();
 }
 
-// ── 설정 모달 ──
 function openSettings(tab='layout'){document.getElementById('settingsModal').style.display='flex';switchSettingsTab(tab,null);}
 function closeSettings(){document.getElementById('settingsModal').style.display='none'}
 function switchSettingsTab(tab,el){
@@ -495,7 +475,6 @@ function openLayoutModal(){document.getElementById('layoutModal').style.display=
 function closeLayoutModal(){document.getElementById('layoutModal').style.display='none'}
 document.getElementById('layoutModal').onclick=function(e){if(e.target===this)closeLayoutModal()}
 
-// ── 색상 스와치 ──
 function renderSwatches(){
   document.getElementById('bubbleSwatches').innerHTML=BUBBLE_PALETTE.map(c=>`
     <div style="width:26px;height:26px;border-radius:50%;background:${c};cursor:pointer;border:2px solid ${c===myBubbleColor?'#fff':'transparent'};transition:transform .15s"
@@ -504,7 +483,6 @@ function renderSwatches(){
 function setBubbleColor(c){myBubbleColor=c;localStorage.setItem(BUBBLE_COLOR_KEY,c);document.querySelectorAll('.bubble.m').forEach(el=>el.style.background=c);renderSwatches();}
 renderSwatches();
 
-// ── 테마 ──
 if(isLight)document.getElementById('appBubble').classList.add('light');
 const themeBtn=document.getElementById('themeToggleBtn');
 themeBtn.textContent=isLight?'🌙':'☀️';
@@ -517,7 +495,6 @@ themeBtn.onclick=function(){
   setTimeout(()=>{this.style.transform='';},180);
 };
 
-// ── 초기화 ──
 selectLayout(currentLayout);
 (async()=>{
   await loadRooms();
