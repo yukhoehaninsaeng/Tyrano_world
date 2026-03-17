@@ -411,11 +411,11 @@ body{height:100vh;overflow:hidden}
       <div class="inv-stamp">🦕</div>
       <div class="inv-from">You're invited to</div>
       <div class="inv-title">티라노<span> 놀이터</span></div>
-      <div class="inv-sub">공룡들이 모이는 익명 채팅 공간.<br>굴을 만들고, 대화하고, 즐기세요.</div>
+      <div class="inv-sub">공룡들이 모이는 익명 채팅 공간.<br>놀이터을 만들고, 대화하고, 즐기세요.</div>
       <div class="inv-divider"></div>
       <div class="inv-info">
-        <div class="inv-info-item"><span class="inv-info-num">47</span><span class="inv-info-lbl">현재 접속</span></div>
-        <div class="inv-info-item"><span class="inv-info-num">12</span><span class="inv-info-lbl">활성 굴</span></div>
+        <div class="inv-info-item"><span class="inv-info-num">0</span><span class="inv-info-lbl">현재 접속</span></div>
+        <div class="inv-info-item"><span class="inv-info-num">0</span><span class="inv-info-lbl">활성 놀이터</span></div>
         <div class="inv-info-item"><span class="inv-info-num">24h</span><span class="inv-info-lbl">익명 채팅</span></div>
       </div>
       <button class="inv-enter-btn" id="invNextBtn">닉네임 설정하기 →</button>
@@ -448,15 +448,15 @@ body{height:100vh;overflow:hidden}
     </div>
     <div class="sb-label">카테고리</div>
     <div class="cat-list">
-      <div class="cat-item active"><span class="cat-icon">🌐</span><span class="cat-lbl">오픈굴</span></div>
-      <div class="cat-item"><span class="cat-icon">🔒</span><span class="cat-lbl">비밀굴</span></div>
+      <div class="cat-item active"><span class="cat-icon">🌐</span><span class="cat-lbl">오픈방</span></div>
+      <div class="cat-item"><span class="cat-icon">🔒</span><span class="cat-lbl">비밀방</span></div>
       <div class="cat-item"><span class="cat-icon">💌</span><span class="cat-lbl">건의함</span></div>
     </div>
     <div class="sb-rooms-head">
-      <span class="sb-rooms-title">내 굴 목록</span>
+      <span class="sb-rooms-title">내 방 목록</span>
       <div class="add-btn" id="addBtn">+</div>
     </div>
-    <div class="sb-search"><div class="sb-si"><span class="search-ic">⌕</span><input type="text" placeholder="내 굴 검색" id="searchInp"/></div></div>
+    <div class="sb-search"><div class="sb-si"><span class="search-ic">⌕</span><input type="text" placeholder="내 방 검색" id="searchInp"/></div></div>
     <div class="room-list" id="roomList"></div>
     <div class="sb-foot">
       <div class="my-av" id="myAv" style="background:#c64ab8">티</div>
@@ -487,10 +487,10 @@ body{height:100vh;overflow:hidden}
     <div class="welcome" id="welcomeScreen">
       <div class="w-ring">🦕</div>
       <div class="w-title">티라노 놀이터에 오신 걸 환영해요</div>
-      <div class="w-sub">왼쪽에서 굴을 선택하거나<br>새 굴을 만들어 대화를 시작해보세요.</div>
+      <div class="w-sub">왼쪽에서 방을 선택하거나<br>새 방을 만들어 대화를 시작해보세요.</div>
       <div class="w-acts">
-        <button class="w-btn p" id="wCreate">+ 굴 만들기</button>
-        <button class="w-btn g" id="wBrowse">굴 둘러보기 →</button>
+        <button class="w-btn p" id="wCreate">+ 방 만들기</button>
+        <button class="w-btn g" id="wBrowse">방 둘러보기 →</button>
       </div>
     </div>
     <div style="display:none;flex:1;flex-direction:column;overflow:hidden" id="chatScreen">
@@ -553,9 +553,9 @@ body{height:100vh;overflow:hidden}
   <!-- 방 만들기 -->
   <div class="overlay" id="dialog" style="display:none">
     <div class="dialog pop">
-      <h3>새 굴 만들기</h3>
-      <p>굴 이름을 입력하고 공개 여부를 설정하세요.</p>
-      <input type="text" placeholder="굴 이름 (예: 직장 탈출굴)" id="roomNameInp" maxlength="30"/>
+      <h3>새 놀이터 만들기</h3>
+      <p>놀이터 이름을 입력하고 공개 여부를 설정하세요.</p>
+      <input type="text" placeholder="놀이터 이름 (예: 직장 탈출 놀이터)" id="roomNameInp" maxlength="30"/>
       <div class="vis-row">
         <button class="vis-btn sel" id="visOpen">🌐 오픈</button>
         <button class="vis-btn" id="visSecret">🔒 비밀</button>
@@ -627,7 +627,7 @@ body{height:100vh;overflow:hidden}
     <div class="xl-rgroup" style="margin-left:auto;border-right:none">
       <div class="xl-rgroup-btns">
         <div class="xl-rb-small" id="xlOnline">🟢 <span id="xlOnlineCnt">47명 접속중</span></div>
-        <div class="xl-rb-small" onclick="showDialog()" style="color:#217346;font-weight:700">+ 새 굴</div>
+        <div class="xl-rb-small" onclick="showDialog()" style="color:#217346;font-weight:700">+ 새 놀이터</div>
       </div>
       <div class="xl-rgroup-label">채팅방</div>
     </div>
@@ -645,7 +645,7 @@ body{height:100vh;overflow:hidden}
     <div class="xl-side">
       <div class="xl-side-head">
         <span>채팅방</span>
-        <span class="xl-side-add" id="xlAddRoom" title="새 굴">＋</span>
+        <span class="xl-side-add" id="xlAddRoom" title="새 방">＋</span>
       </div>
       <div class="xl-sheets" id="xlSheets"></div>
       <div class="xl-side-foot">
@@ -732,7 +732,7 @@ body{height:100vh;overflow:hidden}
     <div class="np-tool-sep"></div>
     <div class="np-tool" title="찾기">🔍</div>
     <div class="np-tool-sep"></div>
-    <div class="np-tool" onclick="showDialog()" title="새 굴 만들기" style="font-size:11px;width:auto;padding:0 6px;color:#217346;font-weight:700;font-family:'Malgun Gothic',sans-serif">+ 새 굴</div>
+    <div class="np-tool" onclick="showDialog()" title="새 방 만들기" style="font-size:11px;width:auto;padding:0 6px;color:#217346;font-weight:700;font-family:'Malgun Gothic',sans-serif">+ 새 방</div>
   </div>
   <!-- 탭바 -->
   <div class="np-tabs">
@@ -943,24 +943,40 @@ function setBubbleColor(c){
 renderSwatches();
 
 // ── 데이터 ───────────────────────────────────
-let rooms=[
-  {id:'r1',name:'월루방',sub:'직장 탈출굴 · 47명',cnt:47,preview:'혹시 웹에서 알림 안오시는분 계신가요?'},
-  {id:'r2',name:'디노 개발방',sub:'개발 · 12명',cnt:12,preview:'오늘 배포 언제해요?'},
-  {id:'r3',name:'취준 뚝배기',sub:'취업준비 · 29명',cnt:29,preview:'면접 후기 공유합니다'},
-];
+let rooms=[];
 let msgsData={};
-const DEMOS=[
-  {u:'아근하는 디잔토끼',t:'오후 01:40',msg:'혹시 딜로이트 SAP 컨 괜찮을까여?',r:42},
-  {u:'강아지927',t:'오후 01:40',msg:'좋죠',r:42},
-  {u:'강아지927',t:'오후 01:40',msg:'빅4면',r:42},
-  {u:'강아지927',t:'오후 01:41',msg:'근데 pwc말고는 일거리가 많이 없을거에요',r:42},
-  {u:'아근하는 디잔토끼',t:'오후 01:41',msg:'한번 사업 접었었다고 한거 같아서요',r:42},
-  {u:'강아지927',t:'오후 01:41',msg:'맞아요 팩트는몰라요근데',r:42},
-  {u:'강태공',t:'오후 03:10',msg:'혹시 웹에서 알림 안오시는분 계신가요?',r:44},
-  {u:'강태공',t:'오후 03:10',msg:'저는 윈도우에 크롬쓰고 있는데 잘오긴하거든요',r:44},
-];
+const DEMOS=[];
 
 // ── 사이드바 렌더링 ──────────────────────────
+function mapApiRoom(room){
+  const cnt=typeof room.participantCount==='number'?room.participantCount:0;
+  const preview=(room.concept||room.description||'').trim()||'?? ???? ????.';
+  return {
+    id:room.id,
+    slug:room.slug,
+    name:room.name,
+    sub:'?? ? '+cnt+'?',
+    cnt,
+    preview
+  };
+}
+
+async function syncRoomsFromApi(){
+  try{
+    const res=await fetch('/api/rooms',{cache:'no-store'});
+    if(!res.ok) return;
+    const data=await res.json();
+    if(!Array.isArray(data)) return;
+    rooms=data.map(mapApiRoom);
+    if(activeRoom && !rooms.some(r=>r.id===activeRoom)){
+      activeRoom=null;
+      document.getElementById('welcomeScreen').style.display='flex';
+      document.getElementById('chatScreen').style.display='none';
+    }
+    renderRooms();renderXlSheets();renderNpSide();
+  }catch{}
+}
+
 function renderRooms(){
   const q=document.getElementById('searchInp').value.trim().toLowerCase();
   const f=rooms.filter(r=>r.name.toLowerCase().includes(q));
@@ -968,7 +984,7 @@ function renderRooms(){
     <div class="room-item${activeRoom===r.id?' active':''}" onclick="openRoom('${r.id}')">
       <div class="ri-top"><span class="ri-name">${r.name}</span><span class="ri-cnt"><span class="ri-dot"></span>${r.cnt}명</span></div>
       <div class="ri-preview">${r.preview}</div>
-    </div>`).join(''):'<div class="empty-state">참여한 굴이 없어요.<br>새 굴을 만들어보세요 🕳️</div>';
+    </div>`).join(''):'<div class="empty-state">참여한 방이 없어요.<br>새 방을 만들어보세요 🕳️</div>';
 }
 function renderXlSheets(){
   document.getElementById('xlSheets').innerHTML=rooms.map(r=>`
@@ -1110,14 +1126,14 @@ function hideDialog(){document.getElementById('dialog').style.display='none';doc
 function createRoom(){
   const n=document.getElementById('roomNameInp').value.trim();if(!n)return;
   const id='r'+Date.now();
-  rooms.unshift({id,name:n,sub:`${visMode==='open'?'오픈':'비밀'} · 1명`,cnt:1,preview:'새 굴이 열렸어요!'});
-  msgsData[id]=[{u:'SYSTEM',t:ts(),msg:`'${n}' 굴이 생성되었습니다 🎉`,r:0}];
+  rooms.unshift({id,name:n,sub:`${visMode==='open'?'오픈':'비밀'} · 1명`,cnt:1,preview:'새 방이 열렸어요!'});
+  msgsData[id]=[{u:'SYSTEM',t:ts(),msg:`'${n}' 방이 생성되었습니다 🎉`,r:0}];
   hideDialog();openRoom(id);
 }
 document.getElementById('addBtn').onclick=showDialog;
 document.getElementById('xlAddRoom').onclick=showDialog;
 document.getElementById('wCreate').onclick=showDialog;
-document.getElementById('wBrowse').onclick=()=>openRoom(rooms[0].id);
+document.getElementById('wBrowse').onclick=()=>{if(rooms.length)openRoom(rooms[0].id)};
 document.getElementById('dCancel').onclick=hideDialog;
 document.getElementById('dCreate').onclick=createRoom;
 document.getElementById('roomNameInp').addEventListener('keydown',e=>{if(e.key==='Enter')createRoom()});
@@ -1137,6 +1153,8 @@ document.getElementById('themeSw').onclick=function(){
 // ── 초기화 ───────────────────────────────────
 selectLayout(currentLayout);
 renderRooms();renderXlSheets();renderNpSide();
+syncRoomsFromApi();
+setInterval(syncRoomsFromApi,5000);
 </script>
 </body>
 </html>
