@@ -471,10 +471,7 @@ body{height:100vh;height:100dvh;overflow:hidden}
         <div class="my-sub" id="mySub">접속 중...</div>
       </div>
       <div class="foot-right">
-        <div class="theme-sw" id="themeSw">
-          <div class="sw-track-icons"><span>☀️</span><span>🌙</span></div>
-          <div class="sw-knob"></div>
-        </div>
+        <button id="themeToggleBtn" style="font-size:20px;background:none;border:none;cursor:pointer;padding:2px 4px;transition:transform .2s;flex-shrink:0;">☀️</button>
         <div class="foot-ic" id="settingsBtn2">⚙️</div>
       </div>
     </div>
@@ -1199,21 +1196,16 @@ renderSwatches();
 
 // ── 테마 ──
 if(isLight) document.getElementById('appBubble').classList.add('light');
-
-document.addEventListener('DOMContentLoaded', ()=>{
-  const btn = document.getElementById('themeToggleBtn');
-  if(!btn) return;
-  // 초기 아이콘: 라이트면 🌙(누르면 다크로), 다크면 ☀️(누르면 라이트로)
-  btn.textContent = isLight ? '🌙' : '☀️';
-  btn.onclick = function(){
-    isLight = !isLight;
-    document.getElementById('appBubble').classList.toggle('light', isLight);
-    localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
-    this.textContent = isLight ? '🌙' : '☀️';
-    this.style.transform = 'scale(1.35)';
-    setTimeout(()=>{ this.style.transform = ''; }, 180);
-  };
-});
+const themeBtn = document.getElementById('themeToggleBtn');
+themeBtn.textContent = isLight ? '🌙' : '☀️';
+themeBtn.onclick = function(){
+  isLight = !isLight;
+  document.getElementById('appBubble').classList.toggle('light', isLight);
+  localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
+  this.textContent = isLight ? '🌙' : '☀️';
+  this.style.transform = 'scale(1.35)';
+  setTimeout(()=>{ this.style.transform = ''; }, 180);
+};
 
 // ── 초기화 ──
 selectLayout(currentLayout);
