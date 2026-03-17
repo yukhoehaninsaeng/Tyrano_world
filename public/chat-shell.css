@@ -404,5 +404,69 @@ body{height:100vh;height:100dvh;overflow:hidden}
 .np-stat.accent{color:#0000aa;font-weight:700}
 @media(max-width:480px){.np-stat:not(.accent):not(:last-child){display:none}}
 
-/* 레이아웃 모달 */
-#layoutModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:150;align-items:center;justify-content:center}
+/* ── 사이드바 섹션 ── */
+.sb-section-label{
+  padding:12px 14px 4px;
+  font-size:10px;font-weight:700;
+  color:var(--text3);letter-spacing:.8px;text-transform:uppercase;
+  flex-shrink:0;display:flex;align-items:center;gap:6px;
+}
+.sb-section-label span{flex:1}
+.sb-section-cnt{
+  font-size:10px;font-weight:700;
+  background:var(--bg4);color:var(--text3);
+  border-radius:20px;padding:1px 7px;
+}
+.sb-section-divider{height:0.5px;background:var(--border);margin:4px 8px 2px;}
+
+/* ── 방 둘러보기 팝업 ── */
+.browse-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.35);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  z-index:60;display:flex;align-items:center;justify-content:center;
+}
+.browse-modal{
+  background:var(--bg2);
+  border:0.5px solid var(--border2);
+  border-radius:20px;
+  width:480px;max-width:95vw;max-height:80vh;
+  display:flex;flex-direction:column;overflow:hidden;
+  box-shadow:0 24px 60px rgba(0,0,0,.4);
+  animation:popIn .2s cubic-bezier(.34,1.2,.64,1) both;
+}
+.browse-header{
+  padding:18px 20px;border-bottom:0.5px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.browse-header h2{font-size:16px;font-weight:800;color:var(--text)}
+.browse-close{width:28px;height:28px;border-radius:8px;background:transparent;border:none;cursor:pointer;font-size:16px;color:var(--text2);display:flex;align-items:center;justify-content:center;transition:background .15s}
+.browse-close:hover{background:var(--bg3)}
+.browse-body{flex:1;overflow-y:auto;padding:16px}
+.browse-body::-webkit-scrollbar{width:3px}
+.browse-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.browse-empty{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px;line-height:1.8}
+.browse-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+@media(max-width:480px){.browse-grid{grid-template-columns:1fr}}
+.browse-card{
+  background:var(--bg3);border:0.5px solid var(--border);
+  border-radius:14px;padding:16px;cursor:pointer;
+  transition:all .15s;display:flex;flex-direction:column;gap:8px;
+}
+.browse-card:hover{background:var(--bg4);border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.browse-card-name{font-size:14px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px}
+.browse-card-badge{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:700}
+.browse-card-badge.open{background:rgba(29,215,95,.15);color:var(--green)}
+.browse-card-badge.secret{background:rgba(232,23,74,.1);color:var(--accent)}
+.browse-card-preview{font-size:12px;color:var(--text3);line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.browse-card-owner{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:5px;margin-top:auto}
+.browse-card-owner-av{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0}
+.browse-card-enter{
+  margin-top:4px;padding:7px;border-radius:8px;
+  background:var(--accent);color:#fff;
+  border:none;font-size:12px;font-weight:700;
+  cursor:pointer;font-family:inherit;width:100%;
+  transition:background .15s;
+}
+.browse-card-enter:hover{background:#c8103e}
