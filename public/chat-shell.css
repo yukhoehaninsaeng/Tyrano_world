@@ -255,30 +255,9 @@ body{height:100vh;height:100dvh;overflow:hidden}
 .layout-card-badge{font-size:11px;font-weight:700;color:var(--accent);background:rgba(232,23,74,.12);padding:2px 8px;border-radius:20px;flex-shrink:0}
 
 /* 방 만들기 / 모달 */
-.room-dropdown,
-.settings-modal,
-.dialog,
-.passcode-modal-box,
-.browse-modal{
-  --bg2:#fff;
-  --bg3:#f7f7f7;
-  --bg4:#efefef;
-  --border:#e6e6e6;
-  --border2:#d8d8d8;
-  --text:#151515;
-  --text2:#555;
-  --text3:#888;
-  --inp-bg:#f8f8f8;
-  --inp-border:#ddd;
-  --inp-text:#151515;
-  --inp-ph:#9b9b9b;
-  background:#fff;
-  color:#151515;
-}
-
 .overlay{
   position:fixed;inset:0;
-  background:rgba(0,0,0,.35);
+  background:rgba(0,0,0,.3);
   backdrop-filter:blur(14px);
   -webkit-backdrop-filter:blur(14px);
   display:flex;align-items:center;justify-content:center;z-index:50
