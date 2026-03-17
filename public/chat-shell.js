@@ -212,6 +212,7 @@ async function loadRooms(){
   rooms=data.map(r=>({id:r.id,name:r.title,visibility:r.visibility,passcode:r.passcode||null,owner_name:r.owner_name||'',preview:'방에 입장해 대화하세요',cnt:0}));
   renderAllSides();
   for(const room of rooms){
+    if(room.visibility==='secret')continue;
     const {data:last}=await sb.from('messages').select('content,sender_name').eq('room_id',room.id).order('created_at',{ascending:false}).limit(1);
     if(last&&last[0])room.preview=last[0].sender_name+': '+last[0].content;
   }
@@ -239,7 +240,7 @@ function subscribeRoom(roomId){
         msgsData[roomId].push({id:m.id,u:m.sender_name,t:fmtTime(m.created_at),msg:m.content,sys:m.is_system||false});
         renderCurrentLayout();
         const r=rooms.find(x=>x.id===roomId);
-        if(r&&!m.is_system){r.preview=m.sender_name+': '+m.content;renderAllSides();}
+        if(r&&r.visibility!=='secret'&&!m.is_system){r.preview=m.sender_name+': '+m.content;renderAllSides();}
       }
     })
     .subscribe(status=>{
@@ -274,11 +275,12 @@ function renderRooms(){
   const otherRooms=rooms.filter(r=>!joined.includes(r.id)&&r.name.toLowerCase().includes(q));
 
   function roomItemHtml(r){
+    const preview=r.visibility==='secret'?'':r.preview;
     return `
       <div class="room-item${activeRoom===r.id?' active':''}" onclick="openRoom('${r.id}')">
         <div class="room-item-body">
           <div class="ri-top"><span class="ri-name">${r.visibility==='secret'?'🔒 ':''}${r.name}</span></div>
-          <div class="ri-preview">${r.preview}</div>
+          <div class="ri-preview">${preview}</div>
         </div>
         <button class="room-kebab" onclick="openRoomDropdown(event,'${r.id}')" title="메뉴">⋮</button>
       </div>`;
@@ -343,7 +345,7 @@ function openBrowseModal(){
           ${r.visibility==='secret'?'🔒':'🌐'} ${r.name}
           <span class="browse-card-badge ${r.visibility==='secret'?'secret':'open'}">${r.visibility==='secret'?'비밀':'오픈'}</span>
         </div>
-        <div class="browse-card-preview">${r.preview}</div>
+        <div class="browse-card-preview">${r.visibility==='secret'?'':r.preview}</div>
         <div class="browse-card-owner">
           <div class="browse-card-owner-av" style="background:${ac(r.owner_name||'?')}">${ini(r.owner_name||'?')}</div>
           👑 ${r.owner_name||'알 수 없음'}
