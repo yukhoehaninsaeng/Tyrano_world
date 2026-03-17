@@ -25,10 +25,11 @@ let myBubbleColor=localStorage.getItem(BUBBLE_COLOR_KEY)||'#9f3060';
 let currentLayout=localStorage.getItem(LAYOUT_KEY)||'bubble';
 let isLight=localStorage.getItem(THEME_KEY)==='light';
 let notifyEnabled=localStorage.getItem(NOTIFY_KEY)==='on';
-let notifyCount=0;
 let activeRoom=null, visMode='open';
 let rooms=[], msgsData={}, msgChannel=null, pendingRoomId=null, msgAlertChannel=null;
 let currentDropdownRoomId=null;
+let unreadByRoom={};
+const alertedMsgIds=new Set();
 
 function loadPasscodes(){try{return JSON.parse(localStorage.getItem(ROOM_PASSCODES_KEY))||{};}catch{return{}}}
 function savePasscode(id,pw){const m=loadPasscodes();m[id]=pw;localStorage.setItem(ROOM_PASSCODES_KEY,JSON.stringify(m))}
@@ -46,6 +47,22 @@ function renderNotifyToggle(){
   btn.textContent=notifyEnabled?'🔔':'🔕';
   btn.title=notifyEnabled?'알림 끄기':'알림 켜기';
   btn.style.opacity=notifyEnabled?'1':'.6';
+}
+function getUnreadTotal(){return Object.values(unreadByRoom).reduce((a,b)=>a+(b||0),0)}
+function clearUnreadForRoom(roomId){if(roomId)delete unreadByRoom[roomId]}
+function clearAllUnread(){unreadByRoom={}}
+function subscribeMessageAlerts(){
+  if(msgAlertChannel||!notifyEnabled)return;
+  msgAlertChannel=sb.channel('messages-global')
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},payload=>{
+      notifyIncomingMessage(payload.new);
+    })
+    .subscribe();
+}
+function unsubscribeMessageAlerts(){
+  if(!msgAlertChannel)return;
+  sb.removeChannel(msgAlertChannel);
+  msgAlertChannel=null;
 }
 async function setNotifyEnabled(enabled){
   if(enabled){
@@ -75,7 +92,12 @@ async function setNotifyEnabled(enabled){
     }
   }
   notifyEnabled=enabled;
-  if(!notifyEnabled)notifyCount=0;
+  if(!notifyEnabled){
+    clearAllUnread();
+    unsubscribeMessageAlerts();
+  }else{
+    subscribeMessageAlerts();
+  }
   localStorage.setItem(NOTIFY_KEY,notifyEnabled?'on':'off');
   renderNotifyToggle();
 }
@@ -84,11 +106,15 @@ function notifyIncomingMessage(m){
   if(!notifyEnabled||!m)return;
   if(m.is_system||m.sender_name===myNick)return;
   if(!isJoined(m.room_id))return;
-  if(m.room_id===activeRoom&&document.visibilityState==='visible')return;
+  if(m.room_id===activeRoom)return;
+  const mid=String(m.id||'');
+  if(mid&&alertedMsgIds.has(mid))return;
+  if(mid)alertedMsgIds.add(mid);
+  unreadByRoom[m.room_id]=(unreadByRoom[m.room_id]||0)+1;
   if(typeof Notification==='undefined'||Notification.permission!=='granted')return;
-  notifyCount+=1;
+  const total=getUnreadTotal();
   try{
-    new Notification('티라노 놀이터',{body:`${notifyCount}건의 메세지가 도착했습니다.`,tag:'tyrano-msg-alert',renotify:true});
+    new Notification('티라노 놀이터',{body:`${total}건의 메세지가 도착했습니다.`,tag:'tyrano-msg-alert',renotify:true});
   }catch{}
 }
 
@@ -220,14 +246,6 @@ function subscribeRoom(roomId){
       const dot=document.getElementById('connDot');
       if(dot)dot.style.background=status==='SUBSCRIBED'?'var(--green)':'#888';
     });
-}
-function subscribeMessageAlerts(){
-  if(msgAlertChannel)return;
-  msgAlertChannel=sb.channel('messages-global')
-    .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},payload=>{
-      notifyIncomingMessage(payload.new);
-    })
-    .subscribe();
 }
 sb.channel('rooms-global')
   .on('postgres_changes',{event:'INSERT',schema:'public',table:'rooms'},payload=>{
@@ -361,7 +379,7 @@ async function openRoom(id,skipCheck=false){
     }
   }
   activeRoom=id;
-  notifyCount=0;
+  clearUnreadForRoom(id);
   addJoined(id);
   localStorage.setItem(LAST_ROOM_KEY,id);
   if(window.innerWidth<=768)closeSidebar();
@@ -564,9 +582,15 @@ themeBtn.onclick=function(){
 };
 
 selectLayout(currentLayout);
-subscribeMessageAlerts();
-window.addEventListener('focus',()=>{notifyCount=0;});
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')notifyCount=0;});
+if(notifyEnabled&&typeof Notification!=='undefined'&&Notification.permission==='granted'){
+  subscribeMessageAlerts();
+}else if(notifyEnabled){
+  notifyEnabled=false;
+  localStorage.setItem(NOTIFY_KEY,'off');
+  renderNotifyToggle();
+}
+window.addEventListener('focus',()=>{if(activeRoom)clearUnreadForRoom(activeRoom);});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&activeRoom)clearUnreadForRoom(activeRoom);});
 (async()=>{
   await loadRooms();
   const lastId=localStorage.getItem(LAST_ROOM_KEY);
