@@ -33,3 +33,21 @@ exception
   when duplicate_object then null;
 end
 $$;
+
+ALTER TABLE public.rooms ADD COLUMN IF NOT EXISTS passcode TEXT;
+
+
+alter table public.rooms add column if not exists owner_name text;
+
+-- messages 테이블 RLS 비활성화 (또는 정책 추가)
+ALTER TABLE public.messages DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.rooms DISABLE ROW LEVEL SECURITY;
+
+-- rooms: 누구나 읽기/쓰기
+CREATE POLICY "allow_all_rooms" ON public.rooms FOR ALL TO anon USING (true) WITH CHECK (true);
+
+-- messages: 누구나 읽기/쓰기  
+CREATE POLICY "allow_all_messages" ON public.messages FOR ALL TO anon USING (true) WITH CHECK (true);
+
+ALTER TABLE public.messages
+ADD COLUMN IF NOT EXISTS is_system boolean NOT NULL DEFAULT false;
