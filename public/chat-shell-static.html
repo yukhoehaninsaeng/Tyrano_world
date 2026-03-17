@@ -33,7 +33,7 @@
 .nick-input{width:100%;background:#222224;border:0.5px solid #3a3a3c;border-radius:10px;padding:12px 14px;font-size:15px;color:#f0ece6;outline:none;font-family:inherit;text-align:center;margin-bottom:12px;transition:border-color .15s}
 .nick-input:focus{border-color:#e8174a}
 .nick-input::placeholder{color:#55525a}
-.nick-skip{font-size:12px;color:#55525a;cursor:pointer;margin-top:4px;transition:color .15s}
+.nick-skip{font-size:12px;color:#55525a;cursor:pointer;margin-top:4px}
 .nick-skip:hover{color:#9a9590}
 @keyframes fadeOut{to{opacity:0;pointer-events:none}}
 .fading{animation:fadeOut .4s ease forwards}
@@ -60,6 +60,7 @@
 }
 body{height:100vh;height:100dvh;overflow:hidden}
 
+/* 사이드바 */
 .sb{width:220px;min-width:220px;background:var(--bg2);border-right:0.5px solid var(--border);display:flex;flex-direction:column;overflow:hidden;transition:background .25s,border-color .25s,transform .3s;flex-shrink:0}
 @media(max-width:768px){
   .sb{position:absolute;top:0;left:0;bottom:0;width:80vw;max-width:300px;z-index:30;transform:translateX(-100%);box-shadow:4px 0 24px rgba(0,0,0,.4)}
@@ -88,12 +89,32 @@ body{height:100vh;height:100dvh;overflow:hidden}
 .room-list::-webkit-scrollbar{width:2px}
 .room-list::-webkit-scrollbar-thumb{background:var(--border2)}
 .empty-state{margin:6px 0;background:var(--bg3);border:0.5px solid var(--border);border-radius:10px;padding:24px 12px;text-align:center;font-size:12px;color:var(--text3);line-height:1.6}
-.room-item{padding:9px;border-radius:9px;cursor:pointer;transition:background .12s;margin-bottom:2px}
+
+/* 방 아이템 - ︙ 버튼 포함 */
+.room-item{padding:9px 6px 9px 9px;border-radius:9px;cursor:pointer;transition:background .12s;margin-bottom:2px;display:flex;align-items:center;gap:4px}
 .room-item:hover{background:rgba(128,128,128,.06)}
 .room-item.active{background:rgba(128,128,128,.1)}
-.ri-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
-.ri-name{font-size:13px;font-weight:700;color:var(--text)}
+.room-item-body{flex:1;min-width:0}
+.ri-top{display:flex;align-items:center;margin-bottom:3px}
+.ri-name{font-size:13px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ri-preview{font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.room-kebab{width:24px;height:24px;border-radius:6px;border:none;background:transparent;color:var(--text3);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;opacity:0}
+.room-item:hover .room-kebab{opacity:1}
+.room-item.active .room-kebab{opacity:.7}
+.room-kebab:hover{background:var(--bg4);color:var(--text);opacity:1!important}
+
+/* 방 메뉴 드롭다운 */
+.room-dropdown{position:fixed;background:var(--bg2);border:0.5px solid var(--border2);border-radius:12px;padding:6px;min-width:160px;z-index:80;box-shadow:0 8px 32px rgba(0,0,0,.35);animation:dropIn .12s cubic-bezier(.34,1.2,.64,1) both}
+@keyframes dropIn{from{opacity:0;transform:scale(.95) translateY(-4px)}to{opacity:1;transform:none}}
+.dd-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--text2);transition:background .1s;white-space:nowrap}
+.dd-item:hover{background:var(--bg3);color:var(--text)}
+.dd-item.danger{color:#e8174a}
+.dd-item.danger:hover{background:rgba(232,23,74,.08);color:#e8174a}
+.dd-sep{height:0.5px;background:var(--border);margin:4px 0}
+.dd-owner-row{display:flex;align-items:center;gap:8px;padding:8px 10px;font-size:12px;color:var(--text3)}
+.dd-owner-av{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;position:relative;flex-shrink:0}
+.dd-crown{position:absolute;top:-7px;left:50%;transform:translateX(-50%);font-size:11px;line-height:1;pointer-events:none}
+
 .sb-foot{padding:10px 12px;border-top:0.5px solid var(--border);display:flex;align-items:center;gap:9px;flex-shrink:0}
 .my-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
 .my-info{flex:1;min-width:0}
@@ -106,8 +127,22 @@ body{height:100vh;height:100dvh;overflow:hidden}
 .sw-knob{width:18px;height:18px;border-radius:50%;background:#888;position:relative;z-index:1;transition:transform .22s cubic-bezier(.34,1.3,.64,1),background .22s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
 #appBubble.light .sw-knob{transform:translateX(20px);background:#fff}
 #appBubble:not(.light) .sw-knob{transform:translateX(0);background:#ccc}
-.foot-ic{font-size:13px;cursor:pointer;color:var(--text3);width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:all .15s}
-.foot-ic:hover{background:var(--bg4);color:var(--text)}
+/* 테마 이모지 토글 버튼 */
+.theme-toggle-btn{
+  font-size:22px;
+  background:none;
+  border:none;
+  cursor:pointer;
+  line-height:1;
+  padding:2px 4px;
+  transition:transform .2s;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* 메인 */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);transition:background .25s;min-width:0}
 .ch{padding:0 18px;height:52px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .ch-left{display:flex;align-items:center;gap:8px}
@@ -134,20 +169,21 @@ body{height:100vh;height:100dvh;overflow:hidden}
 .msgs::-webkit-scrollbar{width:3px}
 .msgs::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 .sys-notice{margin:8px 0;background:rgba(200,170,60,.07);border:0.5px solid rgba(200,170,60,.2);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--text2);text-align:center;line-height:1.5}
+.sys-join{margin:8px auto;background:rgba(29,215,95,.07);border:0.5px solid rgba(29,215,95,.2);border-radius:20px;padding:5px 14px;font-size:11px;color:var(--text2);text-align:center;display:inline-block;max-width:90%}
 .day-sep{text-align:center;font-size:11px;color:var(--text3);margin:10px 0;display:flex;align-items:center;gap:8px}
 .day-sep::before,.day-sep::after{content:'';flex:1;height:.5px;background:var(--border)}
 .msg-row{display:flex;align-items:flex-end;gap:8px}
 .msg-row.first{margin-top:10px}
 .msg-row.me{flex-direction:row-reverse}
-.av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
-.av-wrap{position:relative;flex-shrink:0;width:30px}
+/* 왕관 아바타 */
+.av-wrap{position:relative;flex-shrink:0;width:30px;height:30px}
 .av-wrap.h{visibility:hidden}
-.av-crown{position:absolute;top:-9px;left:50%;transform:translateX(-50%);font-size:12px;line-height:1;pointer-events:none}
-.av.h{visibility:hidden}
+.av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+.av-crown{position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:12px;line-height:1;pointer-events:none}
 .bwrap{display:flex;flex-direction:column;max-width:62%}
 @media(max-width:480px){.bwrap{max-width:82%}}
 .me .bwrap{align-items:flex-end}
-.sname{font-size:10px;font-weight:700;margin-bottom:3px;margin-left:2px}
+.sname{font-size:10px;font-weight:700;margin-bottom:3px;margin-left:2px;display:flex;align-items:center;gap:3px}
 .bmeta{display:flex;align-items:flex-end;gap:5px}
 .me .bmeta{flex-direction:row-reverse}
 .bubble{padding:8px 13px;font-size:13px;line-height:1.55;word-break:break-word;border-radius:16px}
@@ -169,7 +205,15 @@ body{height:100vh;height:100dvh;overflow:hidden}
 .inp-ic{font-size:14px;cursor:pointer;color:var(--text3)}
 .send-btn{background:var(--accent);border:none;border-radius:18px;color:#fff;font-size:12px;font-weight:700;padding:8px 14px;cursor:pointer;font-family:inherit;transition:background .15s;flex-shrink:0;white-space:nowrap}
 .send-btn:hover{background:#c8103e}
-.settings-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:flex;align-items:center;justify-content:center}
+
+/* 설정 모달 오버레이 */
+.settings-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.3);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  z-index:100;display:flex;align-items:center;justify-content:center
+}
 .settings-modal{background:var(--bg2);border:0.5px solid var(--border2);border-radius:16px;width:520px;max-width:95vw;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;animation:popIn .2s cubic-bezier(.34,1.2,.64,1) both}
 @keyframes popIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
 .settings-header{padding:18px 20px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
@@ -198,8 +242,14 @@ body{height:100vh;height:100dvh;overflow:hidden}
 .layout-card-desc{font-size:12px;color:var(--text3)}
 .layout-card-badge{font-size:11px;font-weight:700;color:var(--accent);background:rgba(232,23,74,.12);padding:2px 8px;border-radius:20px;flex-shrink:0}
 
-/* 방 만들기 & 공통 오버레이 */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;z-index:50}
+/* 방 만들기 / 모달 오버레이 */
+.overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.3);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  display:flex;align-items:center;justify-content:center;z-index:50
+}
 .dialog{background:var(--bg2);border:0.5px solid var(--border2);border-radius:16px;padding:24px;width:300px;max-width:90vw}
 .dialog h3{font-size:16px;font-weight:800;color:var(--text);margin-bottom:4px}
 .dialog p{font-size:12px;color:var(--text3);margin-bottom:18px}
@@ -218,34 +268,7 @@ body{height:100vh;height:100dvh;overflow:hidden}
 @keyframes pop{from{opacity:0;transform:scale(.9) translateY(4px)}to{opacity:1;transform:scale(1) translateY(0)}}
 .pop{animation:pop .16s cubic-bezier(.34,1.3,.64,1) both}
 
-/* ── 채팅 햄버거 메뉴 ── */
-.chat-menu-overlay{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.45)}
-.chat-menu-panel{position:fixed;top:0;right:0;bottom:0;width:220px;max-width:80vw;background:var(--bg2);border-left:0.5px solid var(--border);display:flex;flex-direction:column;z-index:41;transform:translateX(100%);transition:transform .25s cubic-bezier(.34,1.1,.64,1)}
-.chat-menu-panel.open{transform:translateX(0)}
-.cmp-head{padding:18px 16px 14px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.cmp-title{font-size:14px;font-weight:800;color:var(--text)}
-.cmp-close{font-size:16px;cursor:pointer;color:var(--text3);padding:4px}
-.cmp-room{padding:14px 16px;border-bottom:0.5px solid var(--border);flex-shrink:0}
-.cmp-room-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px}
-.cmp-room-sub{font-size:11px;color:var(--text3)}
-.cmp-owner{padding:14px 16px;border-bottom:0.5px solid var(--border);flex-shrink:0}
-.cmp-owner-label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px}
-.cmp-owner-row{display:flex;align-items:center;gap:8px}
-.cmp-owner-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;position:relative;flex-shrink:0}
-.cmp-crown{position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:13px;line-height:1}
-.cmp-owner-name{font-size:13px;font-weight:600;color:var(--text)}
-.cmp-actions{padding:12px 10px;display:flex;flex-direction:column;gap:6px;flex:1}
-.cmp-btn{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;transition:background .12s;border:none;background:transparent;color:var(--text2);font-family:inherit;width:100%;text-align:left}
-.cmp-btn:hover{background:var(--bg3)}
-.cmp-btn.danger{color:#e8174a}
-.cmp-btn.danger:hover{background:rgba(232,23,74,.08)}
-.cmp-btn-icon{font-size:16px;width:24px;text-align:center}
-
-/* ── 왕관 아바타 ── */
-.av-wrap{position:relative;flex-shrink:0}
-.av-crown{position:absolute;top:-9px;left:50%;transform:translateX(-50%);font-size:12px;line-height:1;pointer-events:none}
-
-/* ── 비밀방 암호 모달 ── */
+/* 비밀방 암호 모달 */
 .passcode-modal-box{background:var(--bg2);border:0.5px solid var(--border2);border-radius:16px;padding:28px 24px;width:280px;max-width:90vw;display:flex;flex-direction:column;gap:14px;animation:pop .16s cubic-bezier(.34,1.3,.64,1) both}
 .passcode-title{font-size:16px;font-weight:800;color:var(--text)}
 .passcode-sub{font-size:12px;color:var(--text3);margin-top:-8px}
@@ -414,7 +437,7 @@ body{height:100vh;height:100dvh;overflow:hidden}
     <div class="inv-nick-step" id="invNick">
       <div class="inv-stamp" style="width:56px;height:56px;font-size:28px;margin-bottom:16px">🦕</div>
       <div class="inv-title" style="font-size:20px;margin-bottom:6px">닉네임을 정해요</div>
-      <div class="nick-label">티라노 놀이터에서 불릴 이름이에요.<br>나중에 설정에서 바꿀 수 있어요.</div>
+      <div class="nick-label">티라노 놀이터에서 불릴 이름이에요.</div>
       <input class="nick-input" id="nickInput" placeholder="예: 월화수목티라노" maxlength="16"/>
       <button class="inv-enter-btn" id="invEnterBtn">입장하기 🎉</button>
       <div class="nick-skip" id="nickSkip">닉네임 없이 입장 (랜덤 부여)</div>
@@ -448,11 +471,15 @@ body{height:100vh;height:100dvh;overflow:hidden}
         <div class="my-sub" id="mySub">접속 중...</div>
       </div>
       <div class="foot-right">
-       
+        <div class="theme-sw" id="themeSw">
+          <div class="sw-track-icons"><span>☀️</span><span>🌙</span></div>
+          <div class="sw-knob"></div>
+        </div>
         <div class="foot-ic" id="settingsBtn2">⚙️</div>
       </div>
     </div>
   </div>
+
   <div class="main">
     <div class="ch">
       <div class="ch-left">
@@ -462,12 +489,7 @@ body{height:100vh;height:100dvh;overflow:hidden}
       </div>
       <div class="ch-r">
         <span class="layout-badge" id="layoutBadge">말풍선</span>
-         <div class="theme-sw" id="themeSw">
-          <div class="sw-track-icons"><span>☀️</span><span>🌙</span></div>
-          <div class="sw-knob"></div>
-        </div>
         <button class="ch-btn" id="layoutSettingsBtn">⚙️ 레이아웃</button>
-        <button class="ch-btn" id="chatMenuBtn" style="display:none">☰</button>
       </div>
     </div>
     <div class="welcome" id="welcomeScreen">
@@ -492,38 +514,8 @@ body{height:100vh;height:100dvh;overflow:hidden}
     </div>
   </div>
 
-  <!-- 채팅방 햄버거 메뉴 -->
-  <div class="chat-menu-overlay" id="chatMenuOverlay" style="display:none" onclick="closeChatMenu()"></div>
-  <div class="chat-menu-panel" id="chatMenuPanel">
-    <div class="cmp-head">
-      <span class="cmp-title">채팅방 메뉴</span>
-      <span class="cmp-close" onclick="closeChatMenu()">✕</span>
-    </div>
-    <div class="cmp-room">
-      <div class="cmp-room-name" id="cmpRoomName">—</div>
-      <div class="cmp-room-sub" id="cmpRoomSub">—</div>
-    </div>
-    <div class="cmp-owner">
-      <div class="cmp-owner-label">방장</div>
-      <div class="cmp-owner-row">
-        <div class="cmp-owner-av" id="cmpOwnerAv">
-          <span class="cmp-crown">👑</span>
-          <span id="cmpOwnerIni">?</span>
-        </div>
-        <span class="cmp-owner-name" id="cmpOwnerName">—</span>
-      </div>
-    </div>
-    <div class="cmp-actions">
-      <button class="cmp-btn" onclick="leaveRoom()">
-        <span class="cmp-btn-icon">🚪</span> 방 나가기
-      </button>
-      <button class="cmp-btn danger" id="cmpDeleteBtn" style="display:none" onclick="deleteRoom()">
-        <span class="cmp-btn-icon">🗑️</span> 방 삭제하기
-      </button>
-    </div>
-  </div>
-
-  <!-- 설정 모달 -->  <div class="settings-overlay" id="settingsModal" style="display:none">
+  <!-- 설정 모달 -->
+  <div class="settings-overlay" id="settingsModal" style="display:none">
     <div class="settings-modal">
       <div class="settings-header"><h2>설정</h2><button class="settings-close" id="settingsClose">✕</button></div>
       <div class="settings-body">
@@ -562,7 +554,7 @@ body{height:100vh;height:100dvh;overflow:hidden}
   </div>
 </div>
 
-<!-- ★ 방 만들기 다이얼로그 (appBubble 바깥, body 직속) -->
+<!-- 방 만들기 -->
 <div class="overlay" id="dialog" style="display:none">
   <div class="dialog pop">
     <h3>새 방 만들기</h3>
@@ -582,7 +574,7 @@ body{height:100vh;height:100dvh;overflow:hidden}
   </div>
 </div>
 
-<!-- ★ 비밀방 입장 암호 모달 (body 직속, 독립적으로 존재) -->
+<!-- 비밀방 암호 모달 -->
 <div class="overlay" id="passcodeModal" style="display:none">
   <div class="passcode-modal-box pop">
     <div class="passcode-title">🔒 비밀방</div>
@@ -602,16 +594,14 @@ body{height:100vh;height:100dvh;overflow:hidden}
     <span class="xl-titlebar-ico">📊</span>
     <span class="xl-titlebar-title" id="xlTitle">채팅방.xlsx - SpreadChat</span>
     <div class="xl-titlebar-btns">
-      <div class="xl-tb-btn" onclick="selectLayout('notepad')" title="메모장으로">📝</div>
-      <div class="xl-tb-btn" onclick="selectLayout('bubble')" title="말풍선으로">💬</div>
-      <div class="xl-tb-btn close" onclick="selectLayout('bubble')" title="닫기">✕</div>
+      <div class="xl-tb-btn" onclick="selectLayout('notepad')">📝</div>
+      <div class="xl-tb-btn" onclick="selectLayout('bubble')">💬</div>
+      <div class="xl-tb-btn close" onclick="selectLayout('bubble')">✕</div>
     </div>
   </div>
   <div class="xl-ribbon-tabs">
-    <div class="xl-rtab active">홈</div>
-    <div class="xl-rtab">삽입(N)</div>
-    <div class="xl-rtab">데이터(A)</div>
-    <div class="xl-rtab">검토(R)</div>
+    <div class="xl-rtab active">홈</div><div class="xl-rtab">삽입(N)</div>
+    <div class="xl-rtab">데이터(A)</div><div class="xl-rtab">검토(R)</div>
     <div class="xl-rtab" onclick="openLayoutModal()" style="margin-left:auto;opacity:.8">레이아웃 변경</div>
   </div>
   <div class="xl-ribbon">
@@ -686,8 +676,7 @@ body{height:100vh;height:100dvh;overflow:hidden}
   </div>
   <div class="np-toolbar">
     <div class="np-tool">📄</div><div class="np-tool">💾</div>
-    <div class="np-tool-sep"></div>
-    <div class="np-tool">🔍</div>
+    <div class="np-tool-sep"></div><div class="np-tool">🔍</div>
     <div class="np-tool-sep"></div>
     <div class="np-tool" onclick="showDialog()" style="font-size:11px;width:auto;padding:0 6px;color:#217346;font-weight:700;font-family:'Malgun Gothic',sans-serif">+ 새 방</div>
   </div>
@@ -764,43 +753,35 @@ body{height:100vh;height:100dvh;overflow:hidden}
 </div>
 
 <script>
-// ── Supabase ──
 const SUPABASE_URL='https://kycisbrdvjmqgciwhhvo.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5Y2lzYnJkdmptcWdjaXdoaHZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MDQzNjQsImV4cCI6MjA4OTE4MDM2NH0.zyXAAwtMf6KMVwCyk9OB_7ytsQtOK2jDd8fTSmevvEA';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:false}});
 
-// ── localStorage 키 ──
-const STORAGE_KEY        ='tyrano_visited_v1';
-const NICK_KEY           ='tyrano_nickname_v1';
-const LAYOUT_KEY         ='tyrano_layout_v1';
-const BUBBLE_COLOR_KEY   ='tyrano_bubblecolor_v1';
-const THEME_KEY          ='tyrano_theme_v1';
-const LAST_ROOM_KEY      ='tyrano_last_room_v1';
-const ROOM_PASSCODES_KEY ='tyrano_room_passcodes_v1';
+const STORAGE_KEY='tyrano_visited_v1', NICK_KEY='tyrano_nickname_v1';
+const LAYOUT_KEY='tyrano_layout_v1', BUBBLE_COLOR_KEY='tyrano_bubblecolor_v1';
+const THEME_KEY='tyrano_theme_v1', LAST_ROOM_KEY='tyrano_last_room_v1';
+const ROOM_PASSCODES_KEY='tyrano_room_passcodes_v1';
 
-// ── 상수 ──
 const AV_COLORS=['#e8734a','#4a9ee8','#4ac674','#c64ab8','#e8c44a','#4ab8c6','#9f3060','#7a4ac6'];
 const BUBBLE_PALETTE=['#9f3060','#217346','#1565c0','#6a1b9a','#e65100','#4a148c','#1b5e20','#37474f'];
 
-// ── 유틸 ──
 function ac(n){let h=0;for(let i=0;i<n.length;i++)h=n.charCodeAt(i)+((h<<5)-h);return AV_COLORS[Math.abs(h)%AV_COLORS.length]}
 function ini(n){return(n||'?').trim()[0].toUpperCase()}
 function fmtTime(iso){return new Date(iso).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}
 function rnd(){const a=['졸린','배고픈','신나는','수줍은','당당한'],b=['티라노','공룡','스테고','프테라'];return a[~~(Math.random()*a.length)]+b[~~(Math.random()*b.length)]+(~~(Math.random()*900)+100)}
 
-// ── 상태 ──
 let myNick='';
 let myBubbleColor=localStorage.getItem(BUBBLE_COLOR_KEY)||'#9f3060';
 let currentLayout=localStorage.getItem(LAYOUT_KEY)||'bubble';
 let isLight=localStorage.getItem(THEME_KEY)==='light';
 let activeRoom=null, visMode='open';
-let rooms=[], msgsData={}, msgChannel=null;
-let pendingRoomId=null;
+let rooms=[], msgsData={}, msgChannel=null, pendingRoomId=null;
+let currentDropdownRoomId=null; // 현재 열린 드롭다운
 
-// ── 암호 저장 헬퍼 ──
-function loadRoomPasscodes(){try{return JSON.parse(localStorage.getItem(ROOM_PASSCODES_KEY))||{};}catch{return{}}}
-function saveRoomPasscode(id,pw){const m=loadRoomPasscodes();m[id]=pw;localStorage.setItem(ROOM_PASSCODES_KEY,JSON.stringify(m))}
-function getRoomPasscode(id){return loadRoomPasscodes()[id]||null}
+// ── 암호 저장 ──
+function loadPasscodes(){try{return JSON.parse(localStorage.getItem(ROOM_PASSCODES_KEY))||{};}catch{return{}}}
+function savePasscode(id,pw){const m=loadPasscodes();m[id]=pw;localStorage.setItem(ROOM_PASSCODES_KEY,JSON.stringify(m))}
+function getPasscode(id){return loadPasscodes()[id]||null}
 
 // ── 닉네임 ──
 function applyNick(nick){
@@ -816,16 +797,12 @@ function applyNick(nick){
 // ── 초대장 ──
 const invScreen=document.getElementById('inviteScreen');
 function enterApp(){invScreen.classList.add('fading');setTimeout(()=>invScreen.style.display='none',400)}
-
 (async()=>{
   const {count}=await sb.from('rooms').select('*',{count:'exact',head:true});
-  const el=document.getElementById('invRoomCnt');
-  if(el&&count!=null)el.textContent=count;
+  const el=document.getElementById('invRoomCnt');if(el&&count!=null)el.textContent=count;
 })();
-
 if(localStorage.getItem(STORAGE_KEY)){
-  invScreen.style.display='none';
-  applyNick(localStorage.getItem(NICK_KEY)||'');
+  invScreen.style.display='none';applyNick(localStorage.getItem(NICK_KEY)||'');
 }else{
   applyNick('');
   document.getElementById('invNextBtn').onclick=()=>{
@@ -840,20 +817,82 @@ if(localStorage.getItem(STORAGE_KEY)){
 }
 
 // ── 모바일 사이드바 ──
-function openSidebar(){
-  document.getElementById('sidebar').classList.add('open');
-  document.getElementById('sbDimmer').classList.add('show');
-  document.getElementById('sidebarCloseBtn').style.display='';
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sbDimmer').classList.add('show');document.getElementById('sidebarCloseBtn').style.display='';}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sbDimmer').classList.remove('show');}
+window.addEventListener('resize',()=>{if(window.innerWidth>768)closeSidebar();document.getElementById('sidebarCloseBtn').style.display=window.innerWidth<=768?'':'none';});
+
+// ── 드롭다운 메뉴 (︙) ──
+function openRoomDropdown(e, roomId){
+  e.stopPropagation();
+  closeDropdown(); // 기존 드롭다운 닫기
+  const r=rooms.find(x=>x.id===roomId);
+  if(!r)return;
+  currentDropdownRoomId=roomId;
+  const isOwner=myNick===r.owner_name;
+
+  const dd=document.createElement('div');
+  dd.className='room-dropdown';
+  dd.id='roomDropdown';
+
+  // 방장 표시
+  const ownerAv=`<div class="dd-owner-av" style="background:${ac(r.owner_name||'?')}"><span class="dd-crown">👑</span>${ini(r.owner_name||'?')}</div>`;
+  dd.innerHTML=`
+    <div class="dd-owner-row">${ownerAv}<span>방장: <b>${r.owner_name||'알 수 없음'}</b></span></div>
+    <div class="dd-sep"></div>
+    <div class="dd-item" onclick="leaveRoom()"><span>🚪</span> 방 나가기</div>
+    ${isOwner?`<div class="dd-item danger" onclick="deleteRoom('${roomId}')"><span>🗑️</span> 방 삭제하기</div>`:''}
+  `;
+  document.body.appendChild(dd);
+
+  // 버튼 위치 기준으로 드롭다운 위치 조정
+  const btn=e.currentTarget;
+  const rect=btn.getBoundingClientRect();
+  const ddW=170, ddH=dd.offsetHeight||120;
+  let top=rect.bottom+4, left=rect.left-ddW+rect.width;
+  if(top+ddH>window.innerHeight-8)top=rect.top-ddH-4;
+  if(left<8)left=8;
+  dd.style.top=top+'px';
+  dd.style.left=left+'px';
 }
-function closeSidebar(){
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sbDimmer').classList.remove('show');
+
+function closeDropdown(){
+  const el=document.getElementById('roomDropdown');
+  if(el)el.remove();
+  currentDropdownRoomId=null;
 }
-window.addEventListener('resize',()=>{
-  if(window.innerWidth>768)closeSidebar();
-  const btn=document.getElementById('sidebarCloseBtn');
-  if(btn)btn.style.display=window.innerWidth<=768?'':'none';
+
+// 드롭다운 외부 클릭 시 닫기
+document.addEventListener('click',e=>{
+  if(!e.target.closest('#roomDropdown')&&!e.target.closest('.room-kebab'))closeDropdown();
 });
+
+// ── 방 나가기 ──
+function leaveRoom(){
+  closeDropdown();
+  if(!activeRoom)return;
+  activeRoom=null;
+  localStorage.removeItem(LAST_ROOM_KEY);
+  if(msgChannel){sb.removeChannel(msgChannel);msgChannel=null;}
+  document.getElementById('welcomeScreen').style.display='flex';
+  document.getElementById('chatScreen').style.display='none';
+  document.getElementById('roomTitle').textContent='방을 선택하세요';
+  document.getElementById('roomSub').style.display='none';
+  renderAllSides();
+}
+
+// ── 방 삭제 (방장만) ──
+async function deleteRoom(roomId){
+  closeDropdown();
+  const r=rooms.find(x=>x.id===roomId);
+  if(!r||myNick!==r.owner_name){alert('방장만 삭제할 수 있습니다.');return;}
+  if(!confirm(`"${r.name}" 방을 삭제할까요?\n모든 메시지가 사라집니다.`))return;
+  if(activeRoom===roomId)leaveRoom();
+  await sb.from('messages').delete().eq('room_id',roomId);
+  const {error}=await sb.from('rooms').delete().eq('id',roomId);
+  if(error){alert('삭제 실패: '+error.message);return;}
+  rooms=rooms.filter(x=>x.id!==roomId);
+  renderAllSides();
+}
 
 // ── Supabase: 방 목록 ──
 async function loadRooms(){
@@ -868,31 +907,30 @@ async function loadRooms(){
   renderAllSides();
 }
 
-// ── Supabase: 메시지 로드 / 전송 ──
+// ── Supabase: 메시지 로드/전송 ──
 async function loadMessages(roomId){
   const {data,error}=await sb.from('messages').select('*').eq('room_id',roomId).order('created_at',{ascending:true});
   if(error)return;
-  msgsData[roomId]=(data||[]).map(m=>({id:m.id,u:m.sender_name,t:fmtTime(m.created_at),msg:m.content}));
+  msgsData[roomId]=(data||[]).map(m=>({id:m.id,u:m.sender_name,t:fmtTime(m.created_at),msg:m.content,sys:m.is_system||false}));
   renderCurrentLayout();
 }
-async function sendMsg(v){
-  if(!v||!activeRoom)return;
-  const {error}=await sb.from('messages').insert({room_id:activeRoom,sender_name:myNick,content:v});
-  if(error)alert('전송 실패: '+error.message);
+async function sendMsg(v,isSys=false){
+  if(!activeRoom)return;
+  await sb.from('messages').insert({room_id:activeRoom,sender_name:isSys?'SYSTEM':myNick,content:v,is_system:isSys});
 }
 
 // ── Supabase: Realtime ──
 function subscribeRoom(roomId){
   if(msgChannel)sb.removeChannel(msgChannel);
-  msgChannel=sb.channel('room-msgs-'+roomId)
+  msgChannel=sb.channel('room-'+roomId)
     .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'room_id=eq.'+roomId},payload=>{
       const m=payload.new;
       if(!msgsData[roomId])msgsData[roomId]=[];
       if(!msgsData[roomId].some(x=>x.id===m.id)){
-        msgsData[roomId].push({id:m.id,u:m.sender_name,t:fmtTime(m.created_at),msg:m.content});
+        msgsData[roomId].push({id:m.id,u:m.sender_name,t:fmtTime(m.created_at),msg:m.content,sys:m.is_system||false});
         renderCurrentLayout();
         const r=rooms.find(x=>x.id===roomId);
-        if(r){r.preview=m.sender_name+': '+m.content;renderAllSides();}
+        if(r&&!m.is_system){r.preview=m.sender_name+': '+m.content;renderAllSides();}
       }
     })
     .subscribe(status=>{
@@ -905,9 +943,15 @@ sb.channel('rooms-global')
   .on('postgres_changes',{event:'INSERT',schema:'public',table:'rooms'},payload=>{
     const r=payload.new;
     if(!rooms.some(x=>x.id===r.id)){
-      rooms.unshift({id:r.id,name:r.title,visibility:r.visibility,passcode:r.passcode||null,preview:'새 방이 열렸어요!',cnt:0});
+      rooms.unshift({id:r.id,name:r.title,visibility:r.visibility,passcode:r.passcode||null,owner_name:r.owner_name||'',preview:'새 방이 열렸어요!',cnt:0});
       renderAllSides();
     }
+  })
+  .on('postgres_changes',{event:'DELETE',schema:'public',table:'rooms'},payload=>{
+    const id=payload.old.id;
+    rooms=rooms.filter(x=>x.id!==id);
+    if(activeRoom===id)leaveRoom();
+    renderAllSides();
   }).subscribe();
 
 // ── 렌더 ──
@@ -917,151 +961,79 @@ function renderRooms(){
   const q=document.getElementById('searchInp').value.trim().toLowerCase();
   const f=rooms.filter(r=>r.name.toLowerCase().includes(q));
   document.getElementById('roomList').innerHTML=f.length
-    ?f.map(r=>`<div class="room-item${activeRoom===r.id?' active':''}" onclick="openRoom('${r.id}')">
-        <div class="ri-top"><span class="ri-name">${r.visibility==='secret'?'🔒 ':''}${r.name}</span></div>
-        <div class="ri-preview">${r.preview}</div></div>`).join('')
+    ?f.map(r=>`
+      <div class="room-item${activeRoom===r.id?' active':''}" onclick="openRoom('${r.id}')">
+        <div class="room-item-body">
+          <div class="ri-top"><span class="ri-name">${r.visibility==='secret'?'🔒 ':''}${r.name}</span></div>
+          <div class="ri-preview">${r.preview}</div>
+        </div>
+        <button class="room-kebab" onclick="openRoomDropdown(event,'${r.id}')" title="메뉴">⋮</button>
+      </div>`).join('')
     :'<div class="empty-state">아직 방이 없어요.<br>새 방을 만들어보세요 🕳️</div>';
 }
+
 function renderXlSheets(){
   document.getElementById('xlSheets').innerHTML=rooms.map(r=>`
     <div class="xl-sheet-item${activeRoom===r.id?' active':''}" onclick="openRoom('${r.id}')">
       <span class="xl-sheet-dot" style="background:${ac(r.name)}"></span>
-      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.name}</span>
+      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">${r.name}</span>
     </div>`).join('');
 }
 function renderNpSide(){
   document.getElementById('npSideList').innerHTML=rooms.map(r=>`
     <div class="np-sb-item${activeRoom===r.id?' active':''}" onclick="openRoom('${r.id}')">
-      <span class="np-sb-item-dot" style="background:${ac(r.name)}"></span>
-      # ${r.name}
+      <span class="np-sb-item-dot" style="background:${ac(r.name)}"></span># ${r.name}
     </div>`).join('');
 }
 
-// ── 채팅방 햄버거 메뉴 ──
-function openChatMenu(){
-  const r=rooms.find(x=>x.id===activeRoom);
-  if(!r)return;
-  // 방 정보
-  document.getElementById('cmpRoomName').textContent=r.name;
-  document.getElementById('cmpRoomSub').textContent=r.visibility==='secret'?'🔒 비밀방':'🌐 오픈방';
-  // 방장 아바타
-  const owner=r.owner_name||'—';
-  const av=document.getElementById('cmpOwnerAv');
-  av.style.background=ac(owner);
-  document.getElementById('cmpOwnerIni').textContent=ini(owner);
-  document.getElementById('cmpOwnerName').textContent=owner;
-  // 방장이면 삭제 버튼 표시
-  document.getElementById('cmpDeleteBtn').style.display=myNick===owner?'flex':'none';
-  // 패널 열기
-  document.getElementById('chatMenuOverlay').style.display='block';
-  setTimeout(()=>document.getElementById('chatMenuPanel').classList.add('open'),10);
-}
-function closeChatMenu(){
-  document.getElementById('chatMenuPanel').classList.remove('open');
-  setTimeout(()=>document.getElementById('chatMenuOverlay').style.display='none',260);
-}
-
-// 방 나가기
-function leaveRoom(){
-  closeChatMenu();
-  activeRoom=null;
-  localStorage.removeItem(LAST_ROOM_KEY);
-  document.getElementById('welcomeScreen').style.display='flex';
-  document.getElementById('chatScreen').style.display='none';
-  document.getElementById('roomTitle').textContent='방을 선택하세요';
-  document.getElementById('roomSub').style.display='none';
-  document.getElementById('chatMenuBtn').style.display='none';
-  if(msgChannel){sb.removeChannel(msgChannel);msgChannel=null;}
-  renderAllSides();
-}
-
-// 방 삭제 (방장만)
-async function deleteRoom(){
-  const r=rooms.find(x=>x.id===activeRoom);
-  if(!r||myNick!==r.owner_name)return;
-  if(!confirm(`"${r.name}" 방을 삭제할까요?\n모든 메시지가 사라집니다.`))return;
-  closeChatMenu();
-  // 메시지 먼저 삭제 후 방 삭제
-  await sb.from('messages').delete().eq('room_id',activeRoom);
-  const {error}=await sb.from('rooms').delete().eq('id',activeRoom);
-  if(error){alert('삭제 실패: '+error.message);return;}
-  rooms=rooms.filter(x=>x.id!==activeRoom);
-  leaveRoom();
-}
-document.getElementById('chatMenuBtn').onclick=openChatMenu;
-
-// ── 방 열기 (암호 체크 포함) ──
-async function openRoom(id, skipCheck=false){
-  const r=rooms.find(x=>x.id===id);
-  if(!r)return;
-
+// ── 방 열기 ──
+async function openRoom(id,skipCheck=false){
+  const r=rooms.find(x=>x.id===id);if(!r)return;
   // 비밀방 암호 체크
-  if(!skipCheck && r.visibility==='secret'){
+  if(!skipCheck&&r.visibility==='secret'){
     const {data}=await sb.from('rooms').select('passcode').eq('id',id).single();
-    if(data && data.passcode){
-      const saved=getRoomPasscode(id);
-      if(saved!==data.passcode){
-        pendingRoomId=id;
-        document.getElementById('passcodeModalSub').textContent=`"${r.name}" 방은 암호가 설정되어 있습니다.`;
-        document.getElementById('passcodeCheckInp').value='';
-        document.getElementById('passcodeErr').style.display='none';
-        document.getElementById('passcodeModal').style.display='flex';
-        setTimeout(()=>document.getElementById('passcodeCheckInp').focus(),100);
-        return; // 암호 입력 전까지 여기서 중단
-      }
+    if(data&&data.passcode&&getPasscode(id)!==data.passcode){
+      pendingRoomId=id;
+      document.getElementById('passcodeModalSub').textContent=`"${r.name}" 방은 암호가 설정되어 있습니다.`;
+      document.getElementById('passcodeCheckInp').value='';
+      document.getElementById('passcodeErr').style.display='none';
+      document.getElementById('passcodeModal').style.display='flex';
+      setTimeout(()=>document.getElementById('passcodeCheckInp').focus(),100);
+      return;
     }
   }
-
-  // 입장 처리
   activeRoom=id;
   localStorage.setItem(LAST_ROOM_KEY,id);
   if(window.innerWidth<=768)closeSidebar();
-  // 채팅방 햄버거 버튼 표시
-  document.getElementById('chatMenuBtn').style.display='';
-
   document.getElementById('welcomeScreen').style.display='none';
   document.getElementById('chatScreen').style.display='flex';
   document.getElementById('roomTitle').textContent=r.name;
-  const sub=document.getElementById('roomSub');
-  sub.textContent=r.visibility==='secret'?'🔒 비밀방':'오픈방';
-  sub.style.display='';
+  const sub=document.getElementById('roomSub');sub.textContent=r.visibility==='secret'?'🔒 비밀방':'오픈방';sub.style.display='';
   document.getElementById('xlTitle').textContent='SpreadChat — '+r.name+'.xlsx';
   document.getElementById('xlStatRoom').textContent='시트: '+r.name;
   const atab=document.getElementById('xlActiveTab');if(atab)atab.textContent=r.name;
   document.getElementById('npTitleText').textContent='*'+r.name+' - TyranoPad';
   document.getElementById('npTabLabel').textContent=r.name.replace(/\s/g,'_')+'.log';
   document.getElementById('npStatRoom').textContent=r.name;
-
   renderAllSides();
   await loadMessages(id);
   subscribeRoom(id);
+  // 입장 시스템 메시지 전송
+  await sendMsg(`${myNick}님이 채팅방에 입장하셨습니다 👋`, true);
 }
 
-// ── 비밀방 암호 확인 모달 ──
-function closePasscodeModal(){
-  document.getElementById('passcodeModal').style.display='none';
-  document.getElementById('passcodeCheckInp').value='';
-  document.getElementById('passcodeErr').style.display='none';
-  pendingRoomId=null;
-}
+// ── 비밀방 암호 확인 ──
+function closePasscodeModal(){document.getElementById('passcodeModal').style.display='none';document.getElementById('passcodeCheckInp').value='';document.getElementById('passcodeErr').style.display='none';pendingRoomId=null;}
 async function confirmPasscode(){
-  const entered=document.getElementById('passcodeCheckInp').value.trim();
-  if(!pendingRoomId)return;
+  const entered=document.getElementById('passcodeCheckInp').value.trim();if(!pendingRoomId)return;
   const {data}=await sb.from('rooms').select('passcode').eq('id',pendingRoomId).single();
-  if(!data||data.passcode!==entered){
-    document.getElementById('passcodeErr').style.display='block';
-    document.getElementById('passcodeCheckInp').value='';
-    document.getElementById('passcodeCheckInp').focus();
-    return;
-  }
-  saveRoomPasscode(pendingRoomId,entered);
-  const rid=pendingRoomId;
-  closePasscodeModal();
-  openRoom(rid,true);
+  if(!data||data.passcode!==entered){document.getElementById('passcodeErr').style.display='block';document.getElementById('passcodeCheckInp').value='';document.getElementById('passcodeCheckInp').focus();return;}
+  savePasscode(pendingRoomId,entered);
+  const rid=pendingRoomId;closePasscodeModal();openRoom(rid,true);
 }
 document.getElementById('passcodeCheckInp').addEventListener('keydown',e=>{if(e.key==='Enter')confirmPasscode()});
 
-// ── 렌더 ──
+// ── 렌더 함수들 ──
 function renderCurrentLayout(){
   if(!activeRoom)return;
   if(currentLayout==='bubble')renderBubble(activeRoom);
@@ -1076,25 +1048,32 @@ function renderBubble(id){
   const el=document.getElementById('msgs');if(!el)return;
   let h='<div class="day-sep">오늘</div><div class="sys-notice">모든 채팅 내용은 밤 12시가 되면 초기화됩니다.</div>';
   list.forEach((m,i)=>{
+    // 시스템 메시지
+    if(m.sys||m.u==='SYSTEM'){
+      h+=`<div style="display:flex;justify-content:center;margin:6px 0"><span class="sys-join">${m.msg}</span></div>`;
+      return;
+    }
     const me=m.u===myNick,prev=list[i-1],next=list[i+1];
-    const first=!prev||prev.u!==m.u,last=!next||next.u!==m.u;
+    const pReal=prev&&(prev.sys||prev.u==='SYSTEM')?null:prev;
+    const nReal=next&&(next.sys||next.u==='SYSTEM')?null:next;
+    const first=!pReal||pReal.u!==m.u,last=!nReal||nReal.u!==m.u;
     const isOwner=owner&&m.u===owner;
     let cls=me?'m':'o';
     if(!first&&!last)cls+=' mid';else if(!first&&last)cls+=' bot';
     const bStyle=me?`style="background:${myBubbleColor}"`:'';
-    // 왕관 포함 아바타
-    const crown=isOwner?`<span class="av-crown">👑</span>`:'';
-    const avEl=`<div class="av-wrap${last?'':' h'}"><div class="av" style="background:${ac(m.u)}">${ini(m.u)}</div>${crown}</div>`;
-    const sn=(!me&&first)?`<div class="sname" style="color:${ac(m.u)}">${m.u}${isOwner?' 👑':''}</div>`:'';
+    const crownHtml=isOwner?`<span class="av-crown">👑</span>`:'';
+    const avWrap=`<div class="av-wrap${last?'':' h'}"><div class="av" style="background:${ac(m.u)}">${ini(m.u)}</div>${crownHtml}</div>`;
+    const snCrown=isOwner?` <span style="font-size:10px">👑</span>`:'';
+    const sn=(!me&&first)?`<div class="sname" style="color:${ac(m.u)}">${m.u}${snCrown}</div>`:'';
     const bm=`<div class="bmeta"><div class="bubble ${cls}" ${bStyle}>${m.msg}</div><div class="mc">${last?`<div class="ts">${m.t}</div>`:''}</div></div>`;
     const bw=`<div class="bwrap">${sn}${bm}</div>`;
-    h+=`<div class="msg-row${first?' first':''}${me?' me':''}">${me?`${bw}${avEl}`:`${avEl}${bw}`}</div>`;
+    h+=`<div class="msg-row${first?' first':''}${me?' me':''}">${me?`${bw}${avWrap}`:`${avWrap}${bw}`}</div>`;
   });
   el.innerHTML=h;el.scrollTop=el.scrollHeight;
 }
 
 function renderExcel(id){
-  const list=msgsData[id]||[];
+  const list=(msgsData[id]||[]).filter(m=>!m.sys&&m.u!=='SYSTEM');
   document.getElementById('xlRowNums').innerHTML=list.map((_,i)=>`<div class="xl-rn">${i+1}</div>`).join('');
   document.getElementById('xlRows').innerHTML=list.map((m,i)=>`
     <div class="xl-row${m.u===myNick?' selected':''}" onclick="document.getElementById('xlCellRef').textContent='D${i+1}';document.getElementById('xlFval').textContent='${m.msg.replace(/'/g,"\\'").replace(/</g,'&lt;')}'">
@@ -1112,25 +1091,25 @@ function renderExcel(id){
 function uCls(u){if(u===myNick)return'c-me';const h=u.split('').reduce((a,c)=>a+c.charCodeAt(0),0);return['c-u1','c-u2','c-u3','c-u4'][h%4]}
 function renderNotepad(id){
   const list=msgsData[id]||[];
-  document.getElementById('npLnum').innerHTML=list.map((_,i)=>`<div class="np-ln">${i+1}</div>`).join('');
-  document.getElementById('npEditor').innerHTML=list.length===0
-    ?'<div class="np-line"><span class="c-comment">// 메시지가 없습니다</span></div>'
-    :list.map(m=>`<div class="np-line">
-        <span class="c-bracket">[</span><span class="c-time">${m.t}</span><span class="c-bracket">]</span>&nbsp;
-        <span class="${uCls(m.u)}">${m.u}</span>
-        <span class="c-arrow"> → </span>
-        <span class="${m.u===myNick?'c-me-msg':'c-msg'}">${m.msg}</span>
-      </div>`).join('');
+  const real=list.filter(m=>!m.sys&&m.u!=='SYSTEM');
+  document.getElementById('npLnum').innerHTML=real.map((_,i)=>`<div class="np-ln">${i+1}</div>`).join('');
+  if(real.length===0){document.getElementById('npEditor').innerHTML='<div class="np-line"><span class="c-comment">// 메시지가 없습니다</span></div>';}
+  else{
+    document.getElementById('npEditor').innerHTML=list.map(m=>{
+      if(m.sys||m.u==='SYSTEM')return`<div class="np-line"><span class="c-comment">// ${m.msg}</span></div>`;
+      return`<div class="np-line"><span class="c-bracket">[</span><span class="c-time">${m.t}</span><span class="c-bracket">]</span>&nbsp;<span class="${uCls(m.u)}">${m.u}</span><span class="c-arrow"> → </span><span class="${m.u===myNick?'c-me-msg':'c-msg'}">${m.msg}</span></div>`;
+    }).join('');
+  }
   document.getElementById('npEditor').scrollTop=999999;
-  document.getElementById('npNextLn').textContent=list.length+1;
-  document.getElementById('npStatCount').textContent=list.length+' lines';
-  document.getElementById('npStatLn').textContent='Ln: '+(list.length+1)+'  Col: 1';
+  document.getElementById('npNextLn').textContent=real.length+1;
+  document.getElementById('npStatCount').textContent=real.length+' lines';
+  document.getElementById('npStatLn').textContent='Ln: '+(real.length+1)+'  Col: 1';
 }
 
 // ── 전송 ──
 function mkSend(inputId){
   const inp=document.getElementById(inputId);
-  return async()=>{const v=inp.value.trim();if(!v)return;inp.value='';await sendMsg(v);};
+  return async()=>{const v=inp.value.trim();if(!v)return;inp.value='';await sendMsg(v,false);};
 }
 document.getElementById('sendBtn').onclick=mkSend('msgInp');
 document.getElementById('xlSendBtn').onclick=mkSend('xlInp');
@@ -1143,12 +1122,9 @@ document.getElementById('npSendBtn').onclick=mkSend('npInp');
 function showDialog(){document.getElementById('dialog').style.display='flex'}
 function hideDialog(){
   document.getElementById('dialog').style.display='none';
-  document.getElementById('roomNameInp').value='';
-  document.getElementById('passcodeInp').value='';
+  document.getElementById('roomNameInp').value='';document.getElementById('passcodeInp').value='';
   document.getElementById('passcodeWrap').style.display='none';
-  visMode='open';
-  document.getElementById('visOpen').classList.add('sel');
-  document.getElementById('visSecret').classList.remove('sel');
+  visMode='open';document.getElementById('visOpen').classList.add('sel');document.getElementById('visSecret').classList.remove('sel');
 }
 async function createRoom(){
   const n=document.getElementById('roomNameInp').value.trim();if(!n)return;
@@ -1158,7 +1134,7 @@ async function createRoom(){
   const {data,error}=await sb.from('rooms').insert({title:n,visibility:visMode,passcode:pw||null,owner_name:myNick}).select().single();
   btn.textContent='만들기';btn.disabled=false;
   if(error){alert('방 생성 실패: '+error.message);return;}
-  if(data.passcode)saveRoomPasscode(data.id,data.passcode);
+  if(data.passcode)savePasscode(data.id,data.passcode);
   hideDialog();
   if(!rooms.some(r=>r.id===data.id))
     rooms.unshift({id:data.id,name:data.title,visibility:data.visibility,passcode:data.passcode||null,owner_name:data.owner_name||myNick,preview:'방이 생성되었어요!',cnt:0});
@@ -1172,23 +1148,12 @@ document.getElementById('dCancel').onclick=hideDialog;
 document.getElementById('dCreate').onclick=createRoom;
 document.getElementById('roomNameInp').addEventListener('keydown',e=>{if(e.key==='Enter')createRoom()});
 document.getElementById('searchInp').addEventListener('input',renderRooms);
-document.getElementById('visOpen').onclick=function(){
-  visMode='open';this.classList.add('sel');
-  document.getElementById('visSecret').classList.remove('sel');
-  document.getElementById('passcodeWrap').style.display='none';
-  document.getElementById('passcodeInp').value='';
-};
-document.getElementById('visSecret').onclick=function(){
-  visMode='secret';this.classList.add('sel');
-  document.getElementById('visOpen').classList.remove('sel');
-  document.getElementById('passcodeWrap').style.display='block';
-  setTimeout(()=>document.getElementById('passcodeInp').focus(),50);
-};
+document.getElementById('visOpen').onclick=function(){visMode='open';this.classList.add('sel');document.getElementById('visSecret').classList.remove('sel');document.getElementById('passcodeWrap').style.display='none';document.getElementById('passcodeInp').value='';};
+document.getElementById('visSecret').onclick=function(){visMode='secret';this.classList.add('sel');document.getElementById('visOpen').classList.remove('sel');document.getElementById('passcodeWrap').style.display='block';setTimeout(()=>document.getElementById('passcodeInp').focus(),50);};
 
 // ── 레이아웃 전환 ──
 function selectLayout(layout){
-  currentLayout=layout;
-  localStorage.setItem(LAYOUT_KEY,layout);
+  currentLayout=layout;localStorage.setItem(LAYOUT_KEY,layout);
   document.getElementById('appBubble').style.display=layout==='bubble'?'flex':'none';
   document.getElementById('appExcel').style.display=layout==='excel'?'flex':'none';
   document.getElementById('appNotepad').style.display=layout==='notepad'?'flex':'none';
@@ -1198,14 +1163,10 @@ function selectLayout(layout){
     if(card)card.classList.toggle('active',l===layout);
     if(badge)badge.style.display=l===layout?'':'none';
   });
-  ['Bubble','Notepad','Excel'].forEach(l=>{
-    const b=document.getElementById('lmBadge'+l);
-    if(b)b.style.display=l.toLowerCase()===layout?'inline':'none';
-  });
+  ['Bubble','Notepad','Excel'].forEach(l=>{const b=document.getElementById('lmBadge'+l);if(b)b.style.display=l.toLowerCase()===layout?'inline':'none';});
   const names={bubble:'말풍선',notepad:'메모장',excel:'엑셀'};
   const lb=document.getElementById('layoutBadge');if(lb)lb.textContent=names[layout]||layout;
-  if(activeRoom)renderCurrentLayout();
-  closeSettings();
+  if(activeRoom)renderCurrentLayout();closeSettings();
 }
 
 // ── 설정 모달 ──
@@ -1237,21 +1198,29 @@ function setBubbleColor(c){myBubbleColor=c;localStorage.setItem(BUBBLE_COLOR_KEY
 renderSwatches();
 
 // ── 테마 ──
-if(isLight)document.getElementById('appBubble').classList.add('light');
-document.getElementById('themeSw').onclick=function(){
-  isLight=!isLight;
-  document.getElementById('appBubble').classList.toggle('light',isLight);
-  localStorage.setItem(THEME_KEY,isLight?'light':'dark');
-};
+if(isLight) document.getElementById('appBubble').classList.add('light');
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  const btn = document.getElementById('themeToggleBtn');
+  if(!btn) return;
+  // 초기 아이콘: 라이트면 🌙(누르면 다크로), 다크면 ☀️(누르면 라이트로)
+  btn.textContent = isLight ? '🌙' : '☀️';
+  btn.onclick = function(){
+    isLight = !isLight;
+    document.getElementById('appBubble').classList.toggle('light', isLight);
+    localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
+    this.textContent = isLight ? '🌙' : '☀️';
+    this.style.transform = 'scale(1.35)';
+    setTimeout(()=>{ this.style.transform = ''; }, 180);
+  };
+});
 
 // ── 초기화 ──
 selectLayout(currentLayout);
 (async()=>{
   await loadRooms();
   const lastId=localStorage.getItem(LAST_ROOM_KEY);
-  if(lastId&&rooms.some(r=>r.id===lastId)){
-    await openRoom(lastId,false);
-  }
+  if(lastId&&rooms.some(r=>r.id===lastId))await openRoom(lastId,false);
 })();
 </script>
 </body>
