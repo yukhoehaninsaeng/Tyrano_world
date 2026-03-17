@@ -1,4 +1,187 @@
+const SUPABASE_URL='https://kycisbrdvjmqgciwhhvo.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5Y2lzYnJkdmptcWdjaXdoaHZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MDQzNjQsImV4cCI6MjA4OTE4MDM2NH0.zyXAAwtMf6KMVwCyk9OB_7ytsQtOK2jDd8fTSmevvEA';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:false}});
 
+const STORAGE_KEY        ='tyrano_visited_v1';
+const NICK_KEY           ='tyrano_nickname_v1';
+const LAYOUT_KEY         ='tyrano_layout_v1';
+const BUBBLE_COLOR_KEY   ='tyrano_bubblecolor_v1';
+const THEME_KEY          ='tyrano_theme_v1';
+const LAST_ROOM_KEY      ='tyrano_last_room_v1';
+const ROOM_PASSCODES_KEY ='tyrano_room_passcodes_v1';
+const JOINED_ROOMS_KEY   ='tyrano_joined_rooms_v1';
+
+const AV_COLORS=['#e8734a','#4a9ee8','#4ac674','#c64ab8','#e8c44a','#4ab8c6','#9f3060','#7a4ac6'];
+const BUBBLE_PALETTE=['#9f3060','#217346','#1565c0','#6a1b9a','#e65100','#4a148c','#1b5e20','#37474f'];
+
+function ac(n){let h=0;for(let i=0;i<n.length;i++)h=n.charCodeAt(i)+((h<<5)-h);return AV_COLORS[Math.abs(h)%AV_COLORS.length]}
+function ini(n){return(n||'?').trim()[0].toUpperCase()}
+function fmtTime(iso){return new Date(iso).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}
+function rnd(){const a=['졸린','배고픈','신나는','수줍은','당당한'],b=['티라노','공룡','스테고','프테라'];return a[~~(Math.random()*a.length)]+b[~~(Math.random()*b.length)]+(~~(Math.random()*900)+100)}
+
+let myNick='';
+let myBubbleColor=localStorage.getItem(BUBBLE_COLOR_KEY)||'#9f3060';
+let currentLayout=localStorage.getItem(LAYOUT_KEY)||'bubble';
+let isLight=localStorage.getItem(THEME_KEY)==='light';
+let activeRoom=null, visMode='open';
+let rooms=[], msgsData={}, msgChannel=null, pendingRoomId=null;
+let currentDropdownRoomId=null;
+
+function loadPasscodes(){try{return JSON.parse(localStorage.getItem(ROOM_PASSCODES_KEY))||{};}catch{return{}}}
+function savePasscode(id,pw){const m=loadPasscodes();m[id]=pw;localStorage.setItem(ROOM_PASSCODES_KEY,JSON.stringify(m))}
+function getPasscode(id){return loadPasscodes()[id]||null}
+
+function loadJoined(){try{return JSON.parse(localStorage.getItem(JOINED_ROOMS_KEY))||[];}catch{return[]}}
+function saveJoined(ids){localStorage.setItem(JOINED_ROOMS_KEY,JSON.stringify(ids))}
+function addJoined(id){const j=loadJoined();if(!j.includes(id)){j.unshift(id);saveJoined(j)}}
+function removeJoined(id){saveJoined(loadJoined().filter(x=>x!==id))}
+function isJoined(id){return loadJoined().includes(id)}
+
+function applyNick(nick){
+  myNick=nick||rnd();
+  localStorage.setItem(NICK_KEY,myNick);
+  const c=ac(myNick),i=ini(myNick);
+  ['myAv','inpAv','xlMyAv','npMyAv'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent=i;el.style.background=c;}});
+  ['myName','xlMyName','npMyName'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=myNick;});
+  document.getElementById('xlInpName').textContent=myNick;
+  document.getElementById('npPrefix').textContent='['+myNick+'] → ';
+}
+
+const invScreen=document.getElementById('inviteScreen');
+function enterApp(){invScreen.classList.add('fading');setTimeout(()=>invScreen.style.display='none',400)}
+(async()=>{
+  const {count}=await sb.from('rooms').select('*',{count:'exact',head:true});
+  const el=document.getElementById('invRoomCnt');if(el&&count!=null)el.textContent=count;
+})();
+if(localStorage.getItem(STORAGE_KEY)){
+  invScreen.style.display='none';applyNick(localStorage.getItem(NICK_KEY)||'');
+}else{
+  applyNick('');
+  document.getElementById('invNextBtn').onclick=()=>{
+    document.getElementById('invMain').classList.add('hide');
+    document.getElementById('invNick').classList.add('show');
+    setTimeout(()=>document.getElementById('nickInput').focus(),100);
+  };
+  function doEnter(){applyNick(document.getElementById('nickInput').value.trim());localStorage.setItem(STORAGE_KEY,'1');enterApp();}
+  document.getElementById('invEnterBtn').onclick=doEnter;
+  document.getElementById('nickInput').addEventListener('keydown',e=>{if(e.key==='Enter')doEnter()});
+  document.getElementById('nickSkip').onclick=()=>{applyNick('');localStorage.setItem(STORAGE_KEY,'1');enterApp()};
+}
+
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sbDimmer').classList.add('show');document.getElementById('sidebarCloseBtn').style.display='';}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sbDimmer').classList.remove('show');}
+window.addEventListener('resize',()=>{if(window.innerWidth>768)closeSidebar();document.getElementById('sidebarCloseBtn').style.display=window.innerWidth<=768?'':'none';});
+
+function openRoomDropdown(e,roomId){
+  e.stopPropagation();
+  closeDropdown();
+  const r=rooms.find(x=>x.id===roomId);if(!r)return;
+  currentDropdownRoomId=roomId;
+  const isOwner=myNick===r.owner_name;
+  const dd=document.createElement('div');
+  dd.className='room-dropdown';dd.id='roomDropdown';
+  const ownerAv=`<div class="dd-owner-av" style="background:${ac(r.owner_name||'?')}"><span class="dd-crown">👑</span>${ini(r.owner_name||'?')}</div>`;
+  dd.innerHTML=`
+    <div class="dd-owner-row">${ownerAv}<span>방장: <b>${r.owner_name||'알 수 없음'}</b></span></div>
+    <div class="dd-sep"></div>
+    <div class="dd-item" onclick="leaveRoom()"><span>🚪</span> 방 나가기</div>
+    ${isOwner?`<div class="dd-item danger" onclick="deleteRoom('${roomId}')"><span>🗑️</span> 방 삭제하기</div>`:''}
+  `;
+  document.body.appendChild(dd);
+  const btn=e.currentTarget;
+  const rect=btn.getBoundingClientRect();
+  const ddW=170,ddH=dd.offsetHeight||120;
+  let top=rect.bottom+4,left=rect.left-ddW+rect.width;
+  if(top+ddH>window.innerHeight-8)top=rect.top-ddH-4;
+  if(left<8)left=8;
+  dd.style.top=top+'px';dd.style.left=left+'px';
+}
+function closeDropdown(){const el=document.getElementById('roomDropdown');if(el)el.remove();currentDropdownRoomId=null;}
+document.addEventListener('click',e=>{if(!e.target.closest('#roomDropdown')&&!e.target.closest('.room-kebab'))closeDropdown();});
+
+function leaveRoom(){
+  closeDropdown();if(!activeRoom)return;
+  removeJoined(activeRoom);
+  activeRoom=null;localStorage.removeItem(LAST_ROOM_KEY);
+  if(msgChannel){sb.removeChannel(msgChannel);msgChannel=null;}
+  document.getElementById('welcomeScreen').style.display='flex';
+  document.getElementById('chatScreen').style.display='none';
+  document.getElementById('roomTitle').textContent='방을 선택하세요';
+  document.getElementById('roomSub').style.display='none';
+  renderAllSides();
+}
+
+async function deleteRoom(roomId){
+  closeDropdown();
+  const r=rooms.find(x=>x.id===roomId);
+  if(!r||myNick!==r.owner_name){alert('방장만 삭제할 수 있습니다.');return;}
+  if(!confirm(`"${r.name}" 방을 삭제할까요?\n모든 메시지가 사라집니다.`))return;
+  if(activeRoom===roomId)leaveRoom();
+  await sb.from('messages').delete().eq('room_id',roomId);
+  const {error}=await sb.from('rooms').delete().eq('id',roomId);
+  if(error){alert('삭제 실패: '+error.message);return;}
+  rooms=rooms.filter(x=>x.id!==roomId);
+  removeJoined(roomId);
+  renderAllSides();
+}
+
+async function loadRooms(){
+  const {data,error}=await sb.from('rooms').select('*').order('created_at',{ascending:false});
+  if(error||!data)return;
+  rooms=data.map(r=>({id:r.id,name:r.title,visibility:r.visibility,passcode:r.passcode||null,owner_name:r.owner_name||'',preview:'방에 입장해 대화하세요',cnt:0}));
+  renderAllSides();
+  for(const room of rooms){
+    const {data:last}=await sb.from('messages').select('content,sender_name').eq('room_id',room.id).order('created_at',{ascending:false}).limit(1);
+    if(last&&last[0])room.preview=last[0].sender_name+': '+last[0].content;
+  }
+  renderAllSides();
+}
+
+async function loadMessages(roomId){
+  const {data,error}=await sb.from('messages').select('*').eq('room_id',roomId).order('created_at',{ascending:true});
+  if(error)return;
+  msgsData[roomId]=(data||[]).map(m=>({id:m.id,u:m.sender_name,t:fmtTime(m.created_at),msg:m.content,sys:m.is_system||false}));
+  renderCurrentLayout();
+}
+async function sendMsg(v,isSys=false){
+  if(!activeRoom)return;
+  await sb.from('messages').insert({room_id:activeRoom,sender_name:isSys?'SYSTEM':myNick,content:v,is_system:isSys});
+}
+
+function subscribeRoom(roomId){
+  if(msgChannel)sb.removeChannel(msgChannel);
+  msgChannel=sb.channel('room-'+roomId)
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'room_id=eq.'+roomId},payload=>{
+      const m=payload.new;
+      if(!msgsData[roomId])msgsData[roomId]=[];
+      if(!msgsData[roomId].some(x=>x.id===m.id)){
+        msgsData[roomId].push({id:m.id,u:m.sender_name,t:fmtTime(m.created_at),msg:m.content,sys:m.is_system||false});
+        renderCurrentLayout();
+        const r=rooms.find(x=>x.id===roomId);
+        if(r&&!m.is_system){r.preview=m.sender_name+': '+m.content;renderAllSides();}
+      }
+    })
+    .subscribe(status=>{
+      const dot=document.getElementById('connDot');
+      if(dot)dot.style.background=status==='SUBSCRIBED'?'var(--green)':'#888';
+    });
+}
+sb.channel('rooms-global')
+  .on('postgres_changes',{event:'INSERT',schema:'public',table:'rooms'},payload=>{
+    const r=payload.new;
+    if(!rooms.some(x=>x.id===r.id)){
+      rooms.unshift({id:r.id,name:r.title,visibility:r.visibility,passcode:r.passcode||null,owner_name:r.owner_name||'',preview:'새 방이 열렸어요!',cnt:0});
+      renderAllSides();
+    }
+  })
+  .on('postgres_changes',{event:'DELETE',schema:'public',table:'rooms'},payload=>{
+    const id=payload.old.id;
+    rooms=rooms.filter(x=>x.id!==id);
+    if(activeRoom===id)leaveRoom();
+    renderAllSides();
+  }).subscribe();
+
+function renderAllSides(){renderRooms();renderXlSheets();renderNpSide();}
 
 // ══════════════════════════════════════════
 // renderRooms: 카테고리 헤더 (참여중 / 미참여)
