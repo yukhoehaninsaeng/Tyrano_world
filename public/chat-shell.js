@@ -10,7 +10,6 @@ const THEME_KEY          ='tyrano_theme_v1';
 const LAST_ROOM_KEY      ='tyrano_last_room_v1';
 const ROOM_PASSCODES_KEY ='tyrano_room_passcodes_v1';
 const JOINED_ROOMS_KEY   ='tyrano_joined_rooms_v1';
-const NOTIFY_KEY         ='tyrano_notify_v1';
 
 const AV_COLORS=['#e8734a','#4a9ee8','#4ac674','#c64ab8','#e8c44a','#4ab8c6','#9f3060','#7a4ac6'];
 const BUBBLE_PALETTE=['#9f3060','#217346','#1565c0','#6a1b9a','#e65100','#4a148c','#1b5e20','#37474f'];
@@ -24,12 +23,9 @@ let myNick='';
 let myBubbleColor=localStorage.getItem(BUBBLE_COLOR_KEY)||'#9f3060';
 let currentLayout=localStorage.getItem(LAYOUT_KEY)||'bubble';
 let isLight=localStorage.getItem(THEME_KEY)==='light';
-let notifyEnabled=localStorage.getItem(NOTIFY_KEY)==='on';
 let activeRoom=null, visMode='open';
-let rooms=[], msgsData={}, msgChannel=null, pendingRoomId=null, msgAlertChannel=null;
+let rooms=[], msgsData={}, msgChannel=null, pendingRoomId=null;
 let currentDropdownRoomId=null;
-let unreadByRoom={};
-const alertedMsgIds=new Set();
 
 function loadPasscodes(){try{return JSON.parse(localStorage.getItem(ROOM_PASSCODES_KEY))||{};}catch{return{}}}
 function savePasscode(id,pw){const m=loadPasscodes();m[id]=pw;localStorage.setItem(ROOM_PASSCODES_KEY,JSON.stringify(m))}
@@ -40,83 +36,6 @@ function saveJoined(ids){localStorage.setItem(JOINED_ROOMS_KEY,JSON.stringify(id
 function addJoined(id){const j=loadJoined();if(!j.includes(id)){j.unshift(id);saveJoined(j)}}
 function removeJoined(id){saveJoined(loadJoined().filter(x=>x!==id))}
 function isJoined(id){return loadJoined().includes(id)}
-
-function renderNotifyToggle(){
-  const btn=document.getElementById('notifyToggleBtn');
-  if(!btn)return;
-  btn.textContent=notifyEnabled?'🔔':'🔕';
-  btn.title=notifyEnabled?'알림 끄기':'알림 켜기';
-  btn.style.opacity=notifyEnabled?'1':'.6';
-}
-function getUnreadTotal(){return Object.values(unreadByRoom).reduce((a,b)=>a+(b||0),0)}
-function clearUnreadForRoom(roomId){if(roomId)delete unreadByRoom[roomId]}
-function clearAllUnread(){unreadByRoom={}}
-function subscribeMessageAlerts(){
-  if(msgAlertChannel||!notifyEnabled)return;
-  msgAlertChannel=sb.channel('messages-global')
-    .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},payload=>{
-      notifyIncomingMessage(payload.new);
-    })
-    .subscribe();
-}
-function unsubscribeMessageAlerts(){
-  if(!msgAlertChannel)return;
-  sb.removeChannel(msgAlertChannel);
-  msgAlertChannel=null;
-}
-async function setNotifyEnabled(enabled){
-  if(enabled){
-    if(typeof Notification==='undefined'){
-      alert('이 브라우저는 알림을 지원하지 않습니다.');
-      notifyEnabled=false;
-      localStorage.setItem(NOTIFY_KEY,'off');
-      renderNotifyToggle();
-      return;
-    }
-    if(Notification.permission==='default'){
-      const p=await Notification.requestPermission();
-      if(p!=='granted'){
-        alert('브라우저 알림 권한이 필요합니다.');
-        notifyEnabled=false;
-        localStorage.setItem(NOTIFY_KEY,'off');
-        renderNotifyToggle();
-        return;
-      }
-    }
-    if(Notification.permission!=='granted'){
-      alert('브라우저 알림이 차단되어 있습니다. 사이트 알림 권한을 허용해 주세요.');
-      notifyEnabled=false;
-      localStorage.setItem(NOTIFY_KEY,'off');
-      renderNotifyToggle();
-      return;
-    }
-  }
-  notifyEnabled=enabled;
-  if(!notifyEnabled){
-    clearAllUnread();
-    unsubscribeMessageAlerts();
-  }else{
-    subscribeMessageAlerts();
-  }
-  localStorage.setItem(NOTIFY_KEY,notifyEnabled?'on':'off');
-  renderNotifyToggle();
-}
-async function toggleNotify(){await setNotifyEnabled(!notifyEnabled)}
-function notifyIncomingMessage(m){
-  if(!notifyEnabled||!m)return;
-  if(m.is_system||m.sender_name===myNick)return;
-  if(!isJoined(m.room_id))return;
-  if(m.room_id===activeRoom)return;
-  const mid=String(m.id||'');
-  if(mid&&alertedMsgIds.has(mid))return;
-  if(mid)alertedMsgIds.add(mid);
-  unreadByRoom[m.room_id]=(unreadByRoom[m.room_id]||0)+1;
-  if(typeof Notification==='undefined'||Notification.permission!=='granted')return;
-  const total=getUnreadTotal();
-  try{
-    new Notification('티라노 놀이터',{body:`${total}건의 메세지가 도착했습니다.`,tag:'tyrano-msg-alert',renotify:true});
-  }catch{}
-}
 
 function applyNick(nick){
   myNick=nick||rnd();
@@ -365,7 +284,6 @@ function closeBrowseModal(){const el=document.getElementById('browseModal');if(e
 
 async function openRoom(id,skipCheck=false){
   const r=rooms.find(x=>x.id===id);if(!r)return;
-  const wasJoined=isJoined(id);
   if(!skipCheck&&r.visibility==='secret'){
     const {data}=await sb.from('rooms').select('passcode').eq('id',id).single();
     if(data&&data.passcode&&getPasscode(id)!==data.passcode){
@@ -379,7 +297,6 @@ async function openRoom(id,skipCheck=false){
     }
   }
   activeRoom=id;
-  clearUnreadForRoom(id);
   addJoined(id);
   localStorage.setItem(LAST_ROOM_KEY,id);
   if(window.innerWidth<=768)closeSidebar();
@@ -396,7 +313,7 @@ async function openRoom(id,skipCheck=false){
   renderAllSides();
   await loadMessages(id);
   subscribeRoom(id);
-  if(!wasJoined)await sendMsg(`${myNick}님이 놀이터에 입장하셨습니다 👋`,true);
+  await sendMsg(`${myNick}님이 채팅방에 입장하셨습니다 👋`,true);
 }
 
 function closePasscodeModal(){document.getElementById('passcodeModal').style.display='none';document.getElementById('passcodeCheckInp').value='';document.getElementById('passcodeErr').style.display='none';pendingRoomId=null;}
@@ -552,9 +469,6 @@ function switchSettingsTab(tab,el){
 document.getElementById('settingsBtn').onclick=()=>openSettings('layout');
 document.getElementById('settingsBtn2').onclick=()=>openSettings('layout');
 document.getElementById('layoutSettingsBtn').onclick=()=>openSettings('layout');
-const notifyBtn=document.getElementById('notifyToggleBtn');
-if(notifyBtn)notifyBtn.onclick=toggleNotify;
-renderNotifyToggle();
 document.getElementById('settingsClose').onclick=closeSettings;
 document.getElementById('settingsModal').onclick=function(e){if(e.target===this)closeSettings()};
 function openLayoutModal(){document.getElementById('layoutModal').style.display='flex'}
@@ -582,15 +496,6 @@ themeBtn.onclick=function(){
 };
 
 selectLayout(currentLayout);
-if(notifyEnabled&&typeof Notification!=='undefined'&&Notification.permission==='granted'){
-  subscribeMessageAlerts();
-}else if(notifyEnabled){
-  notifyEnabled=false;
-  localStorage.setItem(NOTIFY_KEY,'off');
-  renderNotifyToggle();
-}
-window.addEventListener('focus',()=>{if(activeRoom)clearUnreadForRoom(activeRoom);});
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&activeRoom)clearUnreadForRoom(activeRoom);});
 (async()=>{
   await loadRooms();
   const lastId=localStorage.getItem(LAST_ROOM_KEY);
