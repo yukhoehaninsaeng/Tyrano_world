@@ -285,7 +285,7 @@ function renderRooms(){
   }
 
   let html='';
-
+  // 이태랑의 흔적
   // ── 참여중인 놀이터 ──
   html+=`<div class="sb-cat-header">
     <span class="sb-cat-icon">🏠</span>
